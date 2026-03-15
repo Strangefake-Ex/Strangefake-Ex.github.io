@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPT208 Go Climbers Project</title>
+    <!-- 引入 Tailwind CSS (无需本地安装，直接使用高级样式) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 添加一点自定义动画让页面更生动 */
+        .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- 顶部渐变 Header -->
+    <header class="bg-gradient-to-r from-slate-700 to-slate-900 text-white py-16 text-center shadow-lg">
+        <h1 class="text-4xl font-extrabold tracking-tight mb-2">CPT208 Climb Project</h1>
+        <p class="text-lg text-slate-300">Group Portfolio Page - Human-Centric Computing</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-12">
+
+        <!-- 项目简介 About Project -->
+        <section class="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+            <h2 class="text-2xl font-bold mb-4 text-slate-800 border-b pb-2 border-indigo-100">About Our Project</h2>
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-r-lg text-gray-700 leading-relaxed space-y-4">
+                <p>Our project focuses on climbing-related user needs and aims to design a human-centered digital solution for beginner support, community connection, and better access to climbing information and services.</p>
+                <p>We want to improve the overall climbing experience by helping users understand climbing basics, find suitable partners or trainers, and engage more confidently in the climbing community.</p>
+            </div>
+        </section>
+
+        <!-- 团队成员 Group Members -->
+        <section>
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 pl-2 border-l-4 border-emerald-500">Group Members</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <!-- Member 1 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover-card">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Chenyu" alt="Avatar" class="w-24 h-24 mx-auto mb-4 bg-slate-100 rounded-full p-2">
+                    <h3 class="font-bold text-lg text-slate-800">Chenyu Du</h3>
+                    <p class="text-sm text-gray-500 mb-2">ID: 2360743</p>
+                    <span class="inline-block bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full font-semibold">We</span>
+                </div>
+                <!-- Member 2 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover-card">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Junyan" alt="Avatar" class="w-24 h-24 mx-auto mb-4 bg-slate-100 rounded-full p-2">
+                    <h3 class="font-bold text-lg text-slate-800">Junyan He</h3>
+                    <p class="text-sm text-gray-500 mb-2">ID: 2363304</p>
+                    <span class="inline-block bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full font-semibold">Are</span>
+                </div>
+                <!-- Member 3 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover-card">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Jiafei" alt="Avatar" class="w-24 h-24 mx-auto mb-4 bg-slate-100 rounded-full p-2">
+                    <h3 class="font-bold text-lg text-slate-800">Jiafei Sun</h3>
+                    <p class="text-sm text-gray-500 mb-2">ID: 2361510</p>
+                    <span class="inline-block bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full font-semibold">A</span>
+                </div>
+                <!-- Member 4 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover-card">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Youming" alt="Avatar" class="w-24 h-24 mx-auto mb-4 bg-slate-100 rounded-full p-2">
+                    <h3 class="font-bold text-lg text-slate-800">Youming Yang</h3>
+                    <p class="text-sm text-gray-500 mb-2">ID: 2361217</p>
+                    <span class="inline-block bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full font-semibold">Team!!!</span>
+                </div>
+            </div>
+            <p class="text-center text-sm text-gray-400 mt-4 italic">* Replace image src with your turtle avatars</p>
+        </section>
+
+        <!-- 用户画像 Project Personas (填入了AI生成的内容) -->
+        <section>
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 pl-2 border-l-4 border-amber-400">Project Personas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Persona 1 -->
+                <div class="bg-white rounded-xl shadow-sm p-8 border-t-4 border-blue-400 hover-card">
+                    <h3 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Persona 1: Li Wen - Beginner Climber</h3>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li><strong class="text-gray-900">Age:</strong> 20</li>
+                        <li><strong class="text-gray-900">Gender:</strong> Male</li>
+                        <li><strong class="text-gray-900">Occupation:</strong> University Student</li>
+                        <li><strong class="text-gray-900">Background:</strong> Saw rock climbing videos on TikTok and wants to try, but has zero upper body strength and no gear.</li>
+                        <li><strong class="text-gray-900">Personality:</strong> Introverted, hesitant to ask strangers for help, easily discouraged.</li>
+                        <li><strong class="text-gray-900">Goals:</strong> Wants to master basic V0-V1 bouldering routes and build core strength without looking awkward in front of pros.</li>
+                        <li><strong class="text-gray-900">Needs:</strong> A safe, non-judgmental way to find beginner guides, rent equipment, and perhaps find another beginner to go with.</li>
+                        <li class="bg-red-50 p-3 rounded text-red-800 mt-2"><strong class="text-red-900">Pain Points:</strong> Gyms feel intimidating ("bro-culture"); doesn't know how to read route grades; falls off easily and feels embarrassed.</li>
+                    </ul>
+                </div>
+
+                <!-- Persona 2 -->
+                <div class="bg-white rounded-xl shadow-sm p-8 border-t-4 border-orange-400 hover-card">
+                    <h3 class="text-xl font-bold text-orange-600 mb-4 border-b pb-2">Persona 2: Ryan Li - Social & Improving Climber</h3>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li><strong class="text-gray-900">Age:</strong> 30</li>
+                        <li><strong class="text-gray-900">Gender:</strong> Male</li>
+                        <li><strong class="text-gray-900">Occupation:</strong> PhD Student / TA</li>
+                        <li><strong class="text-gray-900">Background:</strong> Has been climbing for a year. Currently stuck at V3 difficulty. Views climbing as his main social outlet outside the lab.</li>
+                        <li><strong class="text-gray-900">Personality:</strong> Outgoing, analytical, competitive but supportive.</li>
+                        <li><strong class="text-gray-900">Goals:</strong> Wants to break through his plateau (target V5), track his climbing progress systematically, and organize weekend climbing trips with friends.</li>
+                        <li><strong class="text-gray-900">Needs:</strong> Advanced route beta (tips), connection with coaches or more experienced climbers, and community event organization tools.</li>
+                        <li class="bg-red-50 p-3 rounded text-red-800 mt-2"><strong class="text-red-900">Pain Points:</strong> Hard to coordinate schedules with current climbing partners; finger injuries from improper training; lacks a structured way to track route completions.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 强制要求的 AI 声明 (AI Disclosure) -->
+        <section class="bg-slate-800 text-slate-300 rounded-xl p-6 mt-12 text-sm">
+            <h4 class="text-white font-bold mb-2 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                Mandatory AI Disclosure (10-80-10 Rule)
+            </h4>
+            <ul class="list-disc list-inside space-y-1 ml-2">
+                <li><strong>Tool Used:</strong> ChatGPT (GPT-4)</li>
+                <li><strong>Purpose:</strong> Used for brainstorming and drafting the detailed descriptions, goals, and pain points for the two climbing Personas.</li>
+                <li><strong>Human Effort:</strong> We provided the specific context of our CPT208 climbing project (beginner vs. improving climber) as the prompt. After the AI generated the content, we manually reviewed, edited the details to match our target demographics (e.g., Suzhou university students), and formatted it into the portfolio.</li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+</html>

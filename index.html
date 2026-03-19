@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XJTLU Spark - Group Discussion Platform</title>
+    <title>XJTLU Spark - Group Discussion</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 高级自定义动画：背景呼吸光晕与浮动效果 */
+        /* 动态呼吸背景 */
         @keyframes blob {
             0% { transform: translate(0px, 0px) scale(1); }
             33% { transform: translate(30px, -50px) scale(1.1); }
@@ -18,166 +18,153 @@
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
         
-        /* 毛玻璃效果核心类 */
+        /* 毛玻璃与卡片浮动效果 */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
         }
-
-        .hover-lift { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease; }
-        .hover-lift:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        .hover-lift { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-lift:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased relative overflow-x-hidden min-h-screen">
 
     <!-- 动态高级光晕背景 -->
     <div class="fixed inset-0 w-full h-full z-[-1] overflow-hidden">
-        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"></div>
-        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-4000"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-4000"></div>
     </div>
 
     <!-- 顶部导航条 -->
     <nav class="w-full glass-panel sticky top-0 z-50 py-4 px-8 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-200">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-200">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
             </div>
-            <span class="font-bold text-xl tracking-tight text-slate-900">XJTLU Spark</span>
+            <span class="font-bold text-2xl tracking-tight text-slate-800">Spark.</span>
         </div>
-        <div class="text-sm font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">CPT208 • Topic B1</div>
+        <div class="text-sm font-semibold text-indigo-600 bg-white/80 px-4 py-1.5 rounded-full shadow-sm border border-indigo-50">Topic B1 • Group Discussion</div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
 
-        <!-- 1. Hero 项目介绍区域 (左右排版) -->
-        <section class="flex flex-col lg:flex-row gap-12 items-center">
-            <div class="lg:w-1/2 space-y-6">
-                <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                    Ignite Meaningful <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">Group Discussions</span>
-                </h1>
-                <p class="text-lg text-slate-600 leading-relaxed">
-                    Designed to break the ice and bridge the gap between XJTLU students and academic teachers. Our GenAI-powered platform transforms silent seminars into active, inclusive, and dynamic learning environments.
-                </p>
-                <div class="flex gap-4 pt-4">
-                    <span class="px-4 py-2 bg-white rounded-full text-sm font-medium text-slate-700 shadow-sm border border-slate-200">🤖 GenAI Supported</span>
-                    <span class="px-4 py-2 bg-white rounded-full text-sm font-medium text-slate-700 shadow-sm border border-slate-200">📱 Cross-Platform</span>
-                </div>
-            </div>
-            
-            <!-- 团队成员 (创新错落排版) -->
-            <div class="lg:w-1/2 relative w-full h-[400px]">
-                <div class="absolute inset-0 bg-gradient-to-tr from-indigo-100 to-purple-50 rounded-3xl transform rotate-3"></div>
-                <div class="absolute inset-0 glass-panel rounded-3xl p-8 transform -rotate-2 flex flex-col justify-center">
-                    <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                        <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        The Creators
-                    </h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- 成员1 -->
-                        <div class="flex items-center gap-3 bg-white/50 p-3 rounded-xl border border-white/60">
-                            <img src="Qian Wang.jpg" class="w-12 h-12 shadow-sm object-cover" alt="Avatar">
-                            <div><p class="font-bold text-sm text-slate-900">Qian Wang</p><p class="text-xs text-slate-500">2362229</p></div>
-                        </div>
-                        <!-- 成员2 -->
-                        <div class="flex items-center gap-3 bg-white/50 p-3 rounded-xl border border-white/60">
-                            <img src="Zengyi Mei.jpg" class="w-12 h-12 shadow-sm object-cover" alt="Avatar">
-                            <div><p class="font-bold text-sm text-slate-900">Zengyi Mei</p><p class="text-xs text-slate-500">2361796</p></div>
-                        </div>
-                        <!-- 成员3 -->
-                        <div class="flex items-center gap-3 bg-white/50 p-3 rounded-xl border border-white/60">
-                            <img src="Haoyu Shen.jpg" class="w-12 h-12 shadow-sm object-cover" alt="Avatar">
-                            <div><p class="font-bold text-sm text-slate-900">Haoyu Shen</p><p class="text-xs text-slate-500">2361328</p></div>
-                        </div>
-                        <!-- 成员4 -->
-                        <div class="flex items-center gap-3 bg-white/50 p-3 rounded-xl border border-white/60">
-                            <img src="Chenye Zhao.jpg" class="w-12 h-12 shadow-sm object-cover" alt="Avatar">
-                            <div><p class="font-bold text-sm text-slate-900">Chenye Zhao</p><p class="text-xs text-slate-500">2361582</p></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- 1. Hero 居中全景项目介绍 -->
+        <section class="text-center max-w-4xl mx-auto space-y-8 pt-10">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 tracking-tight leading-tight">
+                Ignite Meaningful <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">Classroom Conversations</span>
+            </h1>
+            <p class="text-xl text-slate-600 leading-relaxed px-4">
+                Designed to bridge the gap between XJTLU students and academic teachers. Our GenAI-powered platform transforms silent seminars into active, inclusive, and dynamic learning environments.
+            </p>
         </section>
 
-        <!-- 2. 用户画像 (Bento Box 便当盒网格布局) -->
+        <!-- 2. Team Members 团队成员 -->
+        <section class="relative">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-600 tracking-wide">Team Members</h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-purple-300 via-indigo-300 to-cyan-300 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Member 1: Qian Wang -->
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Qian Wang.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Qian Wang Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Qian Wang</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 23XXXXX</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: UI/UX Design</p>
+                </div>
+
+                <!-- Member 2: Zengyi Mei -->
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Zengyi Mei.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Zengyi Mei Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Zengyi Mei</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 23XXXXX</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: User Research</p>
+                </div>
+
+                <!-- Member 3: Haoyu Shen -->
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Haoyu Shen.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Haoyu Shen Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Haoyu Shen</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 23XXXXX</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: Developer</p>
+                </div>
+
+                <!-- Member 4: Chenye Zhao -->
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Chenye Zhao.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Chenye Zhao Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Chenye Zhao</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 23XXXXX</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: Project Manager</p>
+                </div>
+            </div>
+            <p class="text-center text-xs text-slate-400 mt-4">* Please update your Student IDs and specific roles directly in the code.</p>
+        </section>
+
+        <!-- 3. 用户画像 -->
         <section>
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-extrabold text-slate-900">Target Personas</h2>
+                <h2 class="text-3xl font-extrabold text-slate-800">Target Personas</h2>
                 <p class="text-slate-500 mt-3">Understanding the silence to build better conversations.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 
                 <!-- Persona 1: The Student -->
-                <div class="glass-panel rounded-3xl p-8 hover-lift relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-100 rounded-bl-full z-0 opacity-50 transition-transform group-hover:scale-110"></div>
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <span class="px-3 py-1 bg-cyan-100 text-cyan-700 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Primary User</span>
-                                <h3 class="text-2xl font-bold text-slate-900">Yifei (The "Silent" Student)</h3>
-                                <p class="text-sm text-slate-500 mt-1">Age 19 • XJTLU Year 2 Student • Introverted</p>
-                            </div>
-                            <div class="text-4xl">🤫</div>
+                <div class="glass-panel rounded-3xl p-8 hover-lift relative overflow-hidden border-t-4 border-t-cyan-400">
+                    <div class="flex flex-col sm:flex-row gap-6 items-start mb-6 border-b border-slate-200/50 pb-6">
+                        <!-- AI生成的学生画像图片将放在这里 (目前使用高质量占位图，等你们用AI生成后可以替换掉 src) -->
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop" class="w-28 h-28 rounded-2xl object-cover shadow-md border-2 border-white" alt="Yifei Portrait">
+                        <div>
+                            <span class="px-3 py-1 bg-cyan-100 text-cyan-700 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Primary User</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Yifei (The "Silent" Student)</h3>
+                            <p class="text-sm text-slate-500 mt-1">Age 19 • XJTLU Year 2 Student • Introverted</p>
                         </div>
-                        
-                        <div class="space-y-5">
-                            <div class="bg-white/60 p-4 rounded-2xl border border-white">
-                                <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400"></span>Core Goals</h4>
-                                <p class="text-sm text-slate-600">Wants to earn participation marks and share brilliant ideas without the anxiety of speaking flawed English in front of 30 peers and the professor.</p>
-                            </div>
-                            
-                            <div class="bg-white/60 p-4 rounded-2xl border border-white">
-                                <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span>Frustrations</h4>
-                                <ul class="text-sm text-slate-600 list-disc list-inside space-y-1">
-                                    <li>Needs time to translate thoughts from Chinese to English.</li>
-                                    <li>"Extroverts always dominate the group discussions."</li>
-                                    <li>Fear of being judged by the academic teacher.</li>
-                                </ul>
-                            </div>
-
-                            <div class="p-4 rounded-2xl bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-100">
-                                <p class="text-sm text-cyan-800 italic">"I usually just nod during Seminars. I have good points, but by the time I formulate my sentence in English, the topic has already moved on."</p>
-                            </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400"></span>Core Goals</h4>
+                            <p class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl">Wants to earn participation marks and share brilliant ideas without the anxiety of speaking flawed English in front of 30 peers and the professor.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span>Frustrations</h4>
+                            <ul class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl list-disc list-inside space-y-1">
+                                <li>Needs time to translate thoughts from Chinese to English.</li>
+                                <li>Fear of being judged by the academic teacher.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
 
                 <!-- Persona 2: The Teacher -->
-                <div class="glass-panel rounded-3xl p-8 hover-lift relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-bl-full z-0 opacity-50 transition-transform group-hover:scale-110"></div>
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Secondary User</span>
-                                <h3 class="text-2xl font-bold text-slate-900">Dr. Sarah (The Facilitator)</h3>
-                                <p class="text-sm text-slate-500 mt-1">Age 35 • Language/Academic Teacher • Extroverted</p>
-                            </div>
-                            <div class="text-4xl">🎤</div>
+                <div class="glass-panel rounded-3xl p-8 hover-lift relative overflow-hidden border-t-4 border-t-purple-400">
+                    <div class="flex flex-col sm:flex-row gap-6 items-start mb-6 border-b border-slate-200/50 pb-6">
+                        <!-- AI生成的老师画像图片将放在这里 (目前使用高质量占位图，等你们用AI生成后可以替换掉 src) -->
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop" class="w-28 h-28 rounded-2xl object-cover shadow-md border-2 border-white" alt="Dr Sarah Portrait">
+                        <div>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Secondary User</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Dr. Sarah (The Facilitator)</h3>
+                            <p class="text-sm text-slate-500 mt-1">Age 35 • Language/Academic Teacher • Extroverted</p>
                         </div>
-                        
-                        <div class="space-y-5">
-                            <div class="bg-white/60 p-4 rounded-2xl border border-white">
-                                <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400"></span>Core Goals</h4>
-                                <p class="text-sm text-slate-600">Wants to accurately assess student understanding, encourage equal participation, and foster a lively academic debate rather than a monologue.</p>
-                            </div>
-                            
-                            <div class="bg-white/60 p-4 rounded-2xl border border-white">
-                                <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span>Frustrations</h4>
-                                <ul class="text-sm text-slate-600 list-disc list-inside space-y-1">
-                                    <li>Asking a question and getting "dead silence" in return.</li>
-                                    <li>Hard to track who is actually contributing in large groups.</li>
-                                    <li>Traditional forums (like Learning Mall) are too slow and rigid.</li>
-                                </ul>
-                            </div>
-
-                            <div class="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
-                                <p class="text-sm text-purple-800 italic">"It breaks my heart when I throw out a fascinating topic and no one speaks. I know they have thoughts, I just need a tool to unlock them."</p>
-                            </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400"></span>Core Goals</h4>
+                            <p class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl">Wants to accurately assess student understanding, encourage equal participation, and foster a lively academic debate rather than a monologue.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span>Frustrations</h4>
+                            <ul class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl list-disc list-inside space-y-1">
+                                <li>Asking a question and getting "dead silence" in return.</li>
+                                <li>Traditional forums (like Learning Mall) are too slow and rigid.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -185,29 +172,24 @@
             </div>
         </section>
 
-        <!-- 3. 强制要求的 AI 声明 (精美排版) -->
-        <section class="glass-panel rounded-3xl p-8 border-l-4 border-l-indigo-500 relative overflow-hidden">
-            <!-- 装饰性背景图标 -->
-            <svg class="absolute -right-10 -top-10 w-48 h-48 text-indigo-50 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-            
-            <div class="relative z-10">
-                <h4 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <span class="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
-                    Mandatory AI Disclosure (10-80-10 Rule)
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600">
-                    <div class="bg-white/50 p-4 rounded-xl">
-                        <strong class="block text-slate-900 mb-1">Tool Used</strong>
-                        ChatGPT (GPT-4) & DiceBear API (Avatars)
-                    </div>
-                    <div class="bg-white/50 p-4 rounded-xl">
-                        <strong class="block text-slate-900 mb-1">Purpose</strong>
-                        Brainstorming core pain points for XJTLU seminars and structuring the Persona profiles.
-                    </div>
-                    <div class="bg-white/50 p-4 rounded-xl">
-                        <strong class="block text-slate-900 mb-1">Human Effort (The 20%)</strong>
-                        We crafted a precise prompt based on CPT208 Topic B1 constraints. After AI generation, we manually edited the scenario quotes and frustrations to match the real XJTLU classroom context (e.g., language barriers).
-                    </div>
+        <!-- 4. 强制要求的 AI 声明 -->
+        <section class="glass-panel rounded-3xl p-8 border-l-4 border-l-indigo-500">
+            <h4 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
+                Mandatory AI Disclosure (10-80-10 Rule)
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600">
+                <div class="bg-white/50 p-4 rounded-xl">
+                    <strong class="block text-slate-800 mb-1">Tool Used</strong>
+                    ChatGPT (GPT-4) & Midjourney (for visual assets generation).
+                </div>
+                <div class="bg-white/50 p-4 rounded-xl">
+                    <strong class="block text-slate-800 mb-1">Purpose</strong>
+                    Brainstorming pain points for XJTLU seminars and generating the visual portraits for our two Personas.
+                </div>
+                <div class="bg-white/50 p-4 rounded-xl">
+                    <strong class="block text-slate-800 mb-1">Human Effort (The 20%)</strong>
+                    We crafted a precise prompt based on CPT208 Topic B1 constraints. After AI generation, we manually edited the scenario to match the real XJTLU classroom context.
                 </div>
             </div>
         </section>

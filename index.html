@@ -1,257 +1,302 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Round Table - Empowering Group Discussion</title>
-    
-    <!-- 字体加载 -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
+    <title>Round Table - Group Discussion Portfolio</title>
+    <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 核心库 -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/lucide-react@latest"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        serif: ['"Cormorant Garamond"', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        gold: { DEFAULT: '#D4AF37', light: '#F1E5AC' },
-                        medieval: { indigo: '#1E1B4B' },
-                        parchment: '#F5F2ED',
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
-        html { scroll-behavior: smooth; }
-        body { background-color: #F5F2ED; color: #1E1B4B; font-family: 'Inter', sans-serif; margin: 0; }
+        /* 1. 严格保留你原本的动态呼吸背景动画 */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+        
+        /* 2. 严格保留你原本的毛玻璃与浮动效果 */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
         }
-        .wax-seal {
-            width: 3rem; height: 3rem; border-radius: 50%;
-            background: #B91C1C; display: flex; align-items: center; justify-content: center;
-            border: 4px solid #991B1B; position: relative;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .medieval-banner {
-            position: relative; padding: 1rem 2rem; background: #1E1B4B; color: #D4AF37;
-            font-family: "Cormorant Garamond", serif; font-weight: bold; font-style: italic;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 85%, 0% 100%);
-        }
-        #loader {
-            position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-            background: #F5F2ED; z-index: 100; font-family: serif; font-style: italic;
-        }
+        .hover-lift { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-lift:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+
+        /* 圆桌主题点缀：金色丝线 */
+        .round-table-border { border-top: 4px solid #D4AF37; }
+        html { scroll-behavior: smooth; }
     </style>
 </head>
-<body>
-    <div id="loader">正在开启圆桌会议... (Loading...)</div>
-    <div id="root"></div>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased relative overflow-x-hidden min-h-screen">
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        
-        // 安全获取图标的组件
-        const Icon = ({ name, size = 24, className = "" }) => {
-            const LucideIcon = LucideReact[name];
-            return LucideIcon ? <LucideIcon size={size} className={className} /> : null;
-        };
+    <!-- 动态高级光晕背景 - 保留原有配置 -->
+    <div class="fixed inset-0 w-full h-full z-[-1] overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
 
-        const SectionHeader = ({ title, subtitle, iconName }) => (
-            <div className="text-center mb-16 relative">
-                <div className="inline-block mb-6">
-                    <div className="medieval-banner shadow-2xl transform -rotate-1">
-                        <div className="flex items-center gap-4 px-4">
-                            <Icon name={iconName} className="text-gold" />
-                            <span className="text-xl">{title}</span>
+    <!-- 顶部导航条 - 标题改为 Round Table 并增加平滑链接 -->
+    <nav class="w-full glass-panel sticky top-0 z-50 py-4 px-8 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg">
+                <!-- 圆桌/盾牌图标 -->
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            <span class="font-bold text-2xl tracking-tight text-slate-800 italic">Round Table</span>
+        </div>
+        <div class="hidden md:flex gap-6 text-sm font-bold text-slate-600">
+            <a href="#team" class="hover:text-indigo-600 transition-colors">Team</a>
+            <a href="#research" class="hover:text-indigo-600 transition-colors">Research</a>
+            <a href="#journey" class="hover:text-indigo-600 transition-colors">Journey</a>
+            <a href="#prototype" class="hover:text-indigo-600 transition-colors">Prototype</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
+
+        <!-- 1. Hero 居中全景项目介绍 -->
+        <section class="text-center max-w-4xl mx-auto space-y-8 pt-10">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 tracking-tight leading-tight">
+                Equality in Every <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-indigo-500 italic">Academic Conversation</span>
+            </h1>
+            <p class="text-xl text-slate-600 leading-relaxed px-4">
+                Inspired by the legend of King Arthur, <strong>Round Table</strong> is an AI-powered ecosystem designed to eliminate the "monologue" in seminars. We provide every student an equal seat to speak, think, and contribute.
+            </p>
+        </section>
+
+        <!-- 2. Team Members - 严格保留你原本的代码内容 -->
+        <section id="team" class="relative">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-600 tracking-wide">Team Members</h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-purple-300 via-indigo-300 to-cyan-300 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Qian Wang.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Qian Wang Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Qian Wang</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 2362229</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: UI/UX Design</p>
+                </div>
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Zengyi Mei.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Zengyi Mei Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Zengyi Mei</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 2361796</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: User Research</p>
+                </div>
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Haoyu Shen.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Haoyu Shen Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Haoyu Shen</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 2361328</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: Developer</p>
+                </div>
+                <div class="glass-panel rounded-3xl p-8 text-center hover-lift">
+                    <img src="Chenye Zhao.jpg" class="w-24 h-24 mx-auto rounded-2xl object-cover mb-5 shadow-md border-2 border-white" alt="Chenye Zhao Avatar">
+                    <h3 class="text-lg font-bold text-slate-700">Chenye Zhao</h3>
+                    <p class="text-sm text-slate-500 mt-3 font-medium">ID: 2361582</p>
+                    <p class="text-sm text-slate-500 mt-1">SI: Project Manager</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Target Personas - 严格保留你原本的代码内容 -->
+        <section>
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-slate-800">Target Personas</h2>
+                <p class="text-slate-500 mt-3">Understanding the silence to build better conversations.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="glass-panel rounded-3xl p-8 hover-lift relative overflow-hidden border-t-4 border-t-cyan-400">
+                    <div class="flex flex-col sm:flex-row gap-6 items-start mb-6 border-b border-slate-200/50 pb-6">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop" class="w-28 h-28 rounded-2xl object-cover shadow-md border-2 border-white" alt="Yifei Portrait">
+                        <div>
+                            <span class="px-3 py-1 bg-cyan-100 text-cyan-700 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Primary User</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Yifei (The "Silent" Student)</h3>
+                            <p class="text-sm text-slate-500 mt-1">Age 19 • XJTLU Year 2 Student • Introverted</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400"></span>Core Goals</h4>
+                            <p class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl">Wants to earn participation marks and share brilliant ideas without the anxiety of speaking flawed English in front of 30 peers and the professor.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span>Frustrations</h4>
+                            <ul class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl list-disc list-inside space-y-1">
+                                <li>Needs time to translate thoughts from Chinese to English.</li>
+                                <li>Fear of being judged by the academic teacher.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                {subtitle && <p className="text-slate-500 max-w-2xl mx-auto font-sans mt-4">{subtitle}</p>}
-            </div>
-        );
 
-        const TeamMember = ({ name, id, role, image }) => (
-            <div className="glass-panel rounded-3xl p-8 text-center relative overflow-hidden group border-2 border-transparent hover:border-gold/30 transition-all hover:-translate-y-2">
-                <div className="absolute top-4 right-4 wax-seal scale-75 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Icon name="Shield" size={16} className="text-gold-light" />
+                <div class="glass-panel rounded-3xl p-8 hover-lift relative overflow-hidden border-t-4 border-t-purple-400">
+                    <div class="flex flex-col sm:flex-row gap-6 items-start mb-6 border-b border-slate-200/50 pb-6">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop" class="w-28 h-28 rounded-2xl object-cover shadow-md border-2 border-white" alt="Dr Sarah Portrait">
+                        <div>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Secondary User</span>
+                            <h3 class="text-2xl font-bold text-slate-800">Dr. Sarah (The Facilitator)</h3>
+                            <p class="text-sm text-slate-500 mt-1">Age 35 • Language/Academic Teacher • Extroverted</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400"></span>Core Goals</h4>
+                            <p class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl">Wants to accurately assess student understanding, encourage equal participation, and foster a lively academic debate rather than a monologue.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span>Frustrations</h4>
+                            <ul class="text-sm text-slate-600 bg-white/50 p-3 rounded-xl list-disc list-inside space-y-1">
+                                <li>Asking a question and getting "dead silence" in return.</li>
+                                <li>Traditional forums (like Learning Mall) are too slow and rigid.</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <img src={image} className="w-24 h-24 mx-auto rounded-full object-cover mb-5 border-4 border-gold/20 group-hover:border-gold transition-colors" alt={name} />
-                <h3 className="text-xl font-serif font-bold text-medieval-indigo">{name}</h3>
-                <p className="text-sm text-slate-500 mt-2">ID: {id}</p>
-                <p className="text-sm text-gold font-semibold mt-1 uppercase tracking-wider">{role}</p>
             </div>
-        );
+        </section>
 
-        function App() {
-            useEffect(() => {
-                document.getElementById('loader').style.display = 'none';
-            }, []);
+        <!-- 4. Research & Reflection (新增：参考严谨性) -->
+        <section id="research" class="space-y-12">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-slate-800">Survey & Interview Reflection</h2>
+                <p class="text-slate-500 mt-3">Grounding our design in real XJTLU seminar data.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Data Display -->
+                <div class="glass-panel p-8 rounded-3xl space-y-6">
+                    <h3 class="text-xl font-bold text-indigo-600">Statistical Evidence</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-medium">Language Anxiety</span>
+                            <span class="text-2xl font-bold text-indigo-600">84%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full"><div class="bg-indigo-500 h-full rounded-full" style="width: 84%"></div></div>
+                        
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-medium">Silent Periods > 1 min</span>
+                            <span class="text-2xl font-bold text-cyan-600">67%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full"><div class="bg-cyan-500 h-full rounded-full" style="width: 67%"></div></div>
+                    </div>
+                </div>
+                <!-- Qualitative Insights -->
+                <div class="glass-panel p-8 rounded-3xl space-y-4">
+                    <h3 class="text-xl font-bold text-purple-600">Key Interview Takeaway</h3>
+                    <p class="italic text-slate-600 border-l-4 border-purple-400 pl-4 py-2">
+                        "I'm afraid my grammar will distract the teacher from my actual point."
+                    </p>
+                    <p class="text-sm leading-relaxed text-slate-500">
+                        <strong>Reflection:</strong> The silence is often a "buffer" for cognitive processing and face-saving. Our MAS (Multi-Agent System) should act as a bridge, not just a recorder.
+                    </p>
+                </div>
+            </div>
+        </section>
 
-            return (
-                <div className="min-h-screen selection:bg-gold/30">
-                    {/* 背景装饰 */}
-                    <div className="fixed inset-0 z-[-1] opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#1E1B4B 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        <!-- 5. User Journey Map (新增：采用直观的线性卡片) -->
+        <section id="journey" class="space-y-12">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-slate-800">User Journey Map</h2>
+                <p class="text-slate-500 mt-3">The "Quest" of a student during a typical seminar session.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="glass-panel p-6 rounded-3xl round-table-border shadow-sm">
+                    <div class="font-bold text-amber-600 text-xs mb-2">STAGE 1: DISCOVERY</div>
+                    <h4 class="font-bold text-sm mb-2">The Prompt</h4>
+                    <p class="text-xs text-slate-500">Teacher asks a hard question. Yifei feels interested but hesitant.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-3xl border-t-4 border-t-red-400 shadow-sm">
+                    <div class="font-bold text-red-500 text-xs mb-2">STAGE 2: THE VOID</div>
+                    <h4 class="font-bold text-sm mb-2">Silent Struggle</h4>
+                    <p class="text-xs text-slate-500">Silence grows awkward. Yifei tries translating her thoughts in her head.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-3xl border-t-4 border-t-green-400 shadow-sm">
+                    <div class="font-bold text-green-500 text-xs mb-2">STAGE 3: INTERVENTION</div>
+                    <h4 class="font-bold text-sm mb-2">AI Catalyst</h4>
+                    <p class="text-xs text-slate-500">Round Table's Icebreaker Agent nudges her with translated keywords.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-3xl border-t-4 border-t-cyan-400 shadow-sm">
+                    <div class="font-bold text-cyan-500 text-xs mb-2">STAGE 4: VICTORY</div>
+                    <h4 class="font-bold text-sm mb-2">Contribution</h4>
+                    <p class="text-xs text-slate-500">Yifei posts her thought. The class engages. Marks are gained.</p>
+                </div>
+            </div>
+        </section>
 
-                    {/* 导航 */}
-                    <nav className="fixed top-0 w-full z-50 px-6 py-4">
-                        <div className="max-w-7xl mx-auto glass-panel rounded-full px-8 py-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Icon name="Shield" className="text-gold" />
-                                <span className="font-serif font-bold text-xl italic">Round Table</span>
-                            </div>
-                            <div className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest">
-                                <a href="#motivation" className="hover:text-gold">动机</a>
-                                <a href="#research" className="hover:text-gold">研究</a>
-                                <a href="#personas" className="hover:text-gold">画像</a>
-                                <a href="#prototype" className="hover:text-gold">原型</a>
-                                <a href="#team" className="hover:text-gold">团队</a>
+        <!-- 6. Key Requirements & Prototype (新增：整合功能演示) -->
+        <section id="prototype" class="space-y-12">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-slate-800">Key Requirements & Prototype</h2>
+                <p class="text-slate-500 mt-3">Designing for meaningful engagement.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                <!-- Requirements -->
+                <div class="flex-1 space-y-4">
+                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-l-indigo-600">
+                        <h4 class="font-bold mb-2">Functional Requirements</h4>
+                        <ul class="text-sm space-y-2 list-disc list-inside text-slate-600">
+                            <li>Real-time English-Chinese keyword scaffolding.</li>
+                            <li>Automatic detection of discussion bottlenecks.</li>
+                            <li>Persona-based nudge mechanisms for inclusivity.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-l-amber-500">
+                        <h4 class="font-bold mb-2">Round Table Logic</h4>
+                        <p class="text-xs text-slate-500">Utilizing a Multi-Agent System where <strong>Icebreaker</strong>, <strong>Concept Monitor</strong>, and <strong>Devil's Advocate</strong> collaborate to facilitate discussion.</p>
+                    </div>
+                </div>
+
+                <!-- Prototype Mockup -->
+                <div class="flex-[1.5] w-full glass-panel rounded-[2rem] overflow-hidden shadow-2xl border-2 border-white">
+                    <div class="bg-slate-800 p-3 flex gap-1.5 items-center pl-4">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                        <span class="text-[10px] text-slate-400 font-mono ml-4 uppercase tracking-tighter italic">Prototype Workspace - Group B1-3</span>
+                    </div>
+                    <div class="p-6 bg-white/90 min-h-[300px] flex flex-col justify-end gap-4">
+                        <!-- Message 1 -->
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0"></div>
+                            <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none text-xs max-w-[70%] text-slate-700">
+                                <span class="font-bold block text-slate-900 mb-1">Dr. Sarah</span>
+                                How would you critique the ethics of AI in research?
                             </div>
                         </div>
-                    </nav>
-
-                    <main className="max-w-7xl mx-auto px-6 pt-32 pb-20 space-y-32">
-                        {/* Hero */}
-                        <section className="text-center py-20">
-                            <div className="wax-seal mx-auto mb-8 scale-150 shadow-2xl">
-                                <Icon name="Shield" size={24} className="text-gold-light" />
+                        <!-- AI Intervention -->
+                        <div class="flex flex-row-reverse gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-[10px] flex-shrink-0 shadow-lg font-bold italic">RT</div>
+                            <div class="bg-amber-50 border border-amber-100 p-3 rounded-2xl rounded-tr-none text-xs max-w-[70%] text-amber-900 shadow-sm">
+                                <span class="font-bold block text-amber-700 mb-1 italic">Icebreaker Agent</span>
+                                Silence detected. Yifei, you mentioned "Privacy" in your notes. Would you like to expand on that in English?
                             </div>
-                            <h1 className="text-7xl md:text-9xl font-serif font-bold text-medieval-indigo italic tracking-tighter">Round Table</h1>
-                            <p className="text-xl text-slate-500 font-serif italic mt-6">"让每一位沉默的骑士，在数字圆桌上都能找到属于自己的声音。"</p>
-                        </section>
-
-                        {/* Motivation */}
-                        <section id="motivation" className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                            <div className="space-y-8">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 text-gold font-bold text-xs uppercase border border-gold/20">
-                                    <Icon name="Lightbulb" size={16} /> 皇家法令
-                                </div>
-                                <h2 className="text-5xl font-serif font-bold text-medieval-indigo">追求平等的对话</h2>
-                                <p className="text-lg text-slate-600 italic font-serif leading-relaxed">
-                                    "在现代研讨会中，沉默并不总是金子。它往往是焦虑、语言压力和对评判的恐惧。"
-                                </p>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="glass-panel p-4 rounded-2xl border-l-4 border-gold">
-                                        <h4 className="font-bold text-sm">面子保护</h4>
-                                        <p className="text-xs text-slate-500">降低公开演讲压力</p>
-                                    </div>
-                                    <div className="glass-panel p-4 rounded-2xl border-l-4 border-gold">
-                                        <h4 className="font-bold text-sm">AI 辅助</h4>
-                                        <p className="text-xs text-slate-500">实时翻译与脚手架</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="aspect-video rounded-[40px] bg-medieval-indigo overflow-hidden shadow-2xl relative border-4 border-gold/20">
-                                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800" className="w-full h-full object-cover opacity-40" />
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8">
-                                    <Icon name="Shield" size={64} className="text-gold mb-4" />
-                                    <h3 className="text-3xl font-serif font-bold italic">Equality in Dialogue</h3>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Research */}
-                        <section id="research">
-                            <SectionHeader title="智慧卷轴" subtitle="来自 XJTLU 研讨会一线的调研洞察。" iconName="Search" />
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                <div className="glass-panel rounded-3xl p-10 space-y-8 border-t-4 border-gold">
-                                    <h3 className="text-2xl font-serif font-bold flex items-center gap-3"><Icon name="BarChart3" className="text-gold" /> 调研亮点</h3>
-                                    <div className="space-y-6">
-                                        <div>
-                                            <div className="flex justify-between text-sm font-bold mb-2"><span>对英语流利度的焦虑</span><span>85%</span></div>
-                                            <div className="w-full bg-slate-200 h-2 rounded-full"><div className="bg-gold h-full rounded-full" style={{width: '85%'}}></div></div>
-                                        </div>
-                                        <div>
-                                            <div className="flex justify-between text-sm font-bold mb-2"><span>研讨会中的“死寂”</span><span>72%</span></div>
-                                            <div className="w-full bg-slate-200 h-2 rounded-full"><div className="bg-medieval-indigo h-full rounded-full" style={{width: '72%'}}></div></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="glass-panel rounded-3xl p-10 flex flex-col justify-center border-t-4 border-medieval-indigo">
-                                    <Icon name="MessageSquare" className="text-medieval-indigo mb-4" />
-                                    <p className="text-xl text-slate-600 italic font-serif leading-relaxed border-l-4 border-gold/20 pl-6">
-                                        "并不是我没有想法。而是课堂上的‘圆桌’感觉像个舞台，如果我的英语不完美，我不敢踏上去。"
-                                    </p>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Prototype */}
-                        <section id="prototype">
-                            <SectionHeader title="魔法之镜" subtitle="窥见数字圆桌的未来。" iconName="Terminal" />
-                            <div className="glass-panel rounded-[48px] overflow-hidden shadow-2xl border-4 border-white max-w-4xl mx-auto">
-                                <div className="bg-medieval-indigo p-5 flex items-center justify-between">
-                                    <div className="flex gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /><div className="w-3 h-3 rounded-full bg-gold" /><div className="w-3 h-3 rounded-full bg-green-500" /></div>
-                                    <span className="text-xs text-indigo-200 font-mono">RoundTable OS v1.0</span>
-                                    <div className="w-10"></div>
-                                </div>
-                                <div className="h-[400px] p-8 overflow-y-auto space-y-6 bg-[#FAF9F6]">
-                                    <div className="flex gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-slate-200" />
-                                        <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-sm">
-                                            <strong className="text-medieval-indigo block mb-1">Dr. Sarah:</strong>
-                                            "谁能分析一下英国脱欧对 XJTLU 研究的影响？"
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4 flex-row-reverse">
-                                        <div className="w-10 h-10 rounded-xl bg-gold flex items-center justify-center shadow-lg"><Icon name="Sparkles" className="text-white" /></div>
-                                        <div className="bg-gold/5 p-4 rounded-2xl italic border-2 border-gold/20 text-sm">
-                                            <strong className="text-gold block mb-1">破冰代理 (私密):</strong>
-                                            "一飞，我注意到你对‘协作’有一些想法。想分享一下吗？我可以帮你润色英语！"
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="p-6 bg-white border-t border-gold/10 flex gap-3">
-                                    <input type="text" placeholder="向圆桌低语..." className="flex-1 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-sm outline-none font-serif italic" />
-                                    <button className="bg-medieval-indigo text-gold px-8 py-4 rounded-2xl font-bold">发言</button>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Team */}
-                        <section id="team">
-                            <SectionHeader title="圆桌骑士团" subtitle="项目背后的愿景家们。" iconName="Users" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                                <TeamMember name="Qian Wang" id="2362229" role="UI/UX 设计" image="https://picsum.photos/seed/1/200" />
-                                <TeamMember name="Zengyi Mei" id="2361796" role="用户研究" image="https://picsum.photos/seed/2/200" />
-                                <TeamMember name="Haoyu Shen" id="2361328" role="开发者" image="https://picsum.photos/seed/3/200" />
-                                <TeamMember name="Chenye Zhao" id="2361582" role="项目经理" image="https://picsum.photos/seed/4/200" />
-                            </div>
-                        </section>
-                    </main>
-
-                    <footer className="py-20 text-center bg-medieval-indigo text-white">
-                        <div className="flex items-center justify-center gap-3 mb-4">
-                            <Icon name="Shield" className="text-gold" />
-                            <span className="font-serif font-bold text-2xl italic">Round Table</span>
                         </div>
-                        <p className="text-indigo-200 text-sm">© 2026 Round Table Project • XJTLU</p>
-                    </footer>
+                    </div>
+                    <div class="p-4 bg-slate-50 border-t border-slate-100 flex gap-2">
+                        <input type="text" placeholder="Type or use AI Scaffolding..." class="flex-1 bg-white border-none rounded-xl px-4 py-2 text-xs focus:ring-2 focus:ring-amber-400">
+                        <button class="bg-amber-600 text-white px-6 py-2 rounded-xl text-xs font-bold hover:bg-amber-700 transition-colors shadow-md shadow-amber-200">TALK</button>
+                    </div>
                 </div>
-            );
-        }
+            </div>
+        </section>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+    </main>
+
+    <footer class="w-full py-12 text-center text-slate-400 text-xs border-t border-slate-100">
+        © 2026 Group B1-3 • CPT208 Human-Centric Computing • XJTLU
+    </footer>
 </body>
 </html>

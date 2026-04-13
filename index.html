@@ -1,28 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Round Table - 赋能小组讨论</title>
+    <title>Round Table - Empowering Group Discussion</title>
     
-    <!-- 引入 Google 字体 -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- 引入 Tailwind CSS (Play CDN) -->
+    <!-- Tailwind CSS (Play CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 引入 React, ReactDOM 和 Babel (用于在浏览器中解析 JSX) -->
+    <!-- React & Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- 引入 Framer Motion 和 Lucide 图标 -->
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide-react@latest"></script>
 
     <script>
-        // 配置 Tailwind 主题
         tailwind.config = {
             theme: {
                 extend: {
@@ -46,7 +43,6 @@
     </script>
 
     <style>
-        /* 自定义中世纪风格样式 */
         html { scroll-behavior: smooth; }
         body { background-color: #F5F2ED; color: #1E1B4B; font-family: 'Inter', sans-serif; }
 
@@ -96,14 +92,12 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
         const { motion, AnimatePresence } = window.Motion;
         const { 
             Shield, Users, Search, Map, Terminal, ChevronRight, 
-            MessageSquare, BarChart3, Lightbulb, Sparkles 
+            MessageSquare, BarChart3, Lightbulb, Sparkles, ArrowRight 
         } = LucideReact;
-
-        // --- 组件 ---
 
         const SectionHeader = ({ title, subtitle, icon: Icon }) => (
             <motion.div 
@@ -148,7 +142,7 @@
                                 exit={{ opacity: 0, height: 0 }}
                                 className="mt-4 pt-4 border-t border-gold/10 text-sm text-slate-600 italic font-serif"
                             >
-                                "一位数字领域的骑士，誓言维护对话的清晰与声音的平等。"
+                                "A knight of the digital realm, sworn to uphold the clarity of discourse and the equality of voices."
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -159,14 +153,14 @@
         function App() {
             return (
                 <div className="min-h-screen selection:bg-gold/30 cursor-default">
-                    {/* 背景装饰 */}
+                    {/* Background */}
                     <div className="fixed inset-0 w-full h-full z-[-1] overflow-hidden pointer-events-none">
                         <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-100/40 rounded-full filter blur-[120px] opacity-40" />
                         <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-gold-light/20 rounded-full filter blur-[120px] opacity-40" />
                         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#1E1B4B 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                     </div>
 
-                    {/* 导航栏 */}
+                    {/* Navigation */}
                     <nav className="fixed top-0 w-full z-50 px-6 py-4">
                         <div className="max-w-7xl mx-auto glass-panel rounded-full px-8 py-4 flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -174,7 +168,7 @@
                                 <span className="font-serif font-bold text-xl italic tracking-tight">Round Table</span>
                             </div>
                             <div className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest">
-                                {['motivation', 'research', 'personas', 'journey', 'prototype', 'team'].map(item => (
+                                {['motivation', 'requirements', 'research', 'personas', 'journey', 'prototype', 'team'].map(item => (
                                     <a key={item} href={`#${item}`} className="hover:text-gold transition-colors">{item}</a>
                                 ))}
                             </div>
@@ -182,7 +176,7 @@
                     </nav>
 
                     <main className="max-w-7xl mx-auto px-6 pt-32 pb-20 space-y-32">
-                        {/* Hero Section */}
+                        {/* Hero */}
                         <section className="text-center space-y-8 py-20">
                             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
                                 <div className="wax-seal mx-auto mb-8 scale-150 shadow-2xl">
@@ -192,25 +186,27 @@
                                     Round Table
                                 </h1>
                                 <p className="text-xl md:text-2xl text-slate-500 font-serif italic max-w-2xl mx-auto mt-6">
-                                    "让每一位沉默的骑士，在数字圆桌上都能找到属于自己的声音。"
+                                    Empowering every student to find their voice at the digital table.
                                 </p>
                             </motion.div>
                         </section>
 
-                        {/* Motivation Section */}
+                        {/* Motivation */}
                         <section id="motivation" className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                             <div className="space-y-8">
                                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 text-gold font-bold text-xs uppercase tracking-widest border border-gold/20">
-                                    <Lightbulb size={16} /> 皇家法令
+                                    <Lightbulb size={16} /> The Royal Decree
                                 </div>
-                                <h2 className="text-5xl font-serif font-bold text-medieval-indigo">追求平等的对话</h2>
-                                <p className="text-lg text-slate-600 italic font-serif">"在现代研讨会中，沉默并不总是金子。它往往是焦虑、语言压力和对评判的恐惧。"</p>
+                                <h2 className="text-5xl font-serif font-bold text-medieval-indigo">The Quest for Equality</h2>
+                                <p className="text-lg text-slate-600 italic font-serif leading-relaxed">
+                                    "In the modern seminar, silence isn't always golden. It's often a barrier of anxiety, language load, and the fear of judgment."
+                                </p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {[
-                                        { title: "面子保护", desc: "降低公开演讲的心理压力。" },
-                                        { title: "认知负荷", desc: "AI辅助翻译与脚手架支持。" },
-                                        { title: "参与度", desc: "实时追踪参与情况。" },
-                                        { title: "包容性", desc: "为每位学生提供平等席位。" }
+                                        { title: "Face-Saving", desc: "Lowering the stakes of public speaking." },
+                                        { title: "Cognitive Load", desc: "AI-assisted translation and scaffolding." },
+                                        { title: "Engagement", desc: "Real-time participation tracking." },
+                                        { title: "Inclusivity", desc: "A seat for every student." }
                                     ].map((item, i) => (
                                         <div key={i} className="glass-panel p-4 rounded-2xl border-l-4 border-gold">
                                             <h4 className="font-bold text-medieval-indigo text-sm mb-1">{item.title}</h4>
@@ -220,32 +216,53 @@
                                 </div>
                             </div>
                             <div className="relative">
-                                <div className="aspect-square rounded-[40px] bg-medieval-indigo overflow-hidden shadow-2xl border-4 border-gold/20">
-                                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80" className="w-full h-full object-cover opacity-40" alt="Discussion" />
+                                <div className="aspect-square rounded-[40px] bg-medieval-indigo overflow-hidden shadow-2xl border-4 border-gold/20 group">
+                                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80" className="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" alt="Discussion" />
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div className="text-center p-8">
-                                            <Shield size={96} className="text-gold mx-auto mb-6" />
-                                            <h3 className="text-4xl font-serif font-bold text-white mb-2">对话中的平等</h3>
-                                            <p className="text-gold-light text-sm font-serif italic">"Non Nobis Solum" — 不仅为了我们自己</p>
+                                            <Shield size={96} className="text-gold mx-auto mb-6 drop-shadow-2xl" />
+                                            <h3 className="text-4xl font-serif font-bold text-white mb-2">Equality in Dialogue</h3>
+                                            <p className="text-gold-light text-sm font-serif italic">"Non Nobis Solum" — Not for ourselves alone</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
-                        {/* Research Section */}
+                        {/* Requirements */}
+                        <section id="requirements">
+                            <SectionHeader title="The Code of Chivalry" subtitle="The fundamental principles guiding our system." icon={Shield} />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                {[
+                                    { title: "Honor Every Voice", desc: "Detect silent participants and offer gentle, private nudges.", icon: Users },
+                                    { title: "Shield the Speaker", desc: "Provide real-time language scaffolding to reduce fear.", icon: Shield },
+                                    { title: "Wisdom for the Mentor", desc: "Teachers receive a 'God's eye view' of discussion quality.", icon: Search }
+                                ].map((item, i) => (
+                                    <div key={i} className="glass-panel p-8 rounded-[32px] border-t-4 border-gold relative group">
+                                        <div className="w-12 h-12 rounded-2xl bg-medieval-indigo flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                                            <item.icon size={24} className="text-gold" />
+                                        </div>
+                                        <h4 className="text-xl font-serif font-bold text-medieval-indigo mb-3">{item.title}</h4>
+                                        <p className="text-sm text-slate-600 leading-relaxed">{item.desc}</p>
+                                        <div className="absolute bottom-4 right-4 text-gold/10 font-serif text-6xl font-black">0{i+1}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Research */}
                         <section id="research">
-                            <SectionHeader title="智慧卷轴" subtitle="来自 XJTLU 研讨会一线的调研洞察。" icon={Search} />
+                            <SectionHeader title="The Scroll of Wisdom" subtitle="Insights from the frontlines of XJTLU seminars." icon={Search} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 <div className="glass-panel rounded-3xl p-10 space-y-8 border-t-4 border-gold relative overflow-hidden">
                                     <h3 className="text-2xl font-serif font-bold flex items-center gap-3">
-                                        <BarChart3 size={24} className="text-gold" /> 调研亮点
+                                        <BarChart3 size={24} className="text-gold" /> Survey Highlights
                                     </h3>
                                     <div className="space-y-8">
                                         {[
-                                            { label: "对英语流利度的焦虑", value: 85, color: "bg-gold" },
-                                            { label: "研讨会中的“死寂”现象", value: 72, color: "bg-medieval-indigo" },
-                                            { label: "对AI辅助的渴望", value: 91, color: "bg-red-700" }
+                                            { label: "Anxiety about English Fluency", value: 85, color: "bg-gold" },
+                                            { label: "Reported 'Dead Silence' in Seminars", value: 72, color: "bg-medieval-indigo" },
+                                            { label: "Desire for AI Scaffolding", value: 91, color: "bg-red-700" }
                                         ].map((stat, i) => (
                                             <div key={i} className="space-y-2">
                                                 <div className="flex justify-between text-sm font-bold font-serif italic">
@@ -253,7 +270,7 @@
                                                     <span className="text-gold">{stat.value}%</span>
                                                 </div>
                                                 <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
-                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: `${stat.value}%` }} className={`${stat.color} h-full rounded-full`} />
+                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: `${stat.value}%` }} transition={{ duration: 1.5 }} className={`${stat.color} h-full rounded-full`} />
                                                 </div>
                                             </div>
                                         ))}
@@ -261,50 +278,75 @@
                                 </div>
                                 <div className="glass-panel rounded-3xl p-10 space-y-6 border-t-4 border-medieval-indigo">
                                     <h3 className="text-2xl font-serif font-bold flex items-center gap-3">
-                                        <MessageSquare size={24} className="text-medieval-indigo" /> 学生的心声
+                                        <MessageSquare size={24} className="text-medieval-indigo" /> The Voice of the Student
                                     </h3>
                                     <p className="text-xl text-slate-600 italic leading-relaxed font-serif pl-6 border-l-4 border-gold/20">
-                                        "并不是我没有想法。而是课堂上的‘圆桌’感觉像个舞台，如果我的英语不完美，我不敢踏上去。"
+                                        "It's not that I don't have ideas. It's that the 'Round Table' in class feels like a stage, and if my English isn't perfect, I'm afraid to step on it."
                                     </p>
                                 </div>
                             </div>
                         </section>
 
-                        {/* Prototype Section */}
-                        <section id="prototype">
-                            <SectionHeader title="魔法之镜" subtitle="窥见数字圆桌的未来：AI代理作为对话的守护者。" icon={Terminal} />
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-                                <div className="space-y-8">
-                                    <div className="glass-panel rounded-[40px] p-10 border-l-8 border-gold">
-                                        <h4 className="text-2xl font-serif font-bold text-medieval-indigo mb-8">多代理系统 (MAS)</h4>
-                                        <div className="space-y-6">
-                                            {[
-                                                { title: "破冰代理", desc: "检测沉默并提供私密的、上下文相关的提示，降低进入门槛。", icon: Sparkles },
-                                                { title: "精炼代理", desc: "将学生的输入润色为学术英语，同时保留原始意图。", icon: Shield },
-                                                { title: "观察代理", desc: "分析讨论流向，为教师提供参与度热力图。", icon: Search }
-                                            ].map((req, i) => (
-                                                <div key={i} className="flex gap-4 group">
-                                                    <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center flex-shrink-0 mt-1">
-                                                        <req.icon size={20} className="text-gold" />
-                                                    </div>
-                                                    <div>
-                                                        <strong className="text-medieval-indigo block mb-1 font-serif text-lg">{req.title}</strong>
-                                                        <p className="text-sm text-slate-500">{req.desc}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
+                        {/* Personas */}
+                        <section id="personas">
+                            <SectionHeader title="The Heroes of the Quest" subtitle="Understanding the souls who walk our digital Camelot." />
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                {[
+                                    { name: "Yifei", role: "The Silent Knight", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400", color: "border-gold" },
+                                    { name: "Dr. Sarah", role: "The Grand Mentor", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400", color: "border-medieval-indigo" }
+                                ].map((p, i) => (
+                                    <div key={i} className={`glass-panel rounded-[40px] p-10 relative overflow-hidden border-b-8 ${p.color}`}>
+                                        <div className="flex gap-8 items-start mb-8 border-b border-slate-200/50 pb-8">
+                                            <img src={p.img} className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl" alt={p.name} />
+                                            <div>
+                                                <span className="px-3 py-1 bg-gold/10 text-gold text-xs font-bold uppercase tracking-widest rounded-lg mb-3 inline-block">Persona</span>
+                                                <h3 className="text-4xl font-serif font-bold text-medieval-indigo">{p.name}</h3>
+                                                <p className="text-slate-500 font-serif italic">{p.role}</p>
+                                            </div>
                                         </div>
+                                        <p className="text-sm text-slate-600 leading-relaxed italic">"A dedicated individual seeking to transform the way we communicate in academic spaces."</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Journey Map */}
+                        <section id="journey">
+                            <SectionHeader title="The Knight's Journey" subtitle="Mapping the emotional peaks and valleys of a seminar quest." icon={Map} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                {[
+                                    { stage: "The Call", title: "Topic Entry", color: "border-gold" },
+                                    { stage: "The Abyss", title: "The Silent Dip", color: "border-red-700" },
+                                    { stage: "The Guardian", title: "AI Support", color: "border-green-600", badge: "AGENT ACTS" },
+                                    { stage: "The Triumph", title: "Contribution", color: "border-medieval-indigo" }
+                                ].map((step, i) => (
+                                    <div key={i} className={`glass-panel p-8 rounded-[32px] border-b-8 ${step.color} space-y-4 hover:scale-105 transition-transform`}>
+                                        <div className="text-xs font-black text-gold uppercase tracking-widest font-serif">{step.stage}</div>
+                                        <h4 className="text-2xl font-serif font-bold text-medieval-indigo">{step.title}</h4>
+                                        {step.badge && <div className="bg-green-50 text-green-700 px-3 py-1 rounded-lg text-[10px] font-bold inline-block border border-green-100">{step.badge}</div>}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Prototype */}
+                        <section id="prototype">
+                            <SectionHeader title="The Magical Mirror" subtitle="A glimpse into the digital Round Table." icon={Terminal} />
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                                <div className="glass-panel rounded-[40px] p-10 border-l-8 border-gold space-y-8">
+                                    <h4 className="text-2xl font-serif font-bold text-medieval-indigo">The Multi-Agent System</h4>
+                                    <div className="space-y-6">
+                                        {['The Icebreaker', 'The Refiner', 'The Observer'].map((agent, i) => (
+                                            <div key={i} className="flex gap-4">
+                                                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center flex-shrink-0"><Sparkles size={20} className="text-gold" /></div>
+                                                <div><strong className="text-medieval-indigo block font-serif text-lg">{agent}</strong><p className="text-sm text-slate-500">Serving as a guardian of discourse.</p></div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-
-                                {/* Prototype Window */}
                                 <div className="glass-panel rounded-[48px] overflow-hidden shadow-2xl border-4 border-white relative">
                                     <div className="bg-medieval-indigo p-5 flex items-center justify-between border-b border-gold/20">
-                                        <div className="flex gap-2">
-                                            <div className="w-3 h-3 rounded-full bg-red-700" />
-                                            <div className="w-3 h-3 rounded-full bg-gold" />
-                                            <div className="w-3 h-3 rounded-full bg-green-600" />
-                                        </div>
+                                        <div className="flex gap-2"><div className="w-3 h-3 rounded-full bg-red-700" /><div className="w-3 h-3 rounded-full bg-gold" /><div className="w-3 h-3 rounded-full bg-green-600" /></div>
                                         <span className="text-[10px] text-indigo-200 font-mono font-bold">RoundTable OS v1.0</span>
                                         <div className="w-12" />
                                     </div>
@@ -313,35 +355,33 @@
                                             <div className="w-10 h-10 rounded-2xl bg-slate-200 flex-shrink-0" />
                                             <div className="bg-white p-5 rounded-3xl rounded-tl-none text-sm shadow-md border border-slate-100">
                                                 <strong className="text-medieval-indigo block mb-1 font-serif">Dr. Sarah:</strong>
-                                                "谁能分析一下英国脱欧对 XJTLU 研究的影响？"
+                                                "Who can analyze the impact of Brexit on XJTLU's research?"
                                             </div>
                                         </div>
                                         <div className="flex gap-3 flex-row-reverse">
-                                            <div className="w-10 h-10 rounded-2xl bg-gold flex items-center justify-center flex-shrink-0 shadow-lg">
-                                                <Sparkles size={20} className="text-white" />
-                                            </div>
+                                            <div className="w-10 h-10 rounded-2xl bg-gold flex items-center justify-center flex-shrink-0 shadow-lg"><Sparkles size={20} className="text-white" /></div>
                                             <div className="bg-gold/5 p-5 rounded-3xl rounded-tr-none text-sm border-2 border-gold/20 italic shadow-md">
-                                                <strong className="text-gold block mb-1 font-serif">破冰代理 (私密):</strong>
-                                                "一飞，我注意到你对‘协作’有一些想法。想分享一下吗？我可以帮你润色英语！"
+                                                <strong className="text-gold block mb-1 font-serif">Icebreaker Agent (Private):</strong>
+                                                "Yifei, I noticed you have some thoughts. Would you like to share? I can help polish the English!"
                                             </div>
                                         </div>
                                     </div>
                                     <div className="p-6 bg-white border-t border-gold/10 flex gap-3">
-                                        <input type="text" placeholder="向圆桌低语..." className="flex-1 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-sm outline-none font-serif italic" />
-                                        <button className="bg-medieval-indigo text-gold px-10 py-4 rounded-2xl text-sm font-bold">发言</button>
+                                        <input type="text" placeholder="Whisper to the Round Table..." className="flex-1 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-sm outline-none font-serif italic" />
+                                        <button className="bg-medieval-indigo text-gold px-10 py-4 rounded-2xl text-sm font-bold shadow-xl">Speak</button>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
-                        {/* Team Section */}
+                        {/* Team */}
                         <section id="team">
-                            <SectionHeader title="圆桌骑士团" subtitle="Round Table 项目背后的愿景家们。" icon={Users} />
+                            <SectionHeader title="The Knights of the Table" subtitle="The visionaries behind the project." icon={Users} />
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                                <TeamMember name="Qian Wang" id="2362229" role="UI/UX 设计" image="https://picsum.photos/seed/qian/200" />
-                                <TeamMember name="Zengyi Mei" id="2361796" role="用户研究" image="https://picsum.photos/seed/zengyi/200" />
-                                <TeamMember name="Haoyu Shen" id="2361328" role="开发者" image="https://picsum.photos/seed/haoyu/200" />
-                                <TeamMember name="Chenye Zhao" id="2361582" role="项目经理" image="https://picsum.photos/seed/chenye/200" />
+                                <TeamMember name="Qian Wang" id="2362229" role="UI/UX Design" image="https://picsum.photos/seed/qian/200" />
+                                <TeamMember name="Zengyi Mei" id="2361796" role="User Research" image="https://picsum.photos/seed/zengyi/200" />
+                                <TeamMember name="Haoyu Shen" id="2361328" role="Developer" image="https://picsum.photos/seed/haoyu/200" />
+                                <TeamMember name="Chenye Zhao" id="2361582" role="Project Manager" image="https://picsum.photos/seed/chenye/200" />
                             </div>
                         </section>
                     </main>
@@ -352,10 +392,8 @@
                                 <Shield size={32} className="text-gold" />
                                 <span className="font-serif font-bold text-3xl italic">Round Table</span>
                             </div>
-                            <p className="text-indigo-200 text-sm">通过以人为本的 AI，赋能下一代学术对话。</p>
-                            <div className="pt-8 text-indigo-400 text-[10px] uppercase tracking-[0.2em]">
-                                © 2026 Round Table Project • CPT208 • XJTLU
-                            </div>
+                            <p className="text-indigo-200 text-sm">Empowering the next generation of academic dialogue.</p>
+                            <div className="pt-8 text-indigo-400 text-[10px] uppercase tracking-[0.2em]">© 2026 Round Table Project • XJTLU</div>
                         </div>
                     </footer>
                 </div>

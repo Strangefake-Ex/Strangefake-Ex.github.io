@@ -3,103 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Round Table - Digital Seminar Sanctuary</title>
-    <!-- 引入高质感字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <title>Round Table - Empowering Student Voice</title>
+    <!-- 字体引入：Cormorant Garamond (中世纪优雅) & Plus Jakarta Sans (现代科技) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --navy: #1A1A3F;
+            --navy: #1E1B4B;
             --gold: #D4AF37;
-            --red: #B91C1C;
-            --beige: #F9F7F2;
+            --parchment: #F5F2ED;
             --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         body {
-            background-color: var(--beige);
+            background-color: var(--parchment);
             color: var(--navy);
             font-family: 'Plus Jakarta Sans', sans-serif;
             scroll-behavior: smooth;
         }
 
-        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+        h1, h2, h3, .serif { font-family: 'Cormorant Garamond', serif; }
         .cinzel { font-family: 'Cinzel', serif; }
 
-        /* 物理弹簧阻尼交互 */
-        .spring-interact {
-            transition: all 0.5s var(--spring);
-        }
-        .spring-interact:hover {
-            transform: translateY(-10px) scale(1.04);
-            box-shadow: 0 30px 60px -12px rgba(26, 26, 63, 0.15);
+        /* 标题颜色与图片一致：深靛蓝 + 金色渐变 */
+        .hero-title-main { color: var(--navy); }
+        .hero-title-accent {
+            background: linear-gradient(to right, #D4AF37, #F59E0B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* 导航链接弹簧 */
+        /* 强力弹簧物理感交互 */
+        .spring-card {
+            transition: all 0.5s var(--spring);
+            border: 1px solid rgba(30, 27, 75, 0.05);
+        }
+        .spring-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 60px -15px rgba(30, 27, 75, 0.2);
+            border-color: var(--gold);
+        }
+
+        /* 导航链接弹簧感 */
         .nav-link {
             transition: all 0.4s var(--spring);
-            position: relative;
         }
         .nav-link:hover {
             transform: scale(1.1);
-            color: var(--gold);
+            color: var(--navy) !important;
+            font-weight: 800;
         }
 
-        /* 进度条动画核心 */
-        .progress-wrapper {
+        /* 进度条动画 */
+        .progress-container {
             width: 100%;
             background: #E5E7EB;
-            height: 12px;
+            height: 10px;
             border-radius: 99px;
             overflow: hidden;
         }
-        .progress-fill {
+        .progress-bar {
+            width: 0%;
             height: 100%;
-            width: 0%; /* 初始为0 */
             border-radius: 99px;
-            transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: width 2s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* 标题旗帜样式 */
-        .banner-label {
+        /* 卡片展开逻辑 */
+        .expand-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.6s var(--spring);
+        }
+        .member-card:hover .expand-content {
+            max-height: 120px;
+            opacity: 1;
+        }
+
+        /* 复刻左上角 Logo 样式 */
+        .logo-box {
+            background-color: var(--navy);
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(30, 27, 75, 0.3);
+        }
+
+        /* 旗帜标签 */
+        .banner-tag {
             background: var(--navy);
             color: white;
-            padding: 10px 35px;
+            padding: 8px 30px;
             clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
             display: inline-block;
             font-size: 0.7rem;
             font-weight: 800;
             letter-spacing: 0.2em;
         }
-
-        /* 侧边展开逻辑 */
-        .expand-box {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.6s var(--spring);
-        }
-        .member-card:hover .expand-box {
-            max-height: 120px;
-            opacity: 1;
-        }
     </style>
 </head>
 <body>
 
-    <!-- 顶部导航栏 -->
-    <nav class="fixed w-full z-50 bg-[#F9F7F2]/80 backdrop-blur-xl border-b border-gold/10 px-12 py-5 flex justify-between items-center">
-        <!-- 左上角标题复刻：图标+名字 -->
+    <!-- 导航栏 -->
+    <nav class="fixed w-full z-50 bg-[#F5F2ED]/90 backdrop-blur-md border-b border-gold/10 px-12 py-5 flex justify-between items-center shadow-sm">
+        <!-- 复刻左上角标题 -->
         <div class="flex items-center gap-4 group cursor-pointer">
-            <div class="w-12 h-12 bg-[#1A1A3F] rounded-[18px] flex items-center justify-center shadow-xl transition-transform duration-500 group-hover:rotate-[10deg]">
-                <svg class="w-6 h-6 text-[#D4AF37]" fill="currentColor" viewBox="0 0 20 20">
+            <div class="logo-box group-hover:rotate-12 transition-transform duration-500">
+                <svg class="w-6 h-6 text-gold" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001z"></path>
                 </svg>
             </div>
-            <span class="serif italic text-2xl font-bold tracking-tight text-[#1A1A3F]">Round Table</span>
+            <span class="serif italic text-2xl font-bold tracking-tight text-navy">Round Table</span>
         </div>
         
-        <!-- 英文导航菜单 -->
+        <!-- 全英文菜单 -->
         <div class="hidden lg:flex gap-10 text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
             <a href="#team" class="nav-link">Team</a>
             <a href="#motivation" class="nav-link">Motivation</a>
@@ -111,226 +132,187 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-32 space-y-48">
+    <main class="max-w-7xl mx-auto px-6 py-40 space-y-56">
 
         <!-- 1. Hero Section -->
-        <section class="text-center pt-24 space-y-8">
-            <h1 class="text-5xl md:text-7xl font-bold text-navy leading-tight">
-                Where Every Voice <br>
-                <span class="text-gold italic">Finds Its Throne</span>
+        <section class="text-center pt-20">
+            <h1 class="text-6xl md:text-8xl font-bold mb-8 leading-tight">
+                <span class="hero-title-main">Where Every Voice</span> <br>
+                <span class="hero-title-accent italic serif">Finds Its Throne</span>
             </h1>
-            <p class="max-w-2xl mx-auto text-base text-slate-500 italic font-medium">
-                Inspired by King Arthur's vision of equality, <strong>Round Table</strong> is a multi-agent AI system designed to break the silence in XJTLU seminars.
+            <p class="max-w-2xl mx-auto text-base text-slate-500 italic font-medium leading-relaxed">
+                Inspired by the vision of equality at the Round Table, our multi-agent AI sanctuary breaks the barriers of silence, ensuring every student wields the "sword" of participation.
             </p>
-            <div class="pt-8">
-                <a href="#motivation" class="bg-navy text-gold px-12 py-4 rounded-full font-bold shadow-2xl hover:scale-110 transition-transform cinzel tracking-widest text-[10px] inline-block">
-                    Explore the Quest
+            <div class="mt-12">
+                <a href="#motivation" class="bg-[#1E1B4B] text-[#D4AF37] px-12 py-4 rounded-full font-bold shadow-2xl hover:scale-110 transition-transform cinzel tracking-widest text-[10px] inline-block border border-gold/20">
+                    Explore the Quest <span>→</span>
                 </a>
             </div>
         </section>
 
-        <!-- 2. Motivation: The Quest for Equality (参照图片布局) -->
-        <section id="motivation" class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            <div class="space-y-10">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/5 text-gold text-[9px] font-black uppercase tracking-widest border border-gold/10">
-                    💡 THE ROYAL DECREE
+        <!-- 2. Motivation: The Quest for Equality -->
+        <section id="motivation" class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-8">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-navy/5 text-navy text-[9px] font-black uppercase tracking-widest border border-navy/10">
+                    💡 WHY THE ROUND TABLE?
                 </div>
-                <h2 class="text-5xl font-bold serif">The Quest for Equality</h2>
-                <p class="text-slate-500 italic text-lg leading-relaxed">
-                    "In the modern seminar, silence isn't always golden. It's often a barrier of anxiety, language load, and the fear of judgment."
+                <h2 class="text-5xl font-bold serif leading-tight">The Quest for <br> Dialogue Equality</h2>
+                <p class="text-slate-500 italic text-lg border-l-4 border-gold pl-6">
+                    "In modern seminars, silence is often a shield for anxiety, not a lack of wisdom."
                 </p>
-                <p class="text-sm text-slate-400 leading-relaxed">
-                    We believe that like the knights of old, every student deserves a seat where their contribution is valued equally. Round Table isn't just a tool; it's a digital sanctuary.
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    Like the knights of old, every student deserves a seat where their contribution is valued equally. Our system acts as a digital sanctuary for academic growth.
                 </p>
-                
-                <!-- 2x2 Grid from your image -->
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white p-6 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-xs mb-1">Face-Saving</h4>
-                        <p class="text-[10px] text-slate-400 leading-tight">Lowering the stakes of public speaking.</p>
+                    <div class="bg-white p-6 rounded-2xl border border-gold/10 spring-card shadow-sm">
+                        <h4 class="font-bold text-xs text-navy mb-1 uppercase tracking-wider">Face-Saving</h4>
+                        <p class="text-[10px] text-slate-400">Lowering public speaking stakes.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-xs mb-1">Cognitive Load</h4>
-                        <p class="text-[10px] text-slate-400 leading-tight">AI-assisted translation and scaffolding.</p>
+                    <div class="bg-white p-6 rounded-2xl border border-gold/10 spring-card shadow-sm">
+                        <h4 class="font-bold text-xs text-navy mb-1 uppercase tracking-wider">Cognitive Load</h4>
+                        <p class="text-[10px] text-slate-400">AI-assisted translation scaffolding.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-xs mb-1">Engagement</h4>
-                        <p class="text-[10px] text-slate-400 leading-tight">Real-time participation tracking.</p>
+                    <div class="bg-white p-6 rounded-2xl border border-gold/10 spring-card shadow-sm">
+                        <h4 class="font-bold text-xs text-navy mb-1 uppercase tracking-wider">Engagement</h4>
+                        <p class="text-[10px] text-slate-400">Real-time participation tracking.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-xs mb-1">Inclusivity</h4>
-                        <p class="text-[10px] text-slate-400 leading-tight">A seat for every student.</p>
+                    <div class="bg-white p-6 rounded-2xl border border-gold/10 spring-card shadow-sm">
+                        <h4 class="font-bold text-xs text-navy mb-1 uppercase tracking-wider">Inclusivity</h4>
+                        <p class="text-[10px] text-slate-400">A seat for every voice.</p>
                     </div>
                 </div>
             </div>
-
-            <!-- 右侧大卡片 (参照图片) -->
-            <div class="relative group spring-interact">
-                <div class="absolute -inset-4 bg-gold/5 rounded-[40px] blur-2xl"></div>
-                <div class="relative rounded-[40px] overflow-hidden shadow-2xl border-2 border-white aspect-[4/5] md:aspect-square">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="Seminar">
-                    <div class="absolute inset-0 bg-navy/50 flex flex-col items-center justify-center text-white text-center p-12">
-                        <div class="w-16 h-16 border-2 border-gold rounded-2xl flex items-center justify-center mb-6 shadow-lg rotate-12 bg-navy/30">
-                            <svg class="w-8 h-8 text-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001z"></path></svg>
-                        </div>
-                        <h3 class="text-4xl font-bold italic mb-4">Equality in Dialogue</h3>
-                        <p class="text-gold italic text-sm font-serif">"Non Nobis Solum" — Not for ourselves alone</p>
+            <div class="relative group">
+                <div class="absolute -inset-4 bg-navy/5 rounded-[40px] blur-2xl"></div>
+                <div class="relative bg-white rounded-[40px] overflow-hidden shadow-2xl border-[6px] border-white">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Seminar">
+                    <div class="absolute inset-0 bg-navy/40 flex flex-col items-center justify-center text-white text-center p-12">
+                        <h3 class="text-4xl font-bold italic serif mb-4">Equality in Dialogue</h3>
+                        <p class="text-gold italic text-sm">"Non Nobis Solum" — Not for ourselves alone</p>
                     </div>
-                </div>
-                <!-- 底部装饰按钮 -->
-                <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-red-700 rounded-full shadow-2xl flex items-center justify-center text-white border-4 border-white animate-pulse">
-                    ✨
                 </div>
             </div>
         </section>
 
-        <!-- 3. Research Section (进度条修复) -->
+        <!-- 3. Team Section -->
+        <section id="team" class="text-center space-y-16">
+            <div class="banner-tag cinzel">THE KNIGHTS OF THE TABLE</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Member 卡片复用原有图片信息 -->
+                <div class="member-card bg-white rounded-[2.5rem] p-10 spring-card border border-gold/5 cursor-pointer">
+                    <div class="w-24 h-24 mx-auto rounded-full border-4 border-gold/20 p-1 mb-6 relative">
+                        <img src="Qian Wang.jpg" class="w-full h-full object-cover rounded-full shadow-lg" alt="Qian Wang">
+                    </div>
+                    <h3 class="text-xl font-bold text-navy">Qian Wang</h3>
+                    <p class="text-[10px] font-black text-gold tracking-widest uppercase mt-2">UI/UX Design</p>
+                    <div class="expand-content mt-4 text-[10px] text-slate-400 italic">"Weaving the tapestry of interface."</div>
+                </div>
+                <!-- 重复其他成员 -->
+                <div class="member-card bg-white rounded-[2.5rem] p-10 spring-card border border-gold/5 cursor-pointer">
+                    <div class="w-24 h-24 mx-auto rounded-full border-4 border-gold/20 p-1 mb-6 relative">
+                        <img src="Zengyi Mei.jpg" class="w-full h-full object-cover rounded-full shadow-lg" alt="Zengyi Mei">
+                    </div>
+                    <h3 class="text-xl font-bold text-navy">Zengyi Mei</h3>
+                    <p class="text-[10px] font-black text-gold tracking-widest uppercase mt-2">User Research</p>
+                    <div class="expand-content mt-4 text-[10px] text-slate-400 italic">"Decoding the silent echoes."</div>
+                </div>
+                <div class="member-card bg-white rounded-[2.5rem] p-10 spring-card border border-gold/5 cursor-pointer">
+                    <div class="w-24 h-24 mx-auto rounded-full border-4 border-gold/20 p-1 mb-6 relative">
+                        <img src="Haoyu Shen.jpg" class="w-full h-full object-cover rounded-full shadow-lg" alt="Haoyu Shen">
+                    </div>
+                    <h3 class="text-xl font-bold text-navy">Haoyu Shen</h3>
+                    <p class="text-[10px] font-black text-gold tracking-widest uppercase mt-2">Developer</p>
+                    <div class="expand-content mt-4 text-[10px] text-slate-400 italic">"Forging the ironclad logic."</div>
+                </div>
+                <div class="member-card bg-white rounded-[2.5rem] p-10 spring-card border border-gold/5 cursor-pointer">
+                    <div class="w-24 h-24 mx-auto rounded-full border-4 border-gold/20 p-1 mb-6 relative">
+                        <img src="Chenye Zhao.jpg" class="w-full h-full object-cover rounded-full shadow-lg" alt="Chenye Zhao">
+                    </div>
+                    <h3 class="text-xl font-bold text-navy">Chenye Zhao</h3>
+                    <p class="text-[10px] font-black text-gold tracking-widest uppercase mt-2">Project Manager</p>
+                    <div class="expand-content mt-4 text-[10px] text-slate-400 italic">"Guiding the sword of vision."</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Research: The Scroll of Wisdom (进度条已修复) -->
         <section id="research" class="text-center space-y-16">
-            <div class="banner-label cinzel">THE SCROLL OF WISDOM</div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div class="bg-white rounded-[3rem] p-12 text-left space-y-10 shadow-sm border border-gold/5" id="stats-area">
-                    <div class="flex items-center gap-4 mb-2">
-                        <span class="text-2xl">📊</span>
+            <div class="banner-tag cinzel">THE SCROLL OF WISDOM</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10" id="stats-trigger">
+                <!-- 进度条区域 -->
+                <div class="bg-white rounded-[3rem] p-12 text-left space-y-12 shadow-sm border border-gold/10">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center text-2xl">📊</div>
                         <h3 class="serif text-3xl font-bold">Survey Highlights</h3>
                     </div>
-                    <div class="space-y-12 pt-4">
-                        <div class="stat-block">
-                            <div class="flex justify-between text-[11px] font-bold italic mb-3">
-                                <span class="text-slate-500 uppercase tracking-wider">Anxiety about English Fluency</span>
-                                <span class="text-gold count-up" data-target="85">0%</span>
+                    <div class="space-y-12">
+                        <div class="stat-group">
+                            <div class="flex justify-between text-[11px] font-black uppercase italic mb-3">
+                                <span>Anxiety about English Fluency</span>
+                                <span class="text-gold counter" data-target="85">0%</span>
                             </div>
-                            <div class="progress-wrapper">
-                                <div class="progress-fill bg-gold" data-percent="85%"></div>
-                            </div>
+                            <div class="progress-container"><div class="progress-bar bg-[#D4AF37]" data-width="85%"></div></div>
                         </div>
-                        <div class="stat-block">
-                            <div class="flex justify-between text-[11px] font-bold italic mb-3">
-                                <span class="text-slate-500 uppercase tracking-wider">Reported 'Dead Silence' in Seminars</span>
-                                <span class="text-navy count-up" data-target="72">0%</span>
+                        <div class="stat-group">
+                            <div class="flex justify-between text-[11px] font-black uppercase italic mb-3">
+                                <span>Reported 'Dead Silence' in Seminars</span>
+                                <span class="text-navy counter" data-target="72">0%</span>
                             </div>
-                            <div class="progress-wrapper">
-                                <div class="progress-fill bg-navy" data-percent="72%"></div>
-                            </div>
+                            <div class="progress-container"><div class="progress-bar bg-[#1E1B4B]" data-width="72%"></div></div>
                         </div>
-                        <div class="stat-block">
-                            <div class="flex justify-between text-[11px] font-bold italic mb-3">
-                                <span class="text-slate-500 uppercase tracking-wider">Desire for AI Scaffolding</span>
-                                <span class="text-red-700 count-up" data-target="91">0%</span>
+                        <div class="stat-group">
+                            <div class="flex justify-between text-[11px] font-black uppercase italic mb-3">
+                                <span>Desire for AI Scaffolding</span>
+                                <span class="text-red-700 counter" data-target="91">0%</span>
                             </div>
-                            <div class="progress-wrapper">
-                                <div class="progress-fill bg-red-700" data-percent="91%"></div>
-                            </div>
+                            <div class="progress-container"><div class="progress-bar bg-[#B91C1C]" data-width="91%"></div></div>
                         </div>
                     </div>
                 </div>
-                <!-- 引用卡片 -->
-                <div class="bg-white rounded-[3rem] p-12 text-left flex flex-col justify-between shadow-sm border border-gold/5 spring-interact">
+                <!-- 访谈洞察引用卡片 -->
+                <div class="bg-white rounded-[3rem] p-12 text-left flex flex-col justify-between shadow-sm border border-gold/10">
                     <div class="space-y-8">
-                        <span class="text-5xl text-gold/20 font-serif">"</span>
-                        <p class="text-2xl italic text-slate-400 leading-relaxed font-serif px-4">"It's not that I don't have ideas. It's that the 'Round Table' in class feels like a stage, and if my English isn't perfect, I'm afraid to step on it."</p>
+                        <div class="text-6xl text-gold/20 serif font-black">“</div>
+                        <p class="text-2xl italic text-slate-500 leading-relaxed serif px-4">
+                            "It's not that I don't have ideas. It's that the Round Table in class feels like a stage, and if my English isn't perfect, I'm afraid to step on it."
+                        </p>
                     </div>
-                    <div class="bg-slate-50 p-8 rounded-[2rem] border-l-[8px] border-navy mt-10">
-                        <h4 class="text-[10px] font-black uppercase tracking-widest text-navy mb-2 italic">Research Reflection</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed">Students are trapped in a <strong>Face-Saving Culture</strong>. Our design goal is to provide a 'hidden shield' to build confidence.</p>
+                    <div class="bg-navy p-8 rounded-[2rem] border-t-4 border-gold shadow-xl mt-10">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-gold mb-3 italic">THE REVELATION</h4>
+                        <p class="text-xs text-white/70 leading-relaxed">
+                            Research identifies <strong>Face-Saving Culture</strong> as the primary inhibitor. The system must act as a 'Hidden Shield' for individual confidence.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 4. Team Section -->
-        <section id="team" class="text-center space-y-16">
-            <div class="banner-label cinzel">THE KNIGHTS OF THE TABLE</div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="member-card bg-white rounded-[2.5rem] p-8 spring-interact border border-gold/5 group">
-                    <div class="w-24 h-24 mx-auto rounded-full border-2 border-gold/20 p-1 mb-6 transition-transform group-hover:rotate-6">
-                        <img src="Qian Wang.jpg" class="w-full h-full object-cover rounded-full" alt="Qian Wang">
-                    </div>
-                    <h3 class="text-lg font-bold">Qian Wang</h3>
-                    <p class="text-[10px] font-bold text-slate-400 mb-2 italic">ID: 2362229</p>
-                    <p class="text-[10px] font-black text-gold tracking-widest uppercase">UI/UX Design</p>
-                    <div class="expand-box mt-4 text-[10px] text-slate-400 italic">"Master of Visual Strategy"</div>
-                </div>
-                <div class="member-card bg-white rounded-[2.5rem] p-8 spring-interact border border-gold/5 group">
-                    <div class="w-24 h-24 mx-auto rounded-full border-2 border-gold/20 p-1 mb-6 transition-transform group-hover:rotate-6">
-                        <img src="Zengyi Mei.jpg" class="w-full h-full object-cover rounded-full" alt="Zengyi Mei">
-                    </div>
-                    <h3 class="text-lg font-bold">Zengyi Mei</h3>
-                    <p class="text-[10px] font-bold text-slate-400 mb-2 italic">ID: 2361796</p>
-                    <p class="text-[10px] font-black text-gold tracking-widest uppercase">User Research</p>
-                    <div class="expand-box mt-4 text-[10px] text-slate-400 italic">"Voice of the User"</div>
-                </div>
-                <div class="member-card bg-white rounded-[2.5rem] p-8 spring-interact border border-gold/5 group">
-                    <div class="w-24 h-24 mx-auto rounded-full border-2 border-gold/20 p-1 mb-6 transition-transform group-hover:rotate-6">
-                        <img src="Haoyu Shen.jpg" class="w-full h-full object-cover rounded-full" alt="Haoyu Shen">
-                    </div>
-                    <h3 class="text-lg font-bold">Haoyu Shen</h3>
-                    <p class="text-[10px] font-bold text-slate-400 mb-2 italic">ID: 2361328</p>
-                    <p class="text-[10px] font-black text-gold tracking-widest uppercase">Developer</p>
-                    <div class="expand-box mt-4 text-[10px] text-slate-400 italic">"Architect of Logic"</div>
-                </div>
-                <div class="member-card bg-white rounded-[2.5rem] p-8 spring-interact border border-gold/5 group">
-                    <div class="w-24 h-24 mx-auto rounded-full border-2 border-gold/20 p-1 mb-6 transition-transform group-hover:rotate-6">
-                        <img src="Chenye Zhao.jpg" class="w-full h-full object-cover rounded-full" alt="Chenye Zhao">
-                    </div>
-                    <h3 class="text-lg font-bold">Chenye Zhao</h3>
-                    <p class="text-[10px] font-bold text-slate-400 mb-2 italic">ID: 2361582</p>
-                    <p class="text-[10px] font-black text-gold tracking-widest uppercase">Project Manager</p>
-                    <div class="expand-box mt-4 text-[10px] text-slate-400 italic">"Guardian of the Vision"</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. Personas Section (彩色图像) -->
+        <!-- 5. Personas -->
         <section id="personas" class="text-center space-y-16">
-            <div class="banner-label cinzel">THE HEROES OF THE QUEST</div>
+            <div class="banner-tag cinzel">THE HEROES OF THE QUEST</div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div class="bg-white rounded-[3rem] p-10 flex flex-col md:flex-row gap-8 text-left spring-interact border border-gold/5">
+                <div class="bg-white rounded-[3rem] p-10 flex flex-col md:flex-row gap-8 text-left spring-card border border-gold/5 shadow-sm">
                     <div class="relative flex-shrink-0">
-                        <!-- 彩色图片 -->
-                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop" class="w-32 h-32 rounded-3xl object-cover shadow-2xl" alt="Yifei">
-                        <div class="absolute -bottom-3 -right-3 w-10 h-10 bg-red-700 rounded-full flex items-center justify-center text-white border-4 border-white shadow-lg">🛡️</div>
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop" class="w-36 h-36 rounded-3xl object-cover shadow-2xl" alt="Yifei">
+                        <div class="absolute -bottom-3 -right-3 w-12 h-12 bg-red-700 rounded-full flex items-center justify-center text-white border-4 border-white shadow-xl">🛡️</div>
                     </div>
                     <div class="space-y-4">
-                        <div>
-                            <span class="bg-amber-50 text-amber-700 text-[9px] px-3 py-1 rounded font-black tracking-widest">THE SILENT KNIGHT</span>
-                            <h3 class="text-3xl font-bold mt-1">Yifei</h3>
-                            <p class="text-xs text-slate-400 italic">Introverted Brilliant Mind</p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 pt-2">
-                            <div class="space-y-1">
-                                <h4 class="text-[9px] font-black text-navy uppercase tracking-widest">Quest</h4>
-                                <p class="text-[10px] text-slate-500 leading-tight">Contribution marks without anxiety.</p>
-                            </div>
-                            <div class="space-y-1">
-                                <h4 class="text-[9px] font-black text-navy uppercase tracking-widest">Dragon</h4>
-                                <p class="text-[10px] text-slate-500 leading-tight">Fear of linguistic imperfection.</p>
-                            </div>
-                        </div>
+                        <span class="bg-amber-100 text-amber-800 text-[9px] px-3 py-1 rounded font-black tracking-widest">THE SILENT KNIGHT</span>
+                        <h3 class="text-3xl font-bold serif">Yifei</h3>
+                        <p class="text-xs text-slate-400 italic">Brilliant Mind • Language Anxiety • Observer</p>
+                        <p class="text-[11px] text-slate-500 leading-relaxed italic border-l-2 border-gold/30 pl-4">"Wants to contribute her deep insights without the fear of linguistic judgment."</p>
                     </div>
                 </div>
-                <!-- Persona 2 -->
-                <div class="bg-white rounded-[3rem] p-10 flex flex-col md:flex-row gap-8 text-left spring-interact border border-gold/5">
+                <div class="bg-white rounded-[3rem] p-10 flex flex-col md:flex-row gap-8 text-left spring-card border border-gold/5 shadow-sm">
                     <div class="relative flex-shrink-0">
-                        <!-- 彩色图片 -->
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop" class="w-32 h-32 rounded-3xl object-cover shadow-2xl" alt="Sarah">
-                        <div class="absolute -bottom-3 -right-3 w-10 h-10 bg-navy rounded-full flex items-center justify-center text-white border-4 border-white shadow-lg">👥</div>
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop" class="w-36 h-36 rounded-3xl object-cover shadow-2xl" alt="Sarah">
+                        <div class="absolute -bottom-3 -right-3 w-12 h-12 bg-navy rounded-full flex items-center justify-center text-white border-4 border-white shadow-xl">👥</div>
                     </div>
                     <div class="space-y-4">
-                        <div>
-                            <span class="bg-indigo-50 text-indigo-700 text-[9px] px-3 py-1 rounded font-black tracking-widest">THE GRAND MENTOR</span>
-                            <h3 class="text-3xl font-bold mt-1">Dr. Sarah</h3>
-                            <p class="text-xs text-slate-400 italic">Empathetic Facilitator</p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 pt-2">
-                            <div class="space-y-1">
-                                <h4 class="text-[9px] font-black text-navy uppercase tracking-widest">Quest</h4>
-                                <p class="text-[10px] text-slate-500 leading-tight">Full-seat participation.</p>
-                            </div>
-                            <div class="space-y-1">
-                                <h4 class="text-[9px] font-black text-navy uppercase tracking-widest">Dragon</h4>
-                                <p class="text-[10px] text-slate-500 leading-tight">Pain of the "Dead Silence".</p>
-                            </div>
-                        </div>
+                        <span class="bg-indigo-100 text-indigo-800 text-[9px] px-3 py-1 rounded font-black tracking-widest">THE GRAND MENTOR</span>
+                        <h3 class="text-3xl font-bold serif">Dr. Sarah</h3>
+                        <p class="text-xs text-slate-400 italic">Facilitator • Empathetic • Visionary</p>
+                        <p class="text-[11px] text-slate-500 leading-relaxed italic border-l-2 border-gold/30 pl-4">"Seeking to weave a tapestry of dialogue where every seat at the table is active."</p>
                     </div>
                 </div>
             </div>
@@ -338,147 +320,138 @@
 
         <!-- 6. Journey Map -->
         <section id="journey" class="text-center space-y-16">
-            <div class="banner-label cinzel">THE KNIGHT'S QUEST JOURNEY</div>
-            <div class="relative flex flex-col md:flex-row gap-6 pt-10">
-                <div class="absolute top-1/2 left-0 w-full h-0.5 bg-gold/10 -translate-y-1/2 hidden md:block"></div>
-                <!-- Card 1 -->
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-gold spring-interact relative z-10">
-                    <div class="text-[8px] font-black text-gold tracking-widest uppercase mb-3">THE CALL</div>
-                    <h4 class="text-lg font-bold italic serif">Topic Entry</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed">Discussion starts. Yifei hesitates due to the language gap.</p>
+            <div class="banner-tag cinzel">THE KNIGHT'S QUEST JOURNEY</div>
+            <div class="relative flex flex-col md:flex-row gap-6 pt-12">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-gold/10 -translate-y-1/2 hidden md:block"></div>
+                <!-- Journey Cards -->
+                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-gold spring-card relative z-10 shadow-sm">
+                    <div class="text-[9px] font-black text-gold tracking-widest uppercase mb-4 italic">The Call</div>
+                    <h4 class="text-xl font-bold serif mb-4">Topic Entry</h4>
+                    <p class="text-[11px] text-slate-400 italic leading-relaxed">The Mentor poses a challenge. Yifei feels a spark of idea but stays silent.</p>
                 </div>
-                <!-- Card 2 -->
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-red-800 spring-interact relative z-10">
-                    <div class="text-[8px] font-black text-red-800 tracking-widest uppercase mb-3">THE ABYSS</div>
-                    <h4 class="text-lg font-bold italic serif">Silent Dip</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed">"Dead Silence" peaks. Yifei feels sidelined and anxious.</p>
+                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-red-800 spring-card relative z-10 shadow-sm">
+                    <div class="text-[9px] font-black text-red-800 tracking-widest uppercase mb-4 italic">The Abyss</div>
+                    <h4 class="text-xl font-bold serif mb-4">Silent Dip</h4>
+                    <p class="text-[11px] text-slate-400 italic leading-relaxed">Anxiety rises during the dead silence. The language barrier feels tall.</p>
                 </div>
-                <!-- Card 3 -->
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-green-700 spring-interact relative z-10">
-                    <div class="text-[8px] font-black text-green-700 tracking-widest uppercase mb-3">THE GUARDIAN</div>
-                    <h4 class="text-lg font-bold italic serif">AI Scaffold</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed">Agent nudges Yifei and helps polish her English input.</p>
+                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-green-700 spring-card relative z-10 shadow-sm">
+                    <div class="text-[9px] font-black text-green-700 tracking-widest uppercase mb-4 italic">The Guardian</div>
+                    <h4 class="text-xl font-bold serif mb-4">AI Scaffold</h4>
+                    <p class="text-[11px] text-slate-400 italic leading-relaxed">AI Agent nudges Yifei and helps polish her English notes privately.</p>
                 </div>
-                <!-- Card 4 -->
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-navy spring-interact relative z-10">
-                    <div class="text-[8px] font-black text-navy tracking-widest uppercase mb-3">THE TRIUMPH</div>
-                    <h4 class="text-lg font-bold italic serif">Contribution</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed">Voice shared. Contribution mark earned. Success!</p>
+                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-navy spring-card relative z-10 shadow-sm">
+                    <div class="text-[9px] font-black text-navy tracking-widest uppercase mb-4 italic">The Triumph</div>
+                    <h4 class="text-xl font-bold serif mb-4">Contribution</h4>
+                    <p class="text-[11px] text-slate-400 italic leading-relaxed">The voice is shared. The round table is complete. Glory achieved.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 7. Requirements Section -->
+        <!-- 7. Requirements & Prototype -->
         <section id="requirements" class="text-center space-y-16">
-            <div class="banner-label cinzel">THE CODE OF CHIVALRY</div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 text-left">
-                <div class="bg-white p-10 rounded-3xl spring-interact border-l-4 border-navy shadow-sm">
-                    <div class="text-2xl mb-4">🛡️</div>
-                    <h4 class="font-bold mb-2 uppercase text-xs tracking-wider">Privacy Scaffolding</h4>
-                    <p class="text-[10px] text-slate-500 leading-relaxed">Ensure students can polish thoughts privately before public display.</p>
+            <div class="banner-tag cinzel">THE CODE OF CHIVALRY</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                <div class="space-y-6 text-left">
+                    <h3 class="text-4xl font-bold serif">Core Requirements</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-6 rounded-3xl border-l-8 border-navy shadow-sm spring-card">
+                            <h4 class="font-bold text-xs mb-2">PRIVACY SHIELD</h4>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">Allow private interaction with AI to refine thoughts into academic English before public posting.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border-l-8 border-gold shadow-sm spring-card">
+                            <h4 class="font-bold text-xs mb-2">PROACTIVE MODERATION</h4>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">Detect silence peaks and nudge non-participating individuals using persona-based logic.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border-l-8 border-red-800 shadow-sm spring-card">
+                            <h4 class="font-bold text-xs mb-2">FACILITATOR INSIGHTS</h4>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">Provide real-time analytics for teachers on discussion depth and participation health.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white p-10 rounded-3xl spring-interact border-l-4 border-gold shadow-sm">
-                    <div class="text-2xl mb-4">⚖️</div>
-                    <h4 class="font-bold mb-2 uppercase text-xs tracking-wider">Active Moderation</h4>
-                    <p class="text-[10px] text-slate-500 leading-relaxed">Detect silence and nudge individuals to balance the "Round Table".</p>
-                </div>
-                <div class="bg-white p-10 rounded-3xl spring-interact border-l-4 border-red-700 shadow-sm">
-                    <div class="text-2xl mb-4">🔍</div>
-                    <h4 class="font-bold mb-2 uppercase text-xs tracking-wider">Facilitator Insights</h4>
-                    <p class="text-[10px] text-slate-500 leading-relaxed">Provide teachers with a map of discussion health and participation.</p>
-                </div>
-            </div>
-        </section>
 
-        <!-- 8. Prototype -->
-        <section id="prototype" class="text-center space-y-16 pb-20">
-            <div class="banner-label cinzel">THE MAGICAL MIRROR PROTOTYPE</div>
-            <div class="bg-slate-100 rounded-[3rem] overflow-hidden border-[10px] border-white shadow-2xl max-w-4xl mx-auto">
-                <div class="bg-navy p-4 flex items-center justify-between px-10">
-                    <div class="flex gap-2">
-                        <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                <!-- 沉浸式终端原型 -->
+                <div id="prototype" class="bg-slate-900 rounded-[3rem] overflow-hidden border-[12px] border-white shadow-2xl h-[550px] flex flex-col">
+                    <div class="bg-black/40 p-5 flex items-center justify-between px-10 border-b border-white/5">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500 shadow-lg"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500 shadow-lg"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500 shadow-lg"></div>
+                        </div>
+                        <div class="text-gold cinzel text-[9px] tracking-[0.3em] font-black italic">RoundTable Terminal V1.0</div>
                     </div>
-                    <div class="text-white cinzel text-[9px] tracking-widest italic opacity-70">RoundTable OS V1.0</div>
-                </div>
-                <div class="h-[400px] p-10 space-y-8 overflow-y-auto flex flex-col justify-end bg-slate-50/50 backdrop-blur">
-                    <div class="flex gap-4">
-                        <div class="w-10 h-10 rounded-full bg-slate-300"></div>
-                        <div class="bg-white p-5 rounded-3xl rounded-tl-none text-[11px] text-left max-w-sm shadow-sm">
-                            <span class="font-bold block mb-1">Dr. Sarah</span>
-                            "How does Camelot's equality influence modern seminars?"
+                    <div class="flex-1 p-10 space-y-8 overflow-y-auto flex flex-col justify-end">
+                        <div class="flex gap-4">
+                            <div class="w-10 h-10 rounded-full bg-slate-700 flex-shrink-0 border-2 border-white/10"></div>
+                            <div class="bg-white/10 text-white p-5 rounded-3xl rounded-tl-none text-[11px] text-left max-w-[80%] backdrop-blur-md">
+                                <span class="text-gold font-bold block mb-1 uppercase tracking-widest text-[9px]">Mentor: Dr. Sarah</span>
+                                "How does Arthurian legend influence modern cooperative strategy?"
+                            </div>
+                        </div>
+                        <div class="flex flex-row-reverse gap-4">
+                            <div class="w-10 h-10 bg-gold rounded-2xl flex items-center justify-center text-navy text-xs shadow-2xl font-black">🛡️</div>
+                            <div class="bg-gold/10 border border-gold/20 text-gold p-5 rounded-3xl rounded-tr-none text-[11px] text-left max-w-[80%] italic backdrop-blur-md">
+                                <span class="font-black block mb-1 uppercase tracking-widest text-[9px]">Icebreaker Agent (Private)</span>
+                                "Yifei, I've detected a silence. You have notes on 'Egalitarianism'. Want to polish them into academic English?"
+                            </div>
+                        </div>
+                        <div class="flex gap-4 flex-row-reverse">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" class="w-10 h-10 rounded-full object-cover border-2 border-white/20">
+                            <div class="bg-white text-navy p-5 rounded-3xl rounded-tr-none text-[11px] text-left max-w-[80%] shadow-2xl">
+                                <span class="font-bold block mb-1 text-navy uppercase tracking-widest text-[9px]">Knight: Yifei</span>
+                                "The round table eliminates hierarchies, allowing for a decentralized flow of strategic wisdom..."
+                            </div>
                         </div>
                     </div>
-                    <div class="flex flex-row-reverse gap-4">
-                        <div class="w-10 h-10 bg-gold rounded-2xl flex items-center justify-center text-white text-xs shadow-lg font-bold">✨</div>
-                        <div class="bg-amber-50 border border-gold/20 p-5 rounded-3xl rounded-tr-none text-[11px] text-left max-w-sm italic shadow-inner">
-                            <span class="text-gold font-bold block mb-1">Icebreaker Agent (Private)</span>
-                            "Yifei, I see you're typing... Ready to refine your point into Academic English?"
-                        </div>
+                    <div class="p-6 bg-black/50 border-t border-white/5 flex gap-4">
+                        <input type="text" placeholder="Whisper your thoughts to the Guardian..." class="flex-1 bg-white/5 border-none focus:ring-0 text-white text-[11px] px-6 italic rounded-full">
+                        <button class="bg-gold text-navy px-10 py-3 rounded-full font-black cinzel text-[10px] tracking-widest shadow-lg hover:scale-110 transition-transform">TALK</button>
                     </div>
-                    <div class="flex gap-4 flex-row-reverse">
-                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop" class="w-10 h-10 rounded-full object-cover shadow-lg border-2 border-white">
-                        <div class="bg-navy text-white p-5 rounded-3xl rounded-tr-none text-[11px] text-left max-w-sm shadow-xl">
-                            <span class="text-gold font-bold block mb-1">Yifei</span>
-                            "Yes, equality at the round table allows for a non-hierarchical flow of wisdom."
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6 bg-white flex gap-4 border-t border-slate-100">
-                    <input type="text" placeholder="Type here..." class="flex-1 bg-transparent border-none focus:ring-0 text-[11px] px-4 italic">
-                    <button class="bg-gold text-white px-10 py-3 rounded-2xl font-black cinzel text-[10px] tracking-widest shadow-lg">SEND</button>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="py-20 text-center text-navy/40 cinzel tracking-[5px] text-[10px] border-t border-gold/10">
-        © 2026 ROUND TABLE GUILD • FORGED AT XJTLU
+    <footer class="py-24 text-center text-navy/30 cinzel tracking-[0.6em] text-[9px] border-t border-gold/10">
+        © 2026 ROUND TABLE GUILD • FORGED AT XJTLU • ACADEMIC QUEST
     </footer>
 
-    <!-- 动画控制脚本 -->
+    <!-- 进度条及数字滚动脚本 -->
     <script>
-        // 数字滚动增长动画
-        function animateNumber(element, start, end, duration) {
-            let current = start;
-            const range = end - start;
-            const increment = end > start ? 1 : -1;
-            const stepTime = Math.abs(Math.floor(duration / range));
-            const timer = setInterval(() => {
-                current += increment;
-                element.innerText = current + "%";
-                if (current == end) {
-                    clearInterval(timer);
-                }
-            }, stepTime);
+        function animateStats() {
+            const counters = document.querySelectorAll('.counter');
+            const bars = document.querySelectorAll('.progress-bar');
+            
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.innerText = target + "%";
+                        clearInterval(timer);
+                    } else {
+                        counter.innerText = Math.floor(current) + "%";
+                    }
+                }, 30);
+            });
+
+            bars.forEach(bar => {
+                bar.style.width = bar.getAttribute('data-width');
+            });
         }
 
-        // 监听滚动触发动画
-        const observerOptions = { threshold: 0.5 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // 1. 触发进度条
-                    const bars = entry.target.querySelectorAll('.progress-fill');
-                    bars.forEach(bar => {
-                        bar.style.width = bar.getAttribute('data-percent');
-                    });
-                    
-                    // 2. 触发数字滚动
-                    const counters = entry.target.querySelectorAll('.count-up');
-                    counters.forEach(counter => {
-                        const target = parseInt(counter.getAttribute('data-target'));
-                        animateNumber(counter, 0, target, 1500);
-                    });
-                    
+                    animateStats();
                     observer.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.5 });
 
-        observer.observe(document.getElementById('stats-area'));
+        observer.observe(document.getElementById('stats-trigger'));
     </script>
 </body>
 </html>

@@ -3,289 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Round Table - Digital Sanctuary</title>
-    <!-- 字体：Cormorant Garamond (古典衬线) & Plus Jakarta Sans (现代) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <title>Round Table - Digital Sanctuary for Seminar Equality</title>
+    <!-- Fonts: Cormorant Garamond (Classical Serif), Plus Jakarta Sans (Modern), Cinzel (Epic) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --navy: #1E1B4B;
+            --navy: #0F172A;
+            --navy-light: #1E293B;
             --gold: #D4AF37;
             --bright-gold: #FFD700;
             --parchment: #F5F2ED;
+            --crimson: #991B1B;
+            --magic-glow: rgba(212, 175, 55, 0.3);
             --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         html { scroll-behavior: smooth; }
 
         body {
-            background-color: var(--parchment);
-            color: var(--navy);
+            background-color: #1a140f; /* Deep dark wood/stone base */
+            color: var(--parchment);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-image: radial-gradient(rgba(30, 27, 75, 0.05) 1px, transparent 0);
-            background-size: 25px 25px;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
+                url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            background-attachment: fixed;
         }
 
         h1, h2, h3, h4, .serif { font-family: 'Cormorant Garamond', serif; }
         .cinzel { font-family: 'Cinzel', serif; }
 
-        /* 物理回弹交互 */
+        /* Advanced Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+        .float { animation: float 6s ease-in-out infinite; }
+
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 20px var(--magic-glow); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
+        }
+        .pulse-gold { animation: pulse-gold 3s infinite; }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Reveal on Scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Interactions */
         .spring-interact {
             transition: all 0.5s var(--spring);
         }
         .spring-interact:hover {
-            transform: translateY(-6px) scale(1.03);
-            box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.2);
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.5);
+            border-color: var(--gold);
         }
 
         .nav-link {
-            transition: all 0.4s var(--spring);
-            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            color: rgba(245, 242, 237, 0.6);
         }
-        .nav-link:hover {
-            transform: scale(1.1);
-            color: var(--navy) !important;
-            font-weight: 800;
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.3s ease;
         }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link:hover { color: var(--bright-gold) !important; }
 
-        /* 进度条动画 */
+        /* Progress Bars - Fixed & Enhanced */
         .progress-container {
             width: 100%;
-            background: #E5E7EB;
-            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            height: 12px;
             border-radius: 99px;
             overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.1);
         }
         .progress-bar {
             width: 0%;
             height: 100%;
             border-radius: 99px;
-            transition: width 2s cubic-bezier(0.22, 1, 0.36, 1);
+            background: linear-gradient(90deg, var(--gold), var(--bright-gold));
+            box-shadow: 0 0 15px var(--magic-glow);
+            transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+        .progress-bar.gold { background: linear-gradient(90deg, #D4AF37, #FFD700); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .progress-bar.crimson { background: linear-gradient(90deg, #991B1B, #EF4444); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+        .progress-bar.blue { background: linear-gradient(90deg, #1E3A8A, #3B82F6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        .progress-bar.green { background: linear-gradient(90deg, #166534, #22C55E); box-shadow: 0 0 15px rgba(34, 197, 94, 0.4); }
+        .progress-bar.purple { background: linear-gradient(90deg, #5B21B6, #A855F7); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
 
-        /* Logo 样式 - 增强图标可见度 */
-        .logo-box {
-            background-color: var(--navy);
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 15px rgba(30, 27, 75, 0.25);
-        }
-
-        /* 旗帜小标题样式 (Navy Banner) */
+        /* Banner */
         .section-banner {
-            background: var(--navy);
-            color: white;
-            padding: 10px 45px;
-            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+            background: linear-gradient(135deg, var(--navy-light), var(--navy));
+            color: var(--bright-gold);
+            padding: 14px 56px;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
             display: inline-block;
             font-family: 'Cinzel', serif;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.25em;
+            font-size: 0.8rem;
+            font-weight: 900;
+            letter-spacing: 0.4em;
             text-transform: uppercase;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
         }
 
-        /* 成员卡片展开 */
-        .expand-content {
-            max-height: 0;
-            opacity: 0;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--navy); }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(var(--gold), var(--navy)); 
+            border-radius: 10px;
+            border: 2px solid var(--navy);
+        }
+
+        /* Custom Scrollbar for Journey Maps */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+            border: 3px solid rgba(26, 20, 15, 1);
+        }
+
+        /* Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-container {
             overflow: hidden;
-            transition: all 0.6s var(--spring);
+            white-space: nowrap;
+            position: relative;
+            width: 100%;
         }
-        .member-card:hover .expand-content {
-            max-height: 120px;
-            opacity: 1;
+        .marquee-content {
+            display: inline-flex;
+            gap: 2rem;
+            animation: marquee 40s linear infinite;
+        }
+        .marquee-container:hover .marquee-content {
+            animation-play-state: paused;
         }
 
-        /* 主标题金渐变 */
         .gold-glow-text {
-            background: linear-gradient(to right, #C5A059, #D4AF37, #F5E3A1);
+            background: linear-gradient(to right, #C5A059, #FFD700, #F5E3A1, #FFD700, #C5A059);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            display: inline-block;
+            animation: shine 4s linear infinite;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        /* Typing Effect for Prototype */
+        .typing::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Fixed White Text on White Panels */
+        .text-readable {
+            color: var(--parchment);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
-    <!-- 导航栏 -->
-    <nav class="fixed w-full z-50 bg-[#F5F2ED]/90 backdrop-blur-md border-b border-gold/10 px-12 py-4 flex justify-between items-center shadow-sm">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-[#1a140f]/90 backdrop-blur-xl border-b border-gold/20 px-6 md:px-12 py-4 flex justify-between items-center shadow-2xl transition-all duration-500">
         <div class="flex items-center gap-4 group cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-            <div class="logo-box group-hover:rotate-[15deg] transition-transform duration-500">
-                <!-- 加粗并调亮后的盾牌图标 -->
-                <svg class="w-7 h-7 text-[#FFD700]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043 3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"></path>
+            <div class="bg-gradient-to-br from-gold/20 to-navy w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-[15deg] transition-transform duration-500 border border-gold/30">
+                <svg class="w-8 h-8 text-bright-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22V8M5 11l7-9 7 9M8 14h8M9 17h6M10 20h4" />
+                    <path d="M12 8L5 11v4c0 4 3 7 7 7s7-3 7-7v-4l-7-3z" fill="currentColor" fill-opacity="0.1"/>
                 </svg>
             </div>
-            <span class="serif italic text-2xl font-bold tracking-tight text-navy">Round Table</span>
+            <span class="cinzel text-xl font-black tracking-tighter text-bright-gold">Round Table</span>
         </div>
         
-        <div class="hidden lg:flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-            <a href="#motivation" class="nav-link">Motivation</a>
-            <a href="#research" class="nav-link">Research</a>
-            <a href="#personas" class="nav-link">Personas</a>
-            <a href="#journey" class="nav-link">Journey</a>
-            <a href="#requirements" class="nav-link">Requirements</a>
-            <a href="#prototype" class="nav-link">Prototype</a>
-            <a href="#team" class="nav-link">Team</a>
+        <div class="hidden lg:flex gap-8 text-[10px] font-black uppercase tracking-[0.25em]">
+            <a href="#motivation" class="nav-link">01 Motivation</a>
+            <a href="#research" class="nav-link">02 Research</a>
+            <a href="#review" class="nav-link">03 Review</a>
+            <a href="#personas" class="nav-link">04 Personas</a>
+            <a href="#journey" class="nav-link">05 Journey</a>
+            <a href="#requirements" class="nav-link">06 Requirements</a>
+            <a href="#ideation" class="nav-link">07 Ideation</a>
+            <a href="#prototype" class="nav-link">08 Prototype</a>
+            <a href="#team" class="nav-link">09 Team</a>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-28 space-y-32">
+    <main class="max-w-7xl mx-auto px-6 py-28 space-y-40">
 
         <!-- 1. Hero Section -->
-        <section class="text-center pt-24">
-            <h1 class="text-6xl md:text-[80px] font-bold mb-6 leading-[1.1]">
-                <span class="text-navy">Where Every Voice</span> <br>
-                <span class="gold-glow-text italic serif">Finds Its Throne</span>
-            </h1>
-            <p class="max-w-2xl mx-auto text-base text-slate-500 italic font-medium leading-relaxed">
-                Inspired by the vision of equality, our multi-agent AI sanctuary breaks the silence in XJTLU seminars, ensuring every student wields the "sword" of participation.
-            </p>
-            <div class="mt-12">
-                <!-- 修正：深蓝底、胶囊状、金黄色文字按钮 -->
-                <a href="#motivation" class="bg-[#1E1B4B] text-[#D4AF37] px-14 py-4 rounded-full font-extrabold shadow-2xl hover:scale-110 transition-transform cinzel tracking-widest text-[10px] inline-block border border-gold/30">
-                    EXPLORE THE QUEST →
-                </a>
+        <section class="text-center pt-32 relative min-h-[80vh] flex flex-col justify-center">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[120px] -z-10 rotate-slow"></div>
+            
+            <div class="space-y-10 relative reveal">
+                <div class="inline-block px-6 py-2 rounded-full bg-gold/10 border border-gold/30 text-[11px] font-black uppercase tracking-[0.5em] text-bright-gold mb-4 shadow-xl backdrop-blur-md">
+                    ⚔️ The Digital Sanctuary for Dialogue
+                </div>
+                <h1 class="text-7xl md:text-[120px] font-bold mb-8 leading-[0.9] tracking-tighter">
+                    <span class="text-parchment">Where Every Voice</span> <br>
+                    <span class="gold-glow-text italic serif">Finds Its Throne</span>
+                </h1>
+                <p class="max-w-3xl mx-auto text-xl text-slate-300 italic font-medium leading-relaxed opacity-90 text-readable">
+                    Inspired by Arthurian egalitarianism, our multi-agent AI sanctuary dismantles the barriers of anxiety in XJTLU seminars, ensuring every student wields the "sword" of participation.
+                </p>
+                <div class="pt-12 flex flex-col md:flex-row items-center justify-center gap-8">
+                    <a href="#motivation" class="bg-gradient-to-r from-gold to-bright-gold text-navy px-20 py-6 rounded-full font-black shadow-[0_0_30px_rgba(212,175,55,0.4)] hover:scale-110 transition-all cinzel tracking-[0.3em] text-sm border border-white/20 group">
+                        BEGIN THE QUEST 
+                        <span class="inline-block transition-transform group-hover:translate-x-3 ml-3">→</span>
+                    </a>
+                    <a href="#prototype" class="text-bright-gold font-black cinzel tracking-[0.2em] text-sm hover:text-white transition-all hover:tracking-[0.3em]">
+                        VIEW PROTOTYPE
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-24 flex justify-center opacity-40">
+                <svg class="w-32 h-32 text-bright-gold float pulse-gold rounded-full p-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L10.5 5H13.5L12 2ZM11 6V16H13V6H11ZM9 17V19H11V21H13V19H15V17H9Z"/>
+                </svg>
             </div>
         </section>
 
         <!-- 2. Motivation -->
-        <section id="motivation" class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div class="space-y-6">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-navy/5 text-navy text-[8px] font-black uppercase tracking-widest border border-navy/10">
-                    💡 WHY THE ROUND TABLE?
-                </div>
-                <h2 class="text-4xl font-bold serif leading-tight">The Quest for Equality</h2>
-                <p class="text-slate-500 italic text-base border-l-4 border-gold pl-6">"Silence in modern seminars is often a barrier of anxiety, not wisdom."</p>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white p-5 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-[11px] text-navy mb-1 uppercase tracking-wider">Face-Saving</h4>
-                        <p class="text-[9px] text-slate-400">Lowering speaking stakes.</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-[11px] text-navy mb-1 uppercase tracking-wider">Cognitive Load</h4>
-                        <p class="text-[9px] text-slate-400">AI translation scaffolding.</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-[11px] text-navy mb-1 uppercase tracking-wider">Engagement</h4>
-                        <p class="text-[9px] text-slate-400">Real-time participation.</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gold/5 spring-interact shadow-sm">
-                        <h4 class="font-bold text-[11px] text-navy mb-1 uppercase tracking-wider">Inclusivity</h4>
-                        <p class="text-[9px] text-slate-400">A seat for every voice.</p>
-                    </div>
+        <section id="motivation" class="space-y-20">
+            <div class="text-center space-y-10 reveal">
+                <div class="section-banner">01 • Motivation: The Call to Arms</div>
+                <h2 class="text-6xl font-bold serif leading-tight text-parchment">The Quest for Equality in Modern Seminars</h2>
+                
+                <div class="max-w-5xl mx-auto mt-12">
+                    <p class="text-lg bg-gold/5 p-10 rounded-[3rem] border border-gold/20 italic text-slate-300 leading-relaxed text-readable shadow-2xl">
+                        <strong>The Why:</strong> Our group chose the <strong>Social Track</strong> because the seminar environment at XJTLU represents a critical micro-society where power dynamics and cultural barriers often silence brilliant minds. We observed that international students frequently experience "Face-Saving" anxiety, where the fear of public failure outweighs the desire for academic contribution. By choosing this track, we aim to leverage AI not as a replacement for human thought, but as a social equalizer—a digital "Hidden Shield" that allows students to iterate privately before proclaiming publicly. Our goal is to dismantle the invisible hierarchy of the classroom, ensuring that the "Round Table" is not just a metaphor for equality, but a functional reality. We believe that true inclusivity in higher education requires tools that respect psychological safety while actively scaffolding participation, transforming the seminar from a high-stakes stage into a collaborative sanctuary where every voice, regardless of linguistic fluency, finds its throne.
+                    </p>
                 </div>
             </div>
-            <div class="relative group px-4">
-                <div class="relative bg-white rounded-[40px] overflow-hidden shadow-2xl border-[6px] border-white aspect-[5/4]">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070" class="w-full h-full object-cover" alt="Seminar">
-                    <div class="absolute inset-0 bg-navy/40 flex flex-col items-center justify-center text-white text-center p-8">
-                        <h3 class="text-3xl font-bold italic serif mb-3">Equality in Dialogue</h3>
-                        <p class="text-gold italic text-[11px]">"Non Nobis Solum" — Not for ourselves alone</p>
+            
+            <div class="space-y-16 reveal">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+                    <div class="flex items-center p-8 bg-white/5 rounded-[2.5rem] border border-white/10">
+                        <p class="text-lg leading-relaxed text-slate-300">
+                            At XJTLU, the seminar is the heart of academic discourse. Yet, for many, it is a battlefield of anxiety. Our motivation stems from the <strong>Face-Saving Culture</strong> and <strong>Cognitive Overload</strong> that silence international students.
+                        </p>
+                    </div>
+                    <div class="glass-card p-10 rounded-[3rem] spring-interact border-gold/20 shadow-2xl relative overflow-hidden group bg-gold/5">
+                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-gold/10 blur-3xl rounded-full group-hover:bg-gold/20 transition-all duration-700"></div>
+                        <h4 class="font-black text-xs text-bright-gold mb-6 uppercase tracking-[0.2em] flex items-center gap-3 cinzel">
+                            <span class="w-3 h-3 bg-gold rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></span> Psychological Safety
+                        </h4>
+                        <p class="text-sm text-slate-300 leading-relaxed italic">"Creating a 'Hidden Shield' where thoughts are polished before they are proclaimed."</p>
+                    </div>
+                    <div class="glass-card p-10 rounded-[3rem] spring-interact border-gold/20 shadow-2xl relative overflow-hidden group bg-gold/5">
+                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-gold/10 blur-3xl rounded-full group-hover:bg-gold/20 transition-all duration-700"></div>
+                        <h4 class="font-black text-xs text-bright-gold mb-6 uppercase tracking-[0.2em] flex items-center gap-3 cinzel">
+                            <span class="w-3 h-3 bg-gold rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></span> Decentralized Power
+                        </h4>
+                        <p class="text-sm text-slate-300 leading-relaxed italic">"Removing the 'Head of the Table' to ensure a truly egalitarian flow of wisdom."</p>
+                    </div>
+                </div>
+
+                <div class="relative group max-w-5xl mx-auto" style="transition-delay: 0.2s;">
+                    <div class="absolute -inset-6 bg-gold/10 rounded-[60px] blur-3xl group-hover:bg-gold/20 transition-all duration-700"></div>
+                    <div class="relative bg-navy-light rounded-[50px] overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.6)] border-[8px] border-white/5 aspect-[21/9] pulse-gold">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070" class="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" alt="Seminar">
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/20 to-transparent flex flex-col items-center justify-end p-10 text-white text-center">
+                            <h3 class="text-4xl font-bold italic serif mb-4 text-bright-gold">Equality in Dialogue</h3>
+                            <p class="text-gold cinzel text-xs tracking-[0.4em] opacity-80">"Non Nobis Solum" — Not for ourselves alone</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- 3. Research -->
-        <section id="research" class="text-center space-y-12">
-            <div class="section-banner">The Scroll of Wisdom</div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="stats-trigger">
-                <div class="bg-white rounded-[2.5rem] p-10 text-left space-y-10 shadow-sm border border-gold/10">
-                    <h3 class="serif text-2xl font-bold flex items-center gap-3">📊 Survey Highlights</h3>
-                    <div class="space-y-12">
+        <section id="research" class="text-center space-y-20">
+            <div class="section-banner reveal">02 • Research: The Scroll of Wisdom</div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-24 reveal">
+                <div class="space-y-6 p-8 glass-card rounded-[2rem] spring-interact">
+                    <div class="text-5xl float">📝</div>
+                    <h4 class="cinzel text-sm font-bold text-bright-gold tracking-widest">Quantitative Survey</h4>
+                    <p class="text-xs text-slate-400">N=150 XJTLU Students across 5 departments.</p>
+                </div>
+                <div class="space-y-6 p-8 glass-card rounded-[2rem] spring-interact">
+                    <div class="text-5xl float" style="animation-delay: 0.5s;">🎙️</div>
+                    <h4 class="cinzel text-sm font-bold text-bright-gold tracking-widest">Qualitative Interviews</h4>
+                    <p class="text-xs text-slate-400">Deep-dive with 12 students and 4 facilitators.</p>
+                </div>
+                <div class="space-y-6 p-8 glass-card rounded-[2rem] spring-interact">
+                    <div class="text-5xl float" style="animation-delay: 1s;">🧙‍♂️</div>
+                    <h4 class="cinzel text-sm font-bold text-bright-gold tracking-widest">Wizard of Oz Study</h4>
+                    <p class="text-xs text-slate-400">Simulating AI scaffolding with human 'wizards' to test user trust.</p>
+                </div>
+                <div class="space-y-6 p-8 glass-card rounded-[2rem] spring-interact">
+                    <div class="text-5xl float" style="animation-delay: 1.5s;">📚</div>
+                    <h4 class="cinzel text-sm font-bold text-bright-gold tracking-widest">Literature Review</h4>
+                    <p class="text-xs text-slate-400">Analysis of 'Face-Saving' in Asian academic contexts.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16" id="stats-trigger">
+                <div class="glass-card rounded-[4rem] p-16 text-left space-y-16 shadow-2xl border-gold/20 relative overflow-hidden reveal">
+                    <div class="absolute top-0 right-0 p-12 opacity-10">
+                        <svg class="w-48 h-48 text-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21H23L12 2Z"/></svg>
+                    </div>
+                    <h3 class="serif text-4xl font-bold flex items-center gap-6 text-parchment">
+                        <span class="w-14 h-14 bg-gradient-to-br from-gold to-bright-gold text-navy rounded-full flex items-center justify-center text-lg font-black shadow-lg">01</span>
+                        Key Findings
+                    </h3>
+                    <div class="space-y-14">
                         <div class="stat-group">
-                            <div class="flex justify-between text-[10px] font-black uppercase italic mb-2">
-                                <span>Anxiety about English Fluency</span>
-                                <span class="text-gold counter" data-target="85">0%</span>
+                            <div class="flex justify-between text-xs font-black uppercase italic mb-4 tracking-[0.2em]">
+                                <span class="text-slate-400">Anxiety about English Fluency</span>
+                                <span class="text-bright-gold counter" data-target="85">0%</span>
                             </div>
-                            <div class="progress-container"><div class="progress-bar bg-[#D4AF37]" data-width="85%"></div></div>
+                            <div class="progress-container"><div class="progress-bar gold" data-width="85%"></div></div>
                         </div>
                         <div class="stat-group">
-                            <div class="flex justify-between text-[10px] font-black uppercase italic mb-2">
-                                <span>Reported 'Dead Silence' in Seminars</span>
-                                <span class="text-navy counter" data-target="72">0%</span>
+                            <div class="flex justify-between text-xs font-black uppercase italic mb-4 tracking-[0.2em]">
+                                <span class="text-slate-400">Reported 'Dead Silence' in Seminars</span>
+                                <span class="text-crimson counter" data-target="72">0%</span>
                             </div>
-                            <div class="progress-container"><div class="progress-bar bg-[#1E1B4B]" data-width="72%"></div></div>
+                            <div class="progress-container"><div class="progress-bar crimson" data-width="72%"></div></div>
                         </div>
                         <div class="stat-group">
-                            <div class="flex justify-between text-[10px] font-black uppercase italic mb-2">
-                                <span>Desire for AI Scaffolding</span>
-                                <span class="text-red-700 counter" data-target="91">0%</span>
+                            <div class="flex justify-between text-xs font-black uppercase italic mb-4 tracking-[0.2em]">
+                                <span class="text-slate-400">Desire for AI Scaffolding</span>
+                                <span class="text-blue-400 counter" data-target="91">0%</span>
                             </div>
-                            <div class="progress-container"><div class="progress-bar bg-[#B91C1C]" data-width="91%"></div></div>
+                            <div class="progress-container"><div class="progress-bar blue" data-width="91%"></div></div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="flex justify-between text-xs font-black uppercase italic mb-4 tracking-[0.2em]">
+                                <span class="text-slate-400">Participation Equity Gap</span>
+                                <span class="text-green-400 counter" data-target="64">0%</span>
+                            </div>
+                            <div class="progress-container"><div class="progress-bar green" data-width="64%"></div></div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white rounded-[2.5rem] p-10 text-left flex flex-col justify-between border border-gold/10 shadow-sm">
-                    <p class="text-2xl italic text-slate-400 leading-relaxed serif px-4 italic">"It's not that I don't have ideas. It's that the Round Table in class feels like a stage, and if my English isn't perfect, I'm afraid to step on it."</p>
-                    <div class="bg-navy p-6 rounded-2xl border-t-4 border-gold mt-8">
-                        <h4 class="text-[9px] font-black uppercase tracking-widest text-gold mb-2 italic tracking-widest">THE REVELATION</h4>
-                        <p class="text-[11px] text-white/70 leading-relaxed">Research identifies Face-Saving Culture as the inhibitor. The system acts as a 'Hidden Shield'.</p>
+                
+                <div class="flex flex-col gap-10 reveal" style="transition-delay: 0.2s;">
+                    <div class="glass-card rounded-[3rem] p-14 text-left flex flex-col justify-between border-gold/20 shadow-2xl relative group">
+                        <div class="text-8xl text-gold/10 absolute top-8 left-8 serif group-hover:text-gold/20 transition-colors">"</div>
+                        <p class="text-3xl italic text-slate-200 leading-relaxed serif px-10 relative z-10 text-readable">
+                            "It's not that I don't have ideas. It's that the Round Table in class feels like a stage, and if my English isn't perfect, I'm afraid to step on it."
+                        </p>
+                        <div class="mt-12 flex items-center gap-6 px-10">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-navy-light to-navy border border-gold/30 shadow-xl overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400" class="w-full h-full object-cover grayscale" alt="Student Avatar">
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-bright-gold">Anonymous Student</h4>
+                                <p class="text-xs text-slate-500">Year 3, Computer Science • XJTLU</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-navy-light to-navy p-10 rounded-[3rem] border-t-8 border-gold shadow-2xl text-left relative overflow-hidden">
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-gold/5 rounded-full blur-2xl"></div>
+                        <h4 class="text-xs font-black uppercase tracking-[0.4em] text-bright-gold mb-6 italic">The Revelation</h4>
+                        <p class="text-base text-slate-300 leading-relaxed italic text-readable">
+                            Our research identifies that <strong>Face-Saving Culture</strong> is the primary inhibitor. The system must act as a 'Hidden Shield'—allowing private iteration before public contribution.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 4. Personas (正圆头像 + 徽章) -->
-        <section id="personas" class="text-center space-y-12">
-            <div class="section-banner">Heroes of the Quest</div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Yifei -->
-                <div class="bg-white rounded-[40px] p-10 shadow-sm border border-gold/10 spring-interact text-left">
-                    <div class="flex gap-8 items-center mb-8 border-b border-gold/5 pb-8 relative">
-                        <div class="relative flex-shrink-0">
-                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl">
-                            <div class="absolute -bottom-1 -left-1 w-10 h-10 bg-red-800 rounded-full flex items-center justify-center text-white border-4 border-white shadow-lg text-xs">🛡️</div>
+        <!-- 3. Literature & Product Review -->
+        <section id="review" class="text-center space-y-20">
+            <div class="section-banner reveal">03 • Review: The Chronicles of Predecessors</div>
+            <h2 class="text-5xl font-bold serif text-parchment reveal">Analyzing the Gap</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 text-left reveal">
+                <!-- Academic Papers -->
+                <div class="space-y-8">
+                    <h3 class="cinzel text-xl font-bold text-bright-gold tracking-widest border-b border-gold/20 pb-4">Academic Literature</h3>
+                    <div class="space-y-6">
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-gold">
+                            <h4 class="font-bold text-parchment mb-2">Paper 1: AI-Mediated Communication in Classrooms</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Real-time feedback<br>• Privacy focus<br>• Engagement tracking</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Cultural nuances<br>• Emotional safety<br>• Peer interaction</div>
+                            </div>
                         </div>
-                        <div class="space-y-2">
-                            <span class="bg-amber-50 text-amber-800 text-[9px] px-3 py-1 rounded font-black tracking-widest uppercase">The Silent Knight</span>
-                            <h3 class="text-4xl font-bold serif text-navy">Yifei</h3>
-                            <p class="text-xs text-slate-400 italic">Brilliant Mind • Year 2 Student</p>
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-gold">
+                            <h4 class="font-bold text-parchment mb-2">Paper 2: The Face-Saving Inhibitor in Seminars</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Deep cultural analysis<br>• Root cause ID<br>• Qualitative data</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Technical solutions<br>• Scalability<br>• Real-time tools</div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-gold">
+                            <h4 class="font-bold text-parchment mb-2">Paper 3: Scaffolding for ESL Students</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Linguistic support<br>• Vocabulary aids<br>• Grammar checks</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Social anxiety<br>• Spontaneity<br>• Group flow</div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-gold">
+                            <h4 class="font-bold text-parchment mb-2">Paper 4: Collaborative Learning Platforms</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Shared workspaces<br>• Version control<br>• Role assignment</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Individual safety<br>• AI integration<br>• Mobile UX</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-8">
-                        <div class="space-y-3">
-                            <h4 class="text-[10px] font-black text-navy uppercase tracking-widest">✨ Her Quest</h4>
-                            <p class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-4 rounded-xl">Wants to contribute without English anxiety.</p>
+                </div>
+                <!-- Commercial Products -->
+                <div class="space-y-8">
+                    <h3 class="cinzel text-xl font-bold text-bright-gold tracking-widest border-b border-gold/20 pb-4">Commercial Products</h3>
+                    <div class="space-y-6">
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-bright-gold">
+                            <h4 class="font-bold text-parchment mb-2">Product 1: Mentimeter</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Anonymity<br>• Visual polls<br>• Ease of use</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Deep dialogue<br>• AI scaffolding<br>• Long-form text</div>
+                            </div>
                         </div>
-                        <div class="space-y-3">
-                            <h4 class="text-[10px] font-black text-navy uppercase tracking-widest">🛡️ Her Dragons</h4>
-                            <ul class="text-[10px] text-slate-500 space-y-1">
-                                <li>• Translation Lag</li>
-                                <li>• Peer Judgment</li>
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-bright-gold">
+                            <h4 class="font-bold text-parchment mb-2">Product 2: Grammarly</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Real-time polish<br>• Tone detection<br>• Accuracy</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Seminar context<br>• Social features<br>• Live speech</div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-bright-gold">
+                            <h4 class="font-bold text-parchment mb-2">Product 3: Slack</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Async comms<br>• Threading<br>• Integrations</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Academic focus<br>• Anxiety reduction<br>• AI nudging</div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-8 rounded-[2rem] border-l-4 border-bright-gold">
+                            <h4 class="font-bold text-parchment mb-2">Product 4: Otter.ai</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="text-green-400"><strong>Done Well:</strong><br>• Transcription<br>• Summarization<br>• Searchable logs</div>
+                                <div class="text-crimson"><strong>Missed:</strong><br>• Scaffolding<br>• Privacy controls<br>• Interactive UI</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Personas -->
+        <section id="personas" class="text-center space-y-20">
+            <div class="section-banner reveal">04 • Personas: Heroes of the Quest</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Yifei -->
+                <div class="glass-card rounded-[4rem] p-14 shadow-2xl border-gold/20 spring-interact text-left relative overflow-hidden group reveal">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-gold/5 rounded-bl-full -z-10 group-hover:scale-150 transition-transform duration-1000"></div>
+                    <div class="flex flex-col md:flex-row gap-12 items-center mb-12 border-b border-gold/10 pb-12">
+                        <div class="relative flex-shrink-0">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" class="w-48 h-48 rounded-full object-cover border-8 border-navy shadow-2xl ring-4 ring-gold/20">
+                            <div class="absolute -bottom-3 -right-3 w-16 h-16 bg-crimson rounded-full flex items-center justify-center text-white border-4 border-navy shadow-xl text-2xl pulse-gold">🛡️</div>
+                        </div>
+                        <div class="space-y-4 text-center md:text-left">
+                            <span class="bg-gold/10 text-bright-gold text-xs px-6 py-2 rounded-full font-black tracking-[0.2em] uppercase border border-gold/30">Primary Stakeholder • The Silent Knight</span>
+                            <h3 class="text-6xl font-bold serif text-parchment">Yifei</h3>
+                            <p class="text-base text-slate-400 italic font-medium">Brilliant Mind • Year 2 Student • XJTLU</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-12">
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-bright-gold uppercase tracking-[0.3em] flex items-center gap-3">
+                                <span class="w-3 h-3 bg-gold rounded-full pulse-gold"></span> Her Quest
+                            </h4>
+                            <div class="text-sm text-slate-300 leading-relaxed bg-navy/40 p-8 rounded-[2rem] italic border border-gold/10 text-readable space-y-4">
+                                <p><strong>Primary Goal:</strong> To find a collaborative atmosphere that mitigates linguistic vulnerability, allowing her to contribute her profound analytical perspectives without fear.</p>
+                                <p class="text-slate-400">As a bright undergraduate with a cautious mindset about her second-language proficiency, she would benefit tremendously from an AI-assisted platform to privately polish her vocabulary and submit ideas securely.</p>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-bright-gold uppercase tracking-[0.3em] flex items-center gap-3">
+                                <span class="w-3 h-3 bg-crimson rounded-full"></span> Her Dragons
+                            </h4>
+                            <ul class="text-sm text-slate-400 space-y-6">
+                                <li class="flex items-start gap-4">
+                                    <span class="text-crimson text-xl font-bold mt-1">›</span>
+                                    <div>
+                                        <strong class="text-bright-gold block mb-1">Native Speaker Dominance:</strong> Highly fluent peers often seize speaking opportunities before she can finish mentally translating her complex sentences.
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4">
+                                    <span class="text-crimson text-xl font-bold mt-1">›</span>
+                                    <div>
+                                        <strong class="text-bright-gold block mb-1">Vulnerability to Scrutiny:</strong> A severe fear of grammatical stumbling or appearing unpolished causes her to withhold superior academic arguments.
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4">
+                                    <span class="text-crimson text-xl font-bold mt-1">›</span>
+                                    <div>
+                                        <strong class="text-bright-gold block mb-1">Dual Cognitive Burden:</strong> The process of live translation consumes her mental bandwidth, often leading to oversimplified or delayed contributions.
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>
                 </div>
+                
                 <!-- Dr. Sarah -->
-                <div class="bg-white rounded-[40px] p-10 shadow-sm border border-gold/10 spring-interact text-left">
-                    <div class="flex gap-8 items-center mb-8 border-b border-gold/5 pb-8 relative">
+                <div class="glass-card rounded-[4rem] p-14 shadow-2xl border-gold/20 spring-interact text-left relative overflow-hidden group reveal" style="transition-delay: 0.2s;">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-navy-light/5 rounded-bl-full -z-10 group-hover:scale-150 transition-transform duration-1000"></div>
+                    <div class="flex flex-col md:flex-row gap-12 items-center mb-12 border-b border-gold/10 pb-12">
                         <div class="relative flex-shrink-0">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl">
-                            <div class="absolute -bottom-1 -left-1 w-10 h-10 bg-navy rounded-full flex items-center justify-center text-white border-4 border-white shadow-lg text-xs">👥</div>
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" class="w-48 h-48 rounded-full object-cover border-8 border-navy shadow-2xl ring-4 ring-gold/20">
+                            <div class="absolute -bottom-3 -right-3 w-16 h-16 bg-navy-light rounded-full flex items-center justify-center text-white border-4 border-navy shadow-xl text-2xl pulse-gold">👥</div>
                         </div>
-                        <div class="space-y-2">
-                            <span class="bg-indigo-50 text-indigo-800 text-[9px] px-3 py-1 rounded font-black tracking-widest uppercase">The Grand Mentor</span>
-                            <h3 class="text-4xl font-bold serif text-navy">Dr. Sarah</h3>
-                            <p class="text-xs text-slate-400 italic">Facilitator • Visionary</p>
+                        <div class="space-y-4 text-center md:text-left">
+                            <span class="bg-gold/10 text-bright-gold text-xs px-6 py-2 rounded-full font-black tracking-[0.2em] uppercase border border-gold/30">Secondary Stakeholder • The Grand Mentor</span>
+                            <h3 class="text-6xl font-bold serif text-parchment">Dr. Sarah</h3>
+                            <p class="text-base text-slate-400 italic font-medium">Facilitator • Visionary • Academic Lead</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-8">
-                        <div class="space-y-3">
-                            <h4 class="text-[10px] font-black text-navy uppercase tracking-widest">✨ Her Quest</h4>
-                            <p class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-4 rounded-xl">To activate every seat at the digital table.</p>
+                    <div class="grid grid-cols-1 gap-12">
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-bright-gold uppercase tracking-[0.3em] flex items-center gap-3">
+                                <span class="w-3 h-3 bg-gold rounded-full pulse-gold"></span> Her Quest
+                            </h4>
+                            <div class="text-sm text-slate-300 leading-relaxed bg-navy/40 p-8 rounded-[2rem] italic border border-gold/10 text-readable space-y-4">
+                                <p><strong>Primary Goal:</strong> To transform her seminars into vibrant intellectual ecosystems where every student feels empowered to contribute to the central dialogue.</p>
+                                <p class="text-slate-400">She needs an unobtrusive analytical lens to reveal participation patterns and quantify the group's collaborative vitality without disrupting the natural rhythm of teaching.</p>
+                            </div>
                         </div>
-                        <div class="space-y-3">
-                            <h4 class="text-[10px] font-black text-navy uppercase tracking-widest">🛡️ Her Dragons</h4>
-                            <ul class="text-[10px] text-slate-500 space-y-1">
-                                <li>• Dead Silence</li>
-                                <li>• Traditional Tools</li>
+                        <div class="space-y-6">
+                            <h4 class="text-xs font-black text-bright-gold uppercase tracking-[0.3em] flex items-center gap-3">
+                                <span class="w-3 h-3 bg-navy-light rounded-full"></span> Her Dragons
+                            </h4>
+                            <ul class="text-sm text-slate-400 space-y-6">
+                                <li class="flex items-start gap-4">
+                                    <span class="text-bright-gold text-xl font-bold mt-1">›</span>
+                                    <div>
+                                        <strong class="text-bright-gold block mb-1">The Engagement Illusion:</strong> She struggles to differentiate between deep, reflective silence and simple disengagement, causing valuable student insights to remain untapped.
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4">
+                                    <span class="text-bright-gold text-xl font-bold mt-1">›</span>
+                                    <div>
+                                        <strong class="text-bright-gold block mb-1">Antiquated Diagnostics:</strong> Relying on subjective observation provides no reliable data on participation equity, forcing her to navigate classroom dynamics blindfolded.
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4">
+                                    <span class="text-bright-gold text-xl font-bold mt-1">›</span>
+                                    <div>
+                                        <strong class="text-bright-gold block mb-1">The Intellectual Echo Chamber:</strong> She fears discussions become a feedback loop for vocal students, creating a monoculture where quieter, dissenting perspectives are never heard.
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -294,161 +603,1142 @@
         </section>
 
         <!-- 5. Journey Map -->
-        <section id="journey" class="text-center space-y-12">
-            <div class="section-banner">The Knight's Journey</div>
-            <div class="relative flex flex-col md:flex-row gap-4 pt-10">
-                <div class="absolute top-1/2 left-0 w-full h-1 bg-gold/10 -translate-y-1/2 hidden md:block"></div>
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-gold spring-interact relative z-10 shadow-sm">
-                    <h4 class="text-lg font-bold italic serif mb-2">Topic Entry</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed italic">Discussion starts. Yifei hesitates.</p>
+        <section id="journey" class="text-center space-y-20">
+            <div class="section-banner reveal">05 • Journey: The Knight's Journey</div>
+            
+            <!-- Student Journey -->
+            <div class="space-y-12 reveal">
+                <h3 class="text-4xl font-bold serif leading-tight text-parchment">From Silent Observer to Valued Contributor</h3>
+                <p class="text-slate-400 italic text-lg -mt-6">Mapping Yifei's transformational experience with the Round Table system.</p>
+                
+                <div class="marquee-container pb-12">
+                    <div class="marquee-content">
+                        <!-- Set 1 -->
+                        <!-- Phase 1 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-slate-400 shadow-[0_20px_50px_rgba(148,163,184,0.15),0_-4px_20px_rgba(148,163,184,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-slate-900/40">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-slate-400/10 blur-3xl rounded-full group-hover:bg-slate-400/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-slate-300 bg-white/5 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 1: INTRODUCTION</h4>
+                                <span class="text-2xl">🤔</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Reads the prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Formulates ideas.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Jots down keywords.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">💭 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"How can I articulate this perfectly?"</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Immediate pressure to perform & fear of failure.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Provide a private "Thought Space".</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 2 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-crimson shadow-[0_20px_50px_rgba(220,38,38,0.2),0_-4px_20px_rgba(220,38,38,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-crimson/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-crimson/10 blur-3xl rounded-full group-hover:bg-crimson/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-crimson bg-crimson/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 2: HESITATION</h4>
+                                <span class="text-2xl">🤐</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Listens to others.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Types and deletes drafts.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Remains silent.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">😩 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"My point is similar but I can't phrase it."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Paralyzed by perfectionism & invisibility.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Detect "near-contributions" (drafting).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 3 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-gold shadow-[0_20px_50px_rgba(212,175,55,0.25),0_-4px_20px_rgba(212,175,55,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-gold/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-gold/10 blur-3xl rounded-full group-hover:bg-gold/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-bright-gold bg-gold/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 3: INTERVENTION</h4>
+                                <span class="text-2xl">🪄</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Receives AI notification.</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Reads personalized prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Engages AI partner.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">😮 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"It understood what I was struggling with."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Initial skepticism & fear of being ignored.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Frame AI as a collaborative partner.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 4 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-blue-500 shadow-[0_20px_50px_rgba(59,130,246,0.2),0_-4px_20px_rgba(59,130,246,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-blue-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-blue-500/10 blur-3xl rounded-full group-hover:bg-blue-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-blue-300 bg-blue-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 4: CONTRIBUTION</h4>
+                                <span class="text-2xl">📢</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Selects polished comment.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Posts to discussion.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Receives validation.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🤩 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"They understood me! I feel visible."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">High anxiety before validation.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Subtly highlight new contributions.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 5 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-green-500 shadow-[0_20px_50px_rgba(34,197,94,0.2),0_-4px_20px_rgba(34,197,94,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-green-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-green-500/10 blur-3xl rounded-full group-hover:bg-green-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-green-400 bg-green-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 5: REFLECTION</h4>
+                                <span class="text-2xl">✨</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Reviews summary report.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Views connections.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Feels accomplished.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">😊 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"I made a meaningful impact today."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Anxiety about formal evaluation.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Emphasize qualitative impact.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Set 2 (Duplicate for Seamless Loop) -->
+                        <!-- Phase 1 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-slate-400 shadow-[0_20px_50px_rgba(148,163,184,0.15),0_-4px_20px_rgba(148,163,184,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-slate-900/40">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-slate-400/10 blur-3xl rounded-full group-hover:bg-slate-400/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-slate-300 bg-white/5 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 1: INTRODUCTION</h4>
+                                <span class="text-2xl">🤔</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Reads the prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Formulates ideas.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Jots down keywords.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">💭 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"How can I articulate this perfectly?"</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Immediate pressure to perform & fear of failure.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Provide a private "Thought Space".</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 2 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-crimson shadow-[0_20px_50px_rgba(220,38,38,0.2),0_-4px_20px_rgba(220,38,38,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-crimson/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-crimson/10 blur-3xl rounded-full group-hover:bg-crimson/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-crimson bg-crimson/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 2: HESITATION</h4>
+                                <span class="text-2xl">🤐</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Listens to others.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Types and deletes drafts.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Remains silent.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">😩 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"My point is similar but I can't phrase it."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Paralyzed by perfectionism & invisibility.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Detect "near-contributions" (drafting).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 3 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-gold shadow-[0_20px_50px_rgba(212,175,55,0.25),0_-4px_20px_rgba(212,175,55,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-gold/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-gold/10 blur-3xl rounded-full group-hover:bg-gold/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-bright-gold bg-gold/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 3: INTERVENTION</h4>
+                                <span class="text-2xl">🪄</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Receives AI notification.</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Reads personalized prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Engages AI partner.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">😮 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"It understood what I was struggling with."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Initial skepticism & fear of being ignored.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Frame AI as a collaborative partner.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 4 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-blue-500 shadow-[0_20px_50px_rgba(59,130,246,0.2),0_-4px_20px_rgba(59,130,246,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-blue-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-blue-500/10 blur-3xl rounded-full group-hover:bg-blue-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-blue-300 bg-blue-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 4: CONTRIBUTION</h4>
+                                <span class="text-2xl">📢</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Selects polished comment.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Posts to discussion.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Receives validation.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🤩 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"They understood me! I feel visible."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">High anxiety before validation.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Subtly highlight new contributions.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 5 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-green-500 shadow-[0_20px_50px_rgba(34,197,94,0.2),0_-4px_20px_rgba(34,197,94,0.3)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-green-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-green-500/10 blur-3xl rounded-full group-hover:bg-green-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-green-400 bg-green-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 5: REFLECTION</h4>
+                                <span class="text-2xl">✨</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Reviews summary report.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Views connections.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Feels accomplished.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">😊 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"I made a meaningful impact today."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Anxiety about formal evaluation.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Emphasize qualitative impact.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-red-800 spring-interact relative z-10 shadow-sm">
-                    <h4 class="text-lg font-bold italic serif mb-2">Silent Dip</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed italic">Anxiety blocks expression.</p>
+            </div>
+
+            <!-- Teacher Journey -->
+            <div class="space-y-12 pt-20 reveal">
+                <h3 class="text-4xl font-bold serif leading-tight text-parchment">From Facilitator to Insightful Mentor</h3>
+                <p class="text-slate-400 italic text-lg -mt-6">Mapping Dr. Sarah's journey to cultivate a truly inclusive seminar environment.</p>
+                
+                <div class="marquee-container pb-12">
+                    <div class="marquee-content" style="animation-duration: 50s;">
+                        <!-- Set 1 -->
+                        <!-- Phase 1 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-slate-400 shadow-[0_20px_50px_rgba(148,163,184,0.15)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-slate-900/40">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-slate-400/10 blur-3xl rounded-full group-hover:bg-slate-400/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-slate-300 bg-white/5 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 1: SESSION PREP</h4>
+                                <span class="text-2xl">📋</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Sets up discussion prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Configures AI goals.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Reviews metrics.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🎯 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"Let's ensure we hear from everyone today."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Time-consuming data tracking & dynamic prediction.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Pre-session dashboard for quiet students.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 2 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-blue-500 shadow-[0_20px_50px_rgba(59,130,246,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-blue-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-blue-500/10 blur-3xl rounded-full group-hover:bg-blue-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-blue-300 bg-blue-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 2: DISCUSSION START</h4>
+                                <span class="text-2xl">🗣️</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Introduces prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Observes vocal dominance.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Checks logins.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🤨 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"Are the others thinking, or just lost?"</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">The "Engagement Illusion" & subjective inadequacy.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Real-time "thought formation" indicators.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 3 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-gold shadow-[0_20px_50px_rgba(212,175,55,0.25)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-gold/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-gold/10 blur-3xl rounded-full group-hover:bg-gold/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-bright-gold bg-gold/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 3: LIVE MONITORING</h4>
+                                <span class="text-2xl">👁️</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Checks analytics HUD.</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Notices "Echo Chamber".</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Sees AI flags.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">😟 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"We need more diverse perspectives shared."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Disruptive verbal interruptions & introvert risk.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Visual sociogram of conversation flow.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 4 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-crimson shadow-[0_20px_50px_rgba(220,38,38,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-crimson/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-crimson/10 blur-3xl rounded-full group-hover:bg-crimson/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-crimson bg-crimson/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 4: INTERVENTION</h4>
+                                <span class="text-2xl">⚔️</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Receives text contribution.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Acknowledges & validates.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Steers debate.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💡 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"This text submission is the bridge we needed."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Attention balance & buried text posts.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">AI suggests transition phrases.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 5 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-green-500 shadow-[0_20px_50px_rgba(34,197,94,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-green-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-green-500/10 blur-3xl rounded-full group-hover:bg-green-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-green-400 bg-green-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 5: ANALYSIS</h4>
+                                <span class="text-2xl">🏆</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Reviews equity report.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Evaluates perspectives.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Adjusts strategy.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">😌 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"We tapped into the silent majority today."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Data overload & translating metrics.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">AI synthesizes actionable insights.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Set 2 (Duplicate for Seamless Loop) -->
+                        <!-- Phase 1 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-slate-400 shadow-[0_20px_50px_rgba(148,163,184,0.15)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-slate-900/40">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-slate-400/10 blur-3xl rounded-full group-hover:bg-slate-400/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-slate-300 bg-white/5 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 1: SESSION PREP</h4>
+                                <span class="text-2xl">📋</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Sets up discussion prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Configures AI goals.</li>
+                                        <li class="flex items-start gap-2"><span class="text-slate-500">◈</span> Reviews metrics.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">🎯 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"Let's ensure we hear from everyone today."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Time-consuming data tracking & dynamic prediction.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Pre-session dashboard for quiet students.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 2 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-blue-500 shadow-[0_20px_50px_rgba(59,130,246,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-blue-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-blue-500/10 blur-3xl rounded-full group-hover:bg-blue-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-blue-300 bg-blue-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 2: DISCUSSION START</h4>
+                                <span class="text-2xl">🗣️</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Introduces prompt.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Observes vocal dominance.</li>
+                                        <li class="flex items-start gap-2"><span class="text-blue-500">◈</span> Checks logins.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">🤨 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"Are the others thinking, or just lost?"</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">The "Engagement Illusion" & subjective inadequacy.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Real-time "thought formation" indicators.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 3 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-gold shadow-[0_20px_50px_rgba(212,175,55,0.25)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-gold/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-gold/10 blur-3xl rounded-full group-hover:bg-gold/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-bright-gold bg-gold/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 3: LIVE MONITORING</h4>
+                                <span class="text-2xl">👁️</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Checks analytics HUD.</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Notices "Echo Chamber".</li>
+                                        <li class="flex items-start gap-2"><span class="text-gold">◈</span> Sees AI flags.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-bright-gold uppercase tracking-widest flex items-center gap-2">😟 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"We need more diverse perspectives shared."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Disruptive verbal interruptions & introvert risk.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">Visual sociogram of conversation flow.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 4 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-crimson shadow-[0_20px_50px_rgba(220,38,38,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-crimson/5">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-crimson/10 blur-3xl rounded-full group-hover:bg-crimson/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-crimson bg-crimson/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 4: INTERVENTION</h4>
+                                <span class="text-2xl">⚔️</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Receives text contribution.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Acknowledges & validates.</li>
+                                        <li class="flex items-start gap-2"><span class="text-crimson">◈</span> Steers debate.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💡 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"This text submission is the bridge we needed."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Attention balance & buried text posts.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">AI suggests transition phrases.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 5 -->
+                        <div class="w-[450px] glass-card rounded-[3rem] p-12 border-t-8 border-green-500 shadow-[0_20px_50px_rgba(34,197,94,0.2)] flex flex-col gap-8 text-left whitespace-normal relative overflow-hidden group bg-green-900/20">
+                            <div class="absolute -right-20 -top-20 w-48 h-48 bg-green-500/10 blur-3xl rounded-full group-hover:bg-green-500/20 transition-all duration-700"></div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-black text-green-400 bg-green-500/10 px-6 py-2 rounded-full tracking-[0.3em] cinzel">PHASE 5: ANALYSIS</h4>
+                                <span class="text-2xl">🏆</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">🚀 Actions</h5>
+                                    <ul class="text-xs text-slate-300 space-y-2 italic list-none">
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Reviews equity report.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Evaluates perspectives.</li>
+                                        <li class="flex items-start gap-2"><span class="text-green-500">◈</span> Adjusts strategy.</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">😌 Emotions</h5>
+                                    <p class="text-xs italic text-slate-400 leading-relaxed">"We tapped into the silent majority today."</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-crimson uppercase tracking-widest flex items-center gap-2">💢 Painpoints</h5>
+                                    <p class="text-xs text-slate-400 italic">Data overload & translating metrics.</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5 class="text-[10px] font-black text-green-400 uppercase tracking-widest flex items-center gap-2">✨ Opportunities</h5>
+                                    <p class="text-xs text-slate-300 italic">AI synthesizes actionable insights.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 4 -->
+                        <div class="w-[400px] glass-card rounded-[3rem] p-10 border-t-8 border-gold shadow-2xl flex flex-col gap-8 text-left whitespace-normal">
+                            <h4 class="text-sm font-black text-bright-gold bg-gold/10 px-6 py-2 rounded-full inline-block tracking-[0.3em] cinzel">PHASE 4: INTERVENTION</h4>
+                            <div class="space-y-6">
+                                <div>
+                                    <h5 class="text-xs font-black text-bright-gold mb-3 uppercase tracking-widest">🚀 ACTIONS</h5>
+                                    <ul class="list-disc list-inside text-sm text-slate-300 space-y-2 italic">
+                                        <li>Receives text contribution from silent student.</li>
+                                        <li>Verbally acknowledges and validates post.</li>
+                                        <li>Uses post to steer live verbal debate.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-black text-bright-gold mb-3 uppercase tracking-widest">💡 EMOTIONS</h5>
+                                    <p class="text-sm italic text-slate-400">"This text submission is exactly the bridge we needed."</p>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-black text-crimson mb-3 uppercase tracking-widest">💢 PAINPOINTS</h5>
+                                    <ul class="list-disc list-inside text-sm text-slate-400 space-y-2">
+                                        <li>Balancing attention between speakers and screen.</li>
+                                        <li>Ensuring text posts aren't buried.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-black text-green-400 mb-3 uppercase tracking-widest">✨ OPPORTUNITIES</h5>
+                                    <p class="text-sm text-slate-300 italic">"Seamless Weaving": AI suggests transition phrases.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Phase 5 -->
+                        <div class="w-[400px] glass-card rounded-[3rem] p-10 border-t-8 border-bright-gold shadow-2xl flex flex-col gap-8 text-left whitespace-normal">
+                            <h4 class="text-sm font-black text-bright-gold bg-gold/10 px-6 py-2 rounded-full inline-block tracking-[0.3em] cinzel">PHASE 5: ANALYSIS</h4>
+                            <div class="space-y-6">
+                                <div>
+                                    <h5 class="text-xs font-black text-bright-gold mb-3 uppercase tracking-widest">🚀 ACTIONS</h5>
+                                    <ul class="list-disc list-inside text-sm text-slate-300 space-y-2 italic">
+                                        <li>Reviews equity report generated by platform.</li>
+                                        <li>Evaluates breadth of perspectives shared.</li>
+                                        <li>Adjusts strategy for next session.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-black text-bright-gold mb-3 uppercase tracking-widest">😌 EMOTIONS</h5>
+                                    <p class="text-sm italic text-slate-400">"We tapped into the silent majority today."</p>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-black text-crimson mb-3 uppercase tracking-widest">💢 PAINPOINTS</h5>
+                                    <ul class="list-disc list-inside text-sm text-slate-400 space-y-2">
+                                        <li>Data overload can be paralyzing.</li>
+                                        <li>Translating metrics into actual grading.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-black text-green-400 mb-3 uppercase tracking-widest">✨ OPPORTUNITIES</h5>
+                                    <p class="text-sm text-slate-300 italic">AI synthesizes actionable insights.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-green-700 spring-interact relative z-10 shadow-sm">
-                    <h4 class="text-lg font-bold italic serif mb-2">AI Scaffold</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed italic">AI Agent nudges privately.</p>
-                </div>
-                <div class="flex-1 bg-white rounded-3xl p-8 text-left border-t-8 border-navy spring-interact relative z-10 shadow-sm">
-                    <h4 class="text-lg font-bold italic serif mb-2">Contribution</h4>
-                    <p class="text-[10px] text-slate-400 italic leading-relaxed italic">The voice is shared. Glory!</p>
+            </div>
+
+            <!-- Evidence of Life -->
+            <div class="space-y-12 pt-20 reveal">
+                <h3 class="cinzel text-xl font-bold text-bright-gold tracking-widest">Echoes from the Field (Evidence of Life)</h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                    <div class="aspect-square glass-card rounded-2xl overflow-hidden group relative">
+                        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                        <div class="absolute inset-0 bg-navy/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black uppercase tracking-widest p-4 text-center">Interviewing Student Y</div>
+                    </div>
+                    <div class="aspect-square glass-card rounded-2xl overflow-hidden group relative">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                        <div class="absolute inset-0 bg-navy/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black uppercase tracking-widest p-4 text-center">Observation at Library</div>
+                    </div>
+                    <div class="aspect-square glass-card rounded-2xl overflow-hidden group relative">
+                        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                        <div class="absolute inset-0 bg-navy/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black uppercase tracking-widest p-4 text-center">Group Brainstorming</div>
+                    </div>
+                    <div class="aspect-square glass-card rounded-2xl overflow-hidden group relative">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                        <div class="absolute inset-0 bg-navy/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black uppercase tracking-widest p-4 text-center">Seminar Observation</div>
+                    </div>
+                    <div class="aspect-square glass-card rounded-2xl overflow-hidden group relative">
+                        <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                        <div class="absolute inset-0 bg-navy/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black uppercase tracking-widest p-4 text-center">Wizard of Oz Setup</div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 6. Requirements -->
-        <section id="requirements" class="text-center space-y-12">
-            <div class="section-banner">The Code of Chivalry</div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-left">
-                <div class="bg-white p-10 rounded-3xl border-l-8 border-navy shadow-sm spring-interact">
-                    <h4 class="font-bold text-[11px] mb-2 uppercase tracking-widest">Privacy Shield</h4>
-                    <p class="text-[10px] text-slate-500">Polish thoughts before public posting.</p>
+        <section id="requirements" class="text-center space-y-20">
+            <div class="section-banner reveal">06 • Requirements: The Code of Chivalry</div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 pt-10 reveal">
+                <!-- Functional -->
+                <div class="glass-card p-12 rounded-[3.5rem] text-left border-l-8 border-gold shadow-2xl spring-interact">
+                    <h4 class="font-black text-sm mb-6 uppercase tracking-[0.3em] text-bright-gold">Functional Requirements</h4>
+                    <ul class="space-y-6 text-sm text-slate-300 italic text-readable">
+                        <li class="flex items-start gap-4"><span class="text-gold text-xl">✦</span> Multi-agent AI scaffolding for real-time thought polishing.</li>
+                        <li class="flex items-start gap-4"><span class="text-gold text-xl">✦</span> Anonymous 'Safe-Zone' for initial drafting.</li>
+                        <li class="flex items-start gap-4"><span class="text-gold text-xl">✦</span> Facilitator dashboard with engagement heatmaps.</li>
+                        <li class="flex items-start gap-4"><span class="text-gold text-xl">✦</span> Real-time speech-to-text with translation support.</li>
+                    </ul>
                 </div>
-                <div class="bg-white p-10 rounded-3xl border-l-8 border-gold shadow-sm spring-interact">
-                    <h4 class="font-bold text-[11px] mb-2 uppercase tracking-widest">Active Moderation</h4>
-                    <p class="text-[10px] text-slate-500">Balance the roundtable seats.</p>
+                <!-- Non-Functional -->
+                <div class="glass-card p-12 rounded-[3.5rem] text-left border-l-8 border-bright-gold shadow-2xl spring-interact">
+                    <h4 class="font-black text-sm mb-6 uppercase tracking-[0.3em] text-bright-gold">Non-Functional Requirements</h4>
+                    <ul class="space-y-6 text-sm text-slate-300 italic text-readable">
+                        <li class="flex items-start gap-4"><span class="text-bright-gold text-xl">✦</span> Latency &lt; 200ms for seamless dialogue flow.</li>
+                        <li class="flex items-start gap-4"><span class="text-bright-gold text-xl">✦</span> High accessibility (WCAG 2.1 compliant).</li>
+                        <li class="flex items-start gap-4"><span class="text-bright-gold text-xl">✦</span> Privacy-first data encryption for student thoughts.</li>
+                        <li class="flex items-start gap-4"><span class="text-bright-gold text-xl">✦</span> Scalability for up to 100 concurrent seminar users.</li>
+                    </ul>
                 </div>
-                <div class="bg-white p-10 rounded-3xl border-l-8 border-red-800 shadow-sm spring-interact">
-                    <h4 class="font-bold text-[11px] mb-2 uppercase tracking-widest">Facilitator Data</h4>
-                    <p class="text-[10px] text-slate-500">Real-time health analytics.</p>
+                <!-- Playful Must-Haves -->
+                <div class="glass-card p-12 rounded-[3.5rem] text-left border-l-8 border-green-500 shadow-2xl spring-interact">
+                    <h4 class="font-black text-sm mb-6 uppercase tracking-[0.3em] text-green-400">"Playful" Must-Haves</h4>
+                    <ul class="space-y-6 text-sm text-slate-300 italic text-readable">
+                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Gamified Contribution:</strong> Earning "Knighthood" titles for quality participation.</li>
+                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Visual Metaphors:</strong> Using a dynamic "Round Table" UI that grows with dialogue.</li>
+                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Interactive Nudges:</strong> AI agents using friendly, Arthurian personas to encourage users.</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <!-- 7. Prototype (修复 Sarah 头像与字体) -->
-        <section id="prototype" class="text-center space-y-12">
-            <div class="section-banner">The Magical Mirror</div>
-            <div class="bg-[#0F172A] rounded-[3rem] overflow-hidden border-[8px] border-white shadow-2xl max-w-4xl mx-auto h-[550px] flex flex-col">
-                <div class="bg-black/30 p-4 flex items-center justify-between px-10 border-b border-white/5">
-                    <div class="flex gap-1.5">
-                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-lg"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-lg"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-lg"></div>
-                    </div>
-                    <div class="text-gold cinzel text-[9px] tracking-[0.2em] font-black italic">RoundTable Terminal V1.0</div>
+        <!-- 7. Ideation & Alternatives -->
+        <section id="ideation" class="text-center space-y-20">
+            <div class="section-banner reveal">07 • Ideation: The Forge of Ideas</div>
+            
+            <!-- Crazy Eights -->
+            <div class="space-y-12 reveal">
+                <h3 class="cinzel text-xl font-bold text-bright-gold tracking-widest">The "Crazy Eights" Sketches</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 1: Radial UI</div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 2: Shield Input</div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 3: Scroll Feed</div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 4: AI Nudge UI</div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 5: Heatmap Viz</div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 6: Avatar System</div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 7: Mobile View</div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 8: Final Concept</div>
                 </div>
-                <div class="flex-1 p-10 space-y-10 overflow-y-auto flex flex-col justify-end bg-slate-900/50">
-                    <!-- Dialogue 1: Sarah (修复头像显示) -->
-                    <div class="flex gap-5 items-start">
-                        <div class="w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden flex-shrink-0 shadow-lg">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Design Alternatives -->
+            <div class="space-y-12 reveal">
+                <h3 class="cinzel text-xl font-bold text-bright-gold tracking-widest">Design Alternatives & Selection</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
+                    <div class="glass-card p-10 rounded-[3rem] border-t-4 border-slate-500 opacity-60">
+                        <h4 class="font-bold text-slate-400 mb-4 italic">Alt A: Pure Text Chat</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">A standard messaging interface. Rejected because it lacks the "Social" track's focus on egalitarianism and psychological safety.</p>
+                    </div>
+                    <div class="glass-card p-10 rounded-[3rem] border-t-4 border-slate-500 opacity-60">
+                        <h4 class="font-bold text-slate-400 mb-4 italic">Alt B: Voice-Only AI</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">Real-time voice translation. Rejected due to high latency and potential to increase anxiety rather than reduce it.</p>
+                    </div>
+                    <div class="glass-card p-10 rounded-[3rem] border-t-8 border-gold shadow-[0_0_40px_rgba(212,175,55,0.2)]">
+                        <h4 class="font-bold text-bright-gold mb-4 italic">Selected: Hybrid Scaffolding</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed">Combines private drafting, AI polishing, and anonymous contribution. Chosen because it directly addresses the "Face-Saving" gap identified in research.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figma Link -->
+            <div class="pt-10 reveal">
+                <a href="https://www.figma.com/proto/your-link-here" target="_blank" class="inline-flex items-center gap-4 bg-navy-light px-12 py-6 rounded-full border border-gold/30 hover:border-gold transition-all group">
+                    <span class="text-xl">🎨</span>
+                    <span class="cinzel text-sm font-bold text-bright-gold tracking-widest">Clickable Figma Prototype</span>
+                    <span class="text-gold group-hover:translate-x-2 transition-transform">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- 8. Prototype -->
+        <section id="prototype" class="text-center space-y-20">
+            <div class="section-banner reveal">08 • Prototype: The Magical Mirror</div>
+            
+            <!-- System Architecture -->
+            <div class="max-w-5xl mx-auto glass-card p-14 rounded-[4rem] shadow-2xl border-gold/20 mb-24 reveal">
+                <h4 class="cinzel text-lg font-bold text-bright-gold mb-12 tracking-[0.3em]">System Architecture</h4>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-12">
+                    <div class="bg-navy-light text-bright-gold p-8 rounded-3xl text-xs font-black cinzel tracking-[0.2em] w-full md:w-auto border border-gold/30 shadow-xl pulse-gold">User Interface</div>
+                    <div class="text-gold text-4xl animate-pulse">→</div>
+                    <div class="bg-gradient-to-br from-gold to-bright-gold text-navy p-8 rounded-3xl text-xs font-black cinzel tracking-[0.2em] w-full md:w-auto shadow-2xl">AI Scaffolding Engine</div>
+                    <div class="text-gold text-4xl animate-pulse">→</div>
+                    <div class="bg-navy-light text-bright-gold p-8 rounded-3xl text-xs font-black cinzel tracking-[0.2em] w-full md:w-auto border border-gold/30 shadow-xl pulse-gold">Public Round Table</div>
+                </div>
+                <p class="mt-12 text-sm text-slate-400 italic text-readable">Powered by Gemini 1.5 Pro for high-context thought processing.</p>
+            </div>
+
+            <!-- Iterative Design -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24 max-w-5xl mx-auto reveal">
+                <div class="glass-card p-12 rounded-[3rem] shadow-2xl border-gold/20 text-left spring-interact">
+                    <h4 class="cinzel text-xs font-black text-bright-gold mb-6 tracking-[0.3em]">V1.0 Low-Fi Insights</h4>
+                    <p class="text-sm text-slate-300 italic leading-relaxed text-readable">
+                        Initial testing showed that students felt 'over-monitored' by the AI. We pivoted to a 'Pull' model where the AI only intervenes when requested or during prolonged silence.
+                    </p>
+                </div>
+                <div class="glass-card p-12 rounded-[3rem] shadow-2xl border-gold/20 text-left spring-interact">
+                    <h4 class="cinzel text-xs font-black text-bright-gold mb-6 tracking-[0.3em]">V2.0 High-Fi Refinement</h4>
+                    <p class="text-sm text-slate-300 italic leading-relaxed text-readable">
+                        Added the 'Sanctuary Mode'—a private drafting space that uses Arthurian metaphors to make the technology feel more like a supportive companion than a rigid tool.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Chat Prototype -->
+            <div class="bg-[#0F172A] rounded-[5rem] overflow-hidden border-[16px] border-navy-light shadow-[0_0_100px_rgba(0,0,0,0.8)] max-w-6xl mx-auto h-[750px] flex flex-col relative group reveal">
+                <div class="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
+                
+                <!-- Terminal Header -->
+                <div class="bg-black/60 p-8 flex items-center justify-between px-16 border-b border-white/10 backdrop-blur-md">
+                    <div class="flex gap-4">
+                        <div class="w-4 h-4 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"></div>
+                        <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.5)]"></div>
+                        <div class="w-4 h-4 rounded-full bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
+                    </div>
+                    <div class="text-bright-gold cinzel text-xs tracking-[0.4em] font-black italic opacity-90">RoundTable Terminal V1.2.4</div>
+                    <div class="text-gold/30 text-xs font-mono tracking-widest">SECURE_ENCRYPTED_LINK</div>
+                </div>
+                
+                <!-- Chat Content -->
+                <div class="flex-1 p-16 space-y-16 overflow-y-auto flex flex-col justify-end bg-gradient-to-b from-slate-900/80 to-slate-950" id="chat-content">
+                    <!-- Dialogue 1: Sarah -->
+                    <div class="flex gap-8 items-start">
+                        <div class="w-16 h-16 rounded-full border-4 border-gold/30 overflow-hidden flex-shrink-0 shadow-2xl ring-4 ring-white/5 pulse-gold">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" class="w-full h-full object-cover" alt="Dr. Sarah">
                         </div>
-                        <div class="bg-white/10 text-white p-6 rounded-3xl rounded-tl-none text-[11px] text-left max-w-[70%] backdrop-blur-lg border border-white/5">
-                            <span class="text-slate-400 font-bold block mb-1 uppercase tracking-widest text-[9px]">Mentor: Dr. Sarah</span>
-                            "How does Arthurian legend influence modern cooperative strategy?"
+                        <div class="bg-white/5 text-parchment p-10 rounded-[3rem] rounded-tl-none text-sm text-left max-w-[80%] backdrop-blur-2xl border border-white/10 shadow-2xl text-readable">
+                            <span class="text-bright-gold font-black block mb-3 uppercase tracking-[0.3em] text-[10px] cinzel">Mentor: Dr. Sarah</span>
+                            "How does Arthurian legend influence modern cooperative strategy in decentralized organizations?"
                         </div>
                     </div>
-                    <!-- Dialogue 2: AI Agent -->
-                    <div class="flex flex-row-reverse gap-5 items-start">
-                        <div class="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center text-white text-xs shadow-2xl font-black">🛡️</div>
-                        <div class="bg-indigo-900/40 border border-indigo-400/30 text-indigo-100 p-6 rounded-3xl rounded-tr-none text-[11px] text-left max-w-[70%] italic backdrop-blur-md">
-                            <span class="text-indigo-400 font-black block mb-1 uppercase tracking-widest text-[9px]">Icebreaker Agent (Private)</span>
-                            "Yifei, I've detected a silence. You have notes on 'Egalitarianism'. Want to polish them?"
+                    
+                    <!-- Dialogue 2: AI Agent (Private) -->
+                    <div class="flex flex-row-reverse gap-8 items-start">
+                        <div class="w-16 h-16 bg-gradient-to-br from-gold to-bright-gold rounded-2xl flex items-center justify-center text-navy text-2xl shadow-2xl font-black ring-4 ring-gold/20 float">🛡️</div>
+                        <div class="bg-gold/10 border border-gold/30 text-bright-gold p-10 rounded-[3rem] rounded-tr-none text-sm text-left max-w-[80%] italic backdrop-blur-2xl shadow-2xl text-readable">
+                            <span class="text-gold font-black block mb-3 uppercase tracking-[0.3em] text-[10px] cinzel">Scaffolding Agent (Private)</span>
+                            <span class="typing" id="ai-typing">"Yifei, I've detected a silence. You have notes on 'Egalitarianism'. Would you like me to polish your draft into a more academic structure?"</span>
                         </div>
                     </div>
+                    
                     <!-- Dialogue 3: Yifei -->
-                    <div class="flex gap-5 flex-row-reverse items-start">
-                        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white/30 flex-shrink-0 shadow-xl">
-                             <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" class="w-full h-full object-cover">
+                    <div class="flex gap-8 flex-row-reverse items-start">
+                        <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-gold/30 flex-shrink-0 shadow-2xl ring-4 ring-white/10 pulse-gold">
+                             <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" class="w-full h-full object-cover" alt="Yifei">
                         </div>
-                        <div class="bg-white text-navy p-6 rounded-3xl rounded-tr-none text-[11px] text-left max-w-[70%] shadow-2xl font-medium">
-                            <span class="text-navy font-bold block mb-1 uppercase tracking-widest text-[9px]">Knight: Yifei</span>
-                            "The round table eliminates hierarchies, allowing for a decentralized flow of strategic wisdom..."
+                        <div class="bg-gradient-to-br from-gold to-bright-gold text-navy p-10 rounded-[3rem] rounded-tr-none text-sm text-left max-w-[80%] shadow-2xl font-bold border border-white/20">
+                            <span class="text-navy font-black block mb-3 uppercase tracking-[0.3em] text-[10px] cinzel">Knight: Yifei</span>
+                            "The round table eliminates hierarchies, allowing for a decentralized flow of strategic wisdom where the value of an idea is independent of the speaker's rank..."
                         </div>
                     </div>
                 </div>
-                <div class="p-6 bg-black/40 border-t border-white/5 flex gap-4 items-center">
-                    <input type="text" placeholder="Type thoughts here..." class="flex-1 bg-white/5 border-none focus:ring-0 text-white text-[11px] px-6 italic rounded-full h-10">
-                    <button class="text-indigo-400 font-black cinzel text-[11px] tracking-widest px-6 h-10">TALK</button>
+                
+                <!-- Input Area -->
+                <div class="p-10 bg-black/80 border-t border-white/10 flex gap-8 items-center backdrop-blur-2xl">
+                    <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gold/40 hover:text-bright-gold transition-all cursor-pointer hover:bg-white/10 shadow-inner">📎</div>
+                    <input type="text" placeholder="Draft your thoughts in the sanctuary..." class="flex-1 bg-white/5 border-none focus:ring-0 text-white text-sm px-10 italic rounded-full h-14 placeholder:text-white/10 shadow-inner">
+                    <button class="bg-gradient-to-r from-gold to-bright-gold text-navy font-black cinzel text-[11px] tracking-[0.4em] px-14 h-14 rounded-full hover:scale-110 transition-all shadow-[0_0_30px_rgba(212,175,55,0.4)]">SEND</button>
                 </div>
+            </div>
+            
+            <div class="pt-16 reveal">
+                <p class="text-sm text-gold/40 italic cinzel tracking-[0.5em]">"Technology is the sword, but equality is the hand that wields it."</p>
             </div>
         </section>
 
-        <!-- 8. Team -->
-        <section id="team" class="text-center space-y-12 pb-24">
-            <div class="section-banner">Knights of the Table</div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="member-card bg-white rounded-[2rem] p-8 spring-interact border border-gold/5 cursor-pointer shadow-sm">
-                    <img src="Qian Wang.jpg" class="w-20 h-20 mx-auto rounded-full border-2 border-gold/20 p-1 mb-4 object-cover">
-                    <h3 class="text-base font-bold text-navy">Qian Wang</h3>
-                    <p class="text-[9px] font-black text-gold tracking-widest uppercase mt-1">UI/UX Design</p>
-                    <div class="expand-content mt-3 text-[9px] text-slate-400 italic">"Master of Visual Strategy."</div>
+        <!-- 9. Team -->
+        <section id="team" class="text-center space-y-24 pb-40">
+            <div class="section-banner reveal">09 • Team: Knights of the Table</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                <!-- Qian Wang -->
+                <div class="member-card glass-card rounded-[4rem] p-12 spring-interact cursor-pointer shadow-2xl group relative overflow-hidden reveal">
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-gold/10 rounded-full group-hover:scale-150 transition-transform duration-1000 blur-xl"></div>
+                    <div class="relative">
+                        <img src="Qian Wang.jpg" class="w-32 h-32 mx-auto rounded-full border-4 border-gold/30 p-2 mb-8 object-cover shadow-2xl ring-4 ring-gold/10">
+                        <h3 class="text-2xl font-bold text-parchment serif">Qian Wang</h3>
+                        <p class="text-[11px] font-black text-bright-gold tracking-[0.3em] uppercase mt-3">UI/UX Design Lead</p>
+                        <div class="mt-8 pt-8 border-t border-white/10 space-y-4">
+                            <p class="text-xs text-slate-400 italic leading-relaxed text-readable">"Master of Visual Strategy and Arthurian Aesthetics."</p>
+                            <div class="flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                                <span class="text-xl">🎨</span><span class="text-xl">✨</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="member-card bg-white rounded-[2rem] p-8 spring-interact border border-gold/5 cursor-pointer shadow-sm">
-                    <img src="Zengyi Mei.jpg" class="w-20 h-20 mx-auto rounded-full border-2 border-gold/20 p-1 mb-4 object-cover">
-                    <h3 class="text-base font-bold text-navy">Zengyi Mei</h3>
-                    <p class="text-[9px] font-black text-gold tracking-widest uppercase mt-1">User Research</p>
-                    <div class="expand-content mt-3 text-[9px] text-slate-400 italic">"Voice of the Classroom."</div>
+                <!-- Zengyi Mei -->
+                <div class="member-card glass-card rounded-[4rem] p-12 spring-interact cursor-pointer shadow-2xl group relative overflow-hidden reveal" style="transition-delay: 0.1s;">
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-gold/10 rounded-full group-hover:scale-150 transition-transform duration-1000 blur-xl"></div>
+                    <div class="relative">
+                        <img src="Zengyi Mei.jpg" class="w-32 h-32 mx-auto rounded-full border-4 border-gold/30 p-2 mb-8 object-cover shadow-2xl ring-4 ring-gold/10">
+                        <h3 class="text-2xl font-bold text-parchment serif">Zengyi Mei</h3>
+                        <p class="text-[11px] font-black text-bright-gold tracking-[0.3em] uppercase mt-3">User Research Lead</p>
+                        <div class="mt-8 pt-8 border-t border-white/10 space-y-4">
+                            <p class="text-xs text-slate-400 italic leading-relaxed text-readable">"Voice of the Classroom and Guardian of Inclusivity."</p>
+                            <div class="flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                                <span class="text-xl">📊</span><span class="text-xl">🔍</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="member-card bg-white rounded-[2rem] p-8 spring-interact border border-gold/5 cursor-pointer shadow-sm">
-                    <img src="Haoyu Shen.jpg" class="w-20 h-20 mx-auto rounded-full border-2 border-gold/20 p-1 mb-4 object-cover">
-                    <h3 class="text-base font-bold text-navy">Haoyu Shen</h3>
-                    <p class="text-[9px] font-black text-gold tracking-widest uppercase mt-1">Developer</p>
-                    <div class="expand-content mt-3 text-[9px] text-slate-400 italic">"Architect of Logic."</div>
+                <!-- Haoyu Shen -->
+                <div class="member-card glass-card rounded-[4rem] p-12 spring-interact cursor-pointer shadow-2xl group relative overflow-hidden reveal" style="transition-delay: 0.2s;">
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-gold/10 rounded-full group-hover:scale-150 transition-transform duration-1000 blur-xl"></div>
+                    <div class="relative">
+                        <img src="Haoyu Shen.jpg" class="w-32 h-32 mx-auto rounded-full border-4 border-gold/30 p-2 mb-8 object-cover shadow-2xl ring-4 ring-gold/10">
+                        <h3 class="text-2xl font-bold text-parchment serif">Haoyu Shen</h3>
+                        <p class="text-[11px] font-black text-bright-gold tracking-[0.3em] uppercase mt-3">Technical Architect</p>
+                        <div class="mt-8 pt-8 border-t border-white/10 space-y-4">
+                            <p class="text-xs text-slate-400 italic leading-relaxed text-readable">"Architect of Logic and Multi-Agent Systems."</p>
+                            <div class="flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                                <span class="text-xl">💻</span><span class="text-xl">⚙️</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="member-card bg-white rounded-[2rem] p-8 spring-interact border border-gold/5 cursor-pointer shadow-sm">
-                    <img src="Chenye Zhao.jpg" class="w-20 h-20 mx-auto rounded-full border-2 border-gold/20 p-1 mb-4 object-cover">
-                    <h3 class="text-base font-bold text-navy">Chenye Zhao</h3>
-                    <p class="text-[9px] font-black text-gold tracking-widest uppercase mt-1">Project Manager</p>
-                    <div class="expand-content mt-3 text-[9px] text-slate-400 italic">"Guardian of the Quest."</div>
+                <!-- Chenye Zhao -->
+                <div class="member-card glass-card rounded-[4rem] p-12 spring-interact cursor-pointer shadow-2xl group relative overflow-hidden reveal" style="transition-delay: 0.3s;">
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-gold/10 rounded-full group-hover:scale-150 transition-transform duration-1000 blur-xl"></div>
+                    <div class="relative">
+                        <img src="Chenye Zhao.jpg" class="w-32 h-32 mx-auto rounded-full border-4 border-gold/30 p-2 mb-8 object-cover shadow-2xl ring-4 ring-gold/10">
+                        <h3 class="text-2xl font-bold text-parchment serif">Chenye Zhao</h3>
+                        <p class="text-[11px] font-black text-bright-gold tracking-[0.3em] uppercase mt-3">Project Manager</p>
+                        <div class="mt-8 pt-8 border-t border-white/10 space-y-4">
+                            <p class="text-xs text-slate-400 italic leading-relaxed text-readable">"Guardian of the Quest and Strategic Visionary."</p>
+                            <div class="flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                                <span class="text-xl">⚔️</span><span class="text-xl">📅</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="py-20 text-center text-navy/30 cinzel tracking-[0.6em] text-[9px] border-t border-gold/10">
-        © 2026 ROUND TABLE GUILD • FORGED AT XJTLU
+    <!-- Footer -->
+    <footer class="py-40 text-center bg-[#1a140f] text-white relative overflow-hidden border-t border-gold/20">
+        <div class="absolute inset-0 opacity-10 pointer-events-none">
+            <div class="w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-wood.png')]"></div>
+        </div>
+        <div class="relative z-10 space-y-12">
+            <div class="cinzel text-4xl font-black tracking-[1em] text-bright-gold animate-pulse">Round Table</div>
+            <div class="flex justify-center gap-14 text-xs font-black uppercase tracking-[0.4em] text-white/40">
+                <a href="#motivation" class="hover:text-bright-gold transition-all hover:tracking-[0.6em]">Motivation</a>
+                <a href="#research" class="hover:text-bright-gold transition-all hover:tracking-[0.6em]">Research</a>
+                <a href="#team" class="hover:text-bright-gold transition-all hover:tracking-[0.6em]">Team</a>
+            </div>
+            <div class="pt-16 border-t border-white/5 max-w-2xl mx-auto">
+                <p class="text-[10px] text-white/20 cinzel tracking-[0.6em]">© 2026 ROUND TABLE GUILD • FORGED AT XJTLU • CPT208 PROJECT</p>
+            </div>
+        </div>
     </footer>
 
     <script>
+        // Reveal on Scroll Observer
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Stats Animation - Fixed & Robust
         function animateStats() {
             const counters = document.querySelectorAll('.counter');
             const bars = document.querySelectorAll('.progress-bar');
+            
             counters.forEach(counter => {
                 const target = parseInt(counter.getAttribute('data-target'));
                 let current = 0;
+                const duration = 2000; // 2 seconds
+                const stepTime = 20;
+                const increment = target / (duration / stepTime);
+                
                 const timer = setInterval(() => {
-                    current += 1;
+                    current += increment;
                     if (current >= target) {
                         counter.innerText = target + "%";
                         clearInterval(timer);
-                    } else { counter.innerText = current + "%"; }
-                }, 30);
+                    } else {
+                        counter.innerText = Math.floor(current) + "%";
+                    }
+                }, stepTime);
             });
-            bars.forEach(bar => { bar.style.width = bar.getAttribute('data-width'); });
+            
+            bars.forEach(bar => {
+                const width = bar.getAttribute('data-width');
+                // Force reflow
+                bar.getBoundingClientRect();
+                bar.style.width = width;
+            });
         }
 
-        const observer = new IntersectionObserver((entries) => {
+        // Intersection Observer for Stats
+        const statsObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     animateStats();
-                    observer.unobserve(entry.target);
+                    statsObserver.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.5 });
-        observer.observe(document.getElementById('stats-trigger'));
+
+        const statsTrigger = document.getElementById('stats-trigger');
+        if (statsTrigger) statsObserver.observe(statsTrigger);
+
+        // Typing Effect for AI Agent
+        function typeEffect(element, text, speed = 50) {
+            let i = 0;
+            element.innerText = "";
+            function type() {
+                if (i < text.length) {
+                    element.innerText += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Trigger typing effect when prototype is in view
+        const prototypeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const aiTyping = document.getElementById('ai-typing');
+                    if (aiTyping) {
+                        const originalText = aiTyping.innerText;
+                        typeEffect(aiTyping, originalText);
+                    }
+                    prototypeObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const prototypeSection = document.getElementById('prototype');
+        if (prototypeSection) prototypeObserver.observe(prototypeSection);
+
+        // Smooth Scroll for Nav Links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-3', 'bg-[#0F172A]/95', 'shadow-[0_10px_30px_rgba(0,0,0,0.5)]');
+                nav.classList.remove('py-4');
+            } else {
+                nav.classList.remove('py-3', 'bg-[#0F172A]/95', 'shadow-[0_10px_30px_rgba(0,0,0,0.5)]');
+                nav.classList.add('py-4');
+            }
+        });
     </script>
 </body>
 </html>

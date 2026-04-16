@@ -63,16 +63,17 @@ To maintain readability and modularity, the codebase can be structured into dyna
 
 ```text
 /round-table-project
-  ├── index-single.html    # The monolithic 2000+ line original file (Option A)
+  ├── index.html    # The monolithic original file (Option A)
   │
+  └──/project
   ├── index.html           # The componentized skeleton file (Option B)
   ├── style.css            # Custom animations and complex visual styles
   ├── main.js              # Core logic and dynamic component loader (Fetch API)
   └── components/          # Modular HTML fragments
-      ├── nav.html         # Navigation bar
-      ├── hero.html        # Landing section
-      ├── motivation.html  # Project motivation
-      └── ...              # Other sections
+  ├── nav.html         # Navigation bar
+  ├── hero.html        # Landing section
+  ├── motivation.html  # Project motivation
+  └── ...              # Other sections
 ```
 ## 🚀 Getting Started
 

@@ -22,13 +22,47 @@
         html { scroll-behavior: smooth; }
 
         body {
-            background-color: #1a140f; /* Deep dark wood/stone base */
+            position: relative;
+            overflow-x: hidden;
+            background-color: #0d1325;
             color: var(--parchment);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
-                url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            background-image:
+                radial-gradient(circle at 18% 16%, rgba(255, 215, 120, 0.17) 0%, rgba(255, 215, 120, 0) 42%),
+                radial-gradient(circle at 84% 12%, rgba(120, 167, 255, 0.22) 0%, rgba(120, 167, 255, 0) 48%),
+                radial-gradient(circle at 50% 80%, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0) 52%),
+                linear-gradient(160deg, #111a33 0%, #18294a 45%, #0f172a 100%),
+                url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
             background-attachment: fixed;
+            background-size: auto, auto, auto, auto, 300px 300px;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: -15%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body::before {
+            background:
+                radial-gradient(circle, rgba(255, 238, 184, 0.22) 0%, rgba(255, 238, 184, 0) 60%) 10% 20% / 40% 40% no-repeat,
+                radial-gradient(circle, rgba(140, 187, 255, 0.2) 0%, rgba(140, 187, 255, 0) 62%) 88% 22% / 44% 44% no-repeat,
+                radial-gradient(circle, rgba(220, 186, 92, 0.18) 0%, rgba(220, 186, 92, 0) 60%) 50% 80% / 50% 50% no-repeat;
+            filter: blur(20px);
+            animation: aura-drift 18s ease-in-out infinite alternate;
+        }
+
+        body::after {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255, 223, 128, 0.35) 0 1px, transparent 2px),
+                radial-gradient(circle at 70% 70%, rgba(149, 199, 255, 0.3) 0 1px, transparent 2px),
+                radial-gradient(circle at 48% 40%, rgba(255, 230, 170, 0.28) 0 1px, transparent 2px);
+            background-size: 220px 220px, 260px 260px, 300px 300px;
+            opacity: 0.45;
+            animation: starlight-shift 26s linear infinite;
         }
 
         h1, h2, h3, h4, .serif { font-family: 'Cormorant Garamond', serif; }
@@ -49,6 +83,18 @@
 
         @keyframes shine {
             to { background-position: 200% center; }
+        }
+
+        @keyframes aura-drift {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-1.5%, 1.2%, 0) scale(1.04); }
+            100% { transform: translate3d(1.2%, -1.4%, 0) scale(1.02); }
+        }
+
+        @keyframes starlight-shift {
+            0% { transform: translateY(0); opacity: 0.35; }
+            50% { opacity: 0.55; }
+            100% { transform: translateY(-28px); opacity: 0.35; }
         }
 
         /* Reveal on Scroll */
@@ -115,7 +161,7 @@
 
         /* Banner */
         .section-banner {
-            background: linear-gradient(135deg, var(--navy-light), var(--navy));
+            background: linear-gradient(135deg, rgba(24, 41, 74, 0.96), rgba(15, 23, 42, 0.96));
             color: var(--bright-gold);
             padding: 14px 56px;
             clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
@@ -125,8 +171,8 @@
             font-weight: 900;
             letter-spacing: 0.4em;
             text-transform: uppercase;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            box-shadow: 0 15px 30px rgba(8, 12, 26, 0.45), 0 0 24px rgba(212, 175, 55, 0.18);
         }
 
         /* Custom Scrollbar */
@@ -181,14 +227,14 @@
         }
 
         .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(160deg, rgba(30, 48, 84, 0.66), rgba(19, 29, 54, 0.72));
+            backdrop-filter: blur(13px);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28), 0 0 24px rgba(212, 175, 55, 0.06);
             transition: border-color 0.3s ease, transform 0.3s ease;
         }
         .glass-card:hover {
-            border-color: rgba(212, 175, 55, 0.5);
+            border-color: rgba(212, 175, 55, 0.58);
         }
 
         /* Typing Effect for Prototype */
@@ -206,12 +252,42 @@
             color: var(--parchment);
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
+
+        /* Hero image layer (first screen only) */
+        .hero-illustration-layer {
+            position: absolute;
+            inset: 0;
+            background-image: url('preview.jpg');
+            background-size: cover;
+            background-position: center center;
+            filter: blur(4px) saturate(0.92) brightness(0.6) contrast(1.03);
+            transform: scale(1.02);
+            z-index: -30;
+            pointer-events: none;
+        }
+
+        .hero-royal-overlay {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 20%, rgba(255, 220, 135, 0.16) 0%, rgba(255, 220, 135, 0) 42%),
+                radial-gradient(circle at 78% 24%, rgba(139, 181, 255, 0.18) 0%, rgba(139, 181, 255, 0) 46%),
+                linear-gradient(180deg, rgba(13, 20, 37, 0.1) 0%, rgba(13, 20, 37, 0.72) 65%, rgba(13, 20, 37, 0.92) 100%);
+            z-index: -20;
+            pointer-events: none;
+        }
+
+        .hero-full-bleed {
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            margin-right: calc(50% - 50vw);
+        }
     </style>
 </head>
 <body class="antialiased">
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-[#1a140f]/90 backdrop-blur-xl border-b border-gold/20 px-6 md:px-12 py-4 flex justify-between items-center shadow-2xl transition-all duration-500">
+    <nav class="fixed w-full z-50 bg-[#182235]/78 backdrop-blur-xl border-b border-gold/20 px-6 md:px-12 py-4 flex justify-between items-center shadow-2xl transition-all duration-500">
         <div class="flex items-center gap-4 group cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
             <div class="bg-gradient-to-br from-gold/20 to-navy w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-[15deg] transition-transform duration-500 border border-gold/30">
                 <svg class="w-8 h-8 text-bright-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -231,17 +307,20 @@
             <a href="#requirements" class="nav-link">06 Requirements</a>
             <a href="#ideation" class="nav-link">07 Ideation</a>
             <a href="#prototype" class="nav-link">08 Prototype</a>
-            <a href="#team" class="nav-link">09 Team</a>
+            <a href="#evaluation" class="nav-link">09 Evaluation</a>
+            <a href="#team" class="nav-link">10 Team</a>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-28 space-y-40">
 
         <!-- 1. Hero Section -->
-        <section class="text-center pt-32 relative min-h-[80vh] flex flex-col justify-center">
+        <section class="hero-full-bleed text-center pt-32 relative min-h-screen flex flex-col justify-center overflow-hidden">
+            <div class="hero-illustration-layer"></div>
+            <div class="hero-royal-overlay"></div>
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[120px] -z-10 rotate-slow"></div>
             
-            <div class="space-y-10 relative reveal">
+            <div class="space-y-10 relative z-10 reveal max-w-7xl mx-auto px-6">
                 <div class="inline-block px-6 py-2 rounded-full bg-gold/10 border border-gold/30 text-[11px] font-black uppercase tracking-[0.5em] text-bright-gold mb-4 shadow-xl backdrop-blur-md">
                     ⚔️ The Digital Sanctuary for Dialogue
                 </div>
@@ -606,10 +685,43 @@
         <section id="journey" class="text-center space-y-20">
             <div class="section-banner reveal">05 • Journey: The Knight's Journey</div>
             
-            <!-- Student Journey -->
+            <!-- Current Journey (As-Is) -->
             <div class="space-y-12 reveal">
-                <h3 class="text-4xl font-bold serif leading-tight text-parchment">From Silent Observer to Valued Contributor</h3>
-                <p class="text-slate-400 italic text-lg -mt-6">Mapping Yifei's transformational experience with the Round Table system.</p>
+                <h3 class="text-4xl font-bold serif leading-tight text-parchment">Current Journey (Before Round Table)</h3>
+                <p class="text-slate-400 italic text-lg -mt-6">Pain-point map showing what happens in a normal seminar before support tools are introduced.</p>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 text-left">
+                    <div class="glass-card rounded-[2rem] p-8 border-t-4 border-slate-400">
+                        <h4 class="text-xs font-black text-slate-300 tracking-[0.2em] cinzel mb-4">PHASE 1</h4>
+                        <p class="text-sm text-parchment font-bold mb-3">Before Class</p>
+                        <p class="text-xs text-slate-400 italic">Student prepares ideas alone but worries about speaking accuracy and speed.</p>
+                    </div>
+                    <div class="glass-card rounded-[2rem] p-8 border-t-4 border-crimson">
+                        <h4 class="text-xs font-black text-crimson tracking-[0.2em] cinzel mb-4">PHASE 2</h4>
+                        <p class="text-sm text-parchment font-bold mb-3">Discussion Opens</p>
+                        <p class="text-xs text-slate-400 italic">Confident speakers start first; quieter students hesitate to interrupt the flow.</p>
+                    </div>
+                    <div class="glass-card rounded-[2rem] p-8 border-t-4 border-crimson">
+                        <h4 class="text-xs font-black text-crimson tracking-[0.2em] cinzel mb-4">PHASE 3</h4>
+                        <p class="text-sm text-parchment font-bold mb-3">Suppressed Contribution</p>
+                        <p class="text-xs text-slate-400 italic">Student drafts mentally, deletes internal wording, and misses the timing window.</p>
+                    </div>
+                    <div class="glass-card rounded-[2rem] p-8 border-t-4 border-slate-500">
+                        <h4 class="text-xs font-black text-slate-300 tracking-[0.2em] cinzel mb-4">PHASE 4</h4>
+                        <p class="text-sm text-parchment font-bold mb-3">Teacher Blind Spots</p>
+                        <p class="text-xs text-slate-400 italic">Facilitator sees silence but cannot distinguish reflection from disengagement.</p>
+                    </div>
+                    <div class="glass-card rounded-[2rem] p-8 border-t-4 border-slate-400">
+                        <h4 class="text-xs font-black text-slate-300 tracking-[0.2em] cinzel mb-4">PHASE 5</h4>
+                        <p class="text-sm text-parchment font-bold mb-3">After Class</p>
+                        <p class="text-xs text-slate-400 italic">Student regrets not sharing, and teacher lacks evidence for fair participation feedback.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Journey (To-Be) -->
+            <div class="space-y-12 reveal">
+                <h3 class="text-4xl font-bold serif leading-tight text-parchment">Future Journey (With Round Table Support)</h3>
+                <p class="text-slate-400 italic text-lg -mt-6">Mapping Yifei's transformational experience after private drafting and low-pressure AI support are introduced.</p>
                 
                 <div class="marquee-container pb-12">
                     <div class="marquee-content">
@@ -1388,9 +1500,9 @@
                 <div class="glass-card p-12 rounded-[3.5rem] text-left border-l-8 border-green-500 shadow-2xl spring-interact">
                     <h4 class="font-black text-sm mb-6 uppercase tracking-[0.3em] text-green-400">"Playful" Must-Haves</h4>
                     <ul class="space-y-6 text-sm text-slate-300 italic text-readable">
-                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Gamified Contribution:</strong> Earning "Knighthood" titles for quality participation.</li>
-                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Visual Metaphors:</strong> Using a dynamic "Round Table" UI that grows with dialogue.</li>
-                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Interactive Nudges:</strong> AI agents using friendly, Arthurian personas to encourage users.</li>
+                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Private Draft Sanctuary:</strong> Students draft privately, get AI polishing help, then choose when to publish to group discussion.</li>
+                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Balanced Participation Monitor:</strong> Teacher dashboard shows speaking distribution, silence duration, and underrepresented voices in real time.</li>
+                        <li class="flex items-start gap-4"><span class="text-green-500 text-xl">✦</span> <strong>Peer-First AI Prompting:</strong> AI nudges only when discussion stalls, and prompts peer interaction instead of replacing human dialogue.</li>
                     </ul>
                 </div>
             </div>
@@ -1449,16 +1561,44 @@
             <div class="section-banner reveal">08 • Prototype: The Magical Mirror</div>
             
             <!-- System Architecture -->
-            <div class="max-w-5xl mx-auto glass-card p-14 rounded-[4rem] shadow-2xl border-gold/20 mb-24 reveal">
+            <div class="max-w-6xl mx-auto glass-card p-14 rounded-[4rem] shadow-2xl border-gold/20 mb-24 reveal">
                 <h4 class="cinzel text-lg font-bold text-bright-gold mb-12 tracking-[0.3em]">System Architecture</h4>
-                <div class="flex flex-col md:flex-row items-center justify-between gap-12">
-                    <div class="bg-navy-light text-bright-gold p-8 rounded-3xl text-xs font-black cinzel tracking-[0.2em] w-full md:w-auto border border-gold/30 shadow-xl pulse-gold">User Interface</div>
-                    <div class="text-gold text-4xl animate-pulse">→</div>
-                    <div class="bg-gradient-to-br from-gold to-bright-gold text-navy p-8 rounded-3xl text-xs font-black cinzel tracking-[0.2em] w-full md:w-auto shadow-2xl">AI Scaffolding Engine</div>
-                    <div class="text-gold text-4xl animate-pulse">→</div>
-                    <div class="bg-navy-light text-bright-gold p-8 rounded-3xl text-xs font-black cinzel tracking-[0.2em] w-full md:w-auto border border-gold/30 shadow-xl pulse-gold">Public Round Table</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                    <div class="bg-navy-light p-6 rounded-2xl border border-gold/20">
+                        <p class="text-xs text-bright-gold font-black cinzel tracking-[0.2em] mb-3">INPUT LAYER</p>
+                        <ul class="text-xs text-slate-300 space-y-2 italic">
+                            <li>Student client input (draft / publish)</li>
+                            <li>Teacher dashboard actions</li>
+                            <li>Session metadata (group, topic, role)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-gold/20 to-bright-gold/10 p-6 rounded-2xl border border-gold/30">
+                        <p class="text-xs text-bright-gold font-black cinzel tracking-[0.2em] mb-3">STATE & LOGIC LAYER</p>
+                        <ul class="text-xs text-slate-200 space-y-2 italic">
+                            <li>Front-end session state (draft, sent, acknowledged)</li>
+                            <li>Prompt-response handler for AI scaffolding</li>
+                            <li>Nudge logic (silence threshold / stuck detection)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-navy-light p-6 rounded-2xl border border-gold/20">
+                        <p class="text-xs text-bright-gold font-black cinzel tracking-[0.2em] mb-3">OUTPUT LAYER</p>
+                        <ul class="text-xs text-slate-300 space-y-2 italic">
+                            <li>Public round-table thread updates</li>
+                            <li>Participation analytics aggregation</li>
+                            <li>Teacher notifications and equity report</li>
+                        </ul>
+                    </div>
                 </div>
-                <p class="mt-12 text-sm text-slate-400 italic text-readable">Powered by Gemini 1.5 Pro for high-context thought processing.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 text-left">
+                    <div class="bg-black/20 rounded-2xl p-6 border border-white/10">
+                        <p class="text-[11px] font-black text-gold mb-3 uppercase tracking-[0.2em]">Data Handling Evidence</p>
+                        <p class="text-xs text-slate-400 italic">Each student interaction updates local state and is mirrored to session logs used by analytics cards (talk-time ratio, silent-window, contribution count).</p>
+                    </div>
+                    <div class="bg-black/20 rounded-2xl p-6 border border-white/10">
+                        <p class="text-[11px] font-black text-gold mb-3 uppercase tracking-[0.2em]">Implementation Scope</p>
+                        <p class="text-xs text-slate-400 italic">Alpha uses front-end mock data plus deterministic rules to simulate AI nudges while preserving the same state transitions planned for production APIs.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Iterative Design -->
@@ -1539,9 +1679,88 @@
             </div>
         </section>
 
-        <!-- 9. Team -->
+        <!-- 9. Evaluation & Reflection -->
+        <section id="evaluation" class="text-center space-y-20">
+            <div class="section-banner reveal">09 • Evaluation & Reflection</div>
+
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-left reveal">
+                <div class="glass-card p-10 rounded-[2.5rem] border-l-4 border-gold">
+                    <p class="text-xs font-black text-bright-gold tracking-[0.2em] cinzel mb-4">TESTER 01 • STUDENT</p>
+                    <p class="text-sm text-parchment font-bold mb-2">Task</p>
+                    <p class="text-xs text-slate-400 italic mb-4">Draft one discussion point and decide whether to publish it.</p>
+                    <p class="text-sm text-parchment font-bold mb-2">Feedback</p>
+                    <p class="text-xs text-slate-400 italic">"Private drafting reduces anxiety, but I need clearer status after publishing."</p>
+                    <p class="text-sm text-parchment font-bold mt-4 mb-2">Change</p>
+                    <p class="text-xs text-slate-300 italic">Added explicit post states: Draft Saved, Sent to Group, Acknowledged.</p>
+                </div>
+                <div class="glass-card p-10 rounded-[2.5rem] border-l-4 border-blue-500">
+                    <p class="text-xs font-black text-blue-300 tracking-[0.2em] cinzel mb-4">TESTER 02 • STUDENT</p>
+                    <p class="text-sm text-parchment font-bold mb-2">Task</p>
+                    <p class="text-xs text-slate-400 italic mb-4">Use AI help to polish text during a silent phase.</p>
+                    <p class="text-sm text-parchment font-bold mb-2">Feedback</p>
+                    <p class="text-xs text-slate-400 italic">"AI suggestions are useful, but too frequent prompts feel distracting."</p>
+                    <p class="text-sm text-parchment font-bold mt-4 mb-2">Change</p>
+                    <p class="text-xs text-slate-300 italic">Switched to peer-first nudging: AI activates only after silence threshold.</p>
+                </div>
+                <div class="glass-card p-10 rounded-[2.5rem] border-l-4 border-green-500">
+                    <p class="text-xs font-black text-green-400 tracking-[0.2em] cinzel mb-4">TESTER 03 • TEACHER</p>
+                    <p class="text-sm text-parchment font-bold mb-2">Task</p>
+                    <p class="text-xs text-slate-400 italic mb-4">Monitor one group and identify low-participation members.</p>
+                    <p class="text-sm text-parchment font-bold mb-2">Feedback</p>
+                    <p class="text-xs text-slate-400 italic">"I can spot silent students faster, but I need actionable intervention hints."</p>
+                    <p class="text-sm text-parchment font-bold mt-4 mb-2">Change</p>
+                    <p class="text-xs text-slate-300 italic">Added intervention hints with suggested neutral transition phrases.</p>
+                </div>
+            </div>
+
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 reveal">
+                <div class="glass-card p-10 rounded-[3rem] text-left">
+                    <h4 class="cinzel text-xs font-black text-crimson mb-4 tracking-[0.3em]">BEFORE (ALPHA V1)</h4>
+                    <div class="aspect-video rounded-2xl bg-black/30 border border-white/10 flex items-center justify-center text-xs text-slate-500 italic mb-4">
+                        Replace with screenshot: v1-over-monitoring.png
+                    </div>
+                    <ul class="text-xs text-slate-400 italic space-y-2">
+                        <li>AI prompts appeared too early and too often.</li>
+                        <li>No explicit publish-status feedback for students.</li>
+                        <li>Teacher dashboard lacked intervention wording.</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-10 rounded-[3rem] text-left">
+                    <h4 class="cinzel text-xs font-black text-green-400 mb-4 tracking-[0.3em]">AFTER (ALPHA V2)</h4>
+                    <div class="aspect-video rounded-2xl bg-black/30 border border-white/10 flex items-center justify-center text-xs text-slate-500 italic mb-4">
+                        Replace with screenshot: v2-peer-first-nudging.png
+                    </div>
+                    <ul class="text-xs text-slate-400 italic space-y-2">
+                        <li>Nudges trigger only after silence threshold is reached.</li>
+                        <li>Draft-to-publish states are visible to the student.</li>
+                        <li>Teacher receives clear intervention suggestions.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 text-left reveal">
+                <div class="glass-card p-10 rounded-[3rem] border-t-4 border-gold">
+                    <h4 class="cinzel text-sm font-bold text-bright-gold tracking-[0.2em] mb-5">Social & Ethical Reflection</h4>
+                    <ul class="text-sm text-slate-300 italic space-y-3">
+                        <li>Psychological safety is prioritized through private drafting and voluntary publishing.</li>
+                        <li>Teacher analytics are used for inclusion support, not punitive ranking.</li>
+                        <li>Language diversity is respected by offering scaffolded expression without forcing uniform style.</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-10 rounded-[3rem] border-t-4 border-bright-gold">
+                    <h4 class="cinzel text-sm font-bold text-bright-gold tracking-[0.2em] mb-5">AI Use Reflection</h4>
+                    <ul class="text-sm text-slate-300 italic space-y-3">
+                        <li>AI is limited to support roles: rephrasing, confidence nudging, and summarizing.</li>
+                        <li>Core design logic, user findings, and requirement decisions are authored by the team.</li>
+                        <li>Known risk: over-reliance on AI wording; mitigation is peer-first prompting and human validation.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Team -->
         <section id="team" class="text-center space-y-24 pb-40">
-            <div class="section-banner reveal">09 • Team: Knights of the Table</div>
+            <div class="section-banner reveal">10 • Team: Knights of the Table</div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 <!-- Qian Wang -->
                 <div class="member-card glass-card rounded-[4rem] p-12 spring-interact cursor-pointer shadow-2xl group relative overflow-hidden reveal">
@@ -1732,10 +1951,10 @@
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('nav');
             if (window.scrollY > 50) {
-                nav.classList.add('py-3', 'bg-[#0F172A]/95', 'shadow-[0_10px_30px_rgba(0,0,0,0.5)]');
+                nav.classList.add('py-3', 'bg-[#121d33]/90', 'shadow-[0_10px_30px_rgba(0,0,0,0.5)]');
                 nav.classList.remove('py-4');
             } else {
-                nav.classList.remove('py-3', 'bg-[#0F172A]/95', 'shadow-[0_10px_30px_rgba(0,0,0,0.5)]');
+                nav.classList.remove('py-3', 'bg-[#121d33]/90', 'shadow-[0_10px_30px_rgba(0,0,0,0.5)]');
                 nav.classList.add('py-4');
             }
         });

@@ -24,7 +24,7 @@ export type StructuredSession = {
 
 export type SessionRepository = {
   getSession: (roomId: RoomId) => Promise<StructuredSession | null>
-  ensureSession: (roomId: RoomId, seat: Seat) => Promise<StructuredSession>
+  ensureSession: (roomId: RoomId, seat: Seat, options?: { targetParticipants?: number }) => Promise<StructuredSession>
   advanceTurn: (roomId: RoomId) => Promise<StructuredSession>
   setCurrentSpeaker: (roomId: RoomId, speakerId: string) => Promise<StructuredSession>
   moveParticipant: (roomId: RoomId, participantId: string, delta: -1 | 1) => Promise<StructuredSession>
@@ -80,13 +80,15 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
     async getSession(roomId) {
       return storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
     },
-    async ensureSession(roomId, seat) {
+    async ensureSession(roomId, seat, options) {
       const existing = storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
       if (existing && existing.order.some((p) => p.id === seat.id)) return existing
 
-      const turnSeconds = existing?.turnSeconds ?? 45
+      const persistedTurnSeconds = existing?.turnSeconds
+      const turnSeconds = persistedTurnSeconds ? (persistedTurnSeconds === 45 ? 90 : persistedTurnSeconds) : 90
       const maxSpeeches = existing?.maxSpeeches ?? 3
       const maxSeconds = existing?.maxSeconds ?? 180
+      const targetParticipants = Math.max(2, Math.round(options?.targetParticipants ?? 3))
       const baseOrder: SessionParticipant[] = existing?.order?.length
         ? existing.order
         : [
@@ -105,7 +107,7 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         })
       }
 
-      while (baseOrder.length < 3) {
+      while (baseOrder.length < targetParticipants) {
         baseOrder.push({ id: createId(), label: botName(baseOrder.length), isBot: true })
       }
 

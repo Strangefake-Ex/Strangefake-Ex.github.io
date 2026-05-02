@@ -11,9 +11,11 @@ export function getDeepseekConfig() {
 export async function deepseekChatJson<T>({
   system,
   user,
+  temperature,
 }: {
   system: string
   user: string
+  temperature?: number
 }): Promise<T> {
   const { apiKey, baseUrl, model } = getDeepseekConfig()
   const messages: ChatMessage[] = [
@@ -30,7 +32,7 @@ export async function deepseekChatJson<T>({
     body: JSON.stringify({
       model,
       messages,
-      temperature: 0.4,
+      temperature: typeof temperature === 'number' ? temperature : 0.4,
       response_format: { type: 'json_object' },
     }),
   })
@@ -60,4 +62,3 @@ export function jsonResponse(body: unknown, status = 200) {
 export function methodNotAllowed() {
   return jsonResponse({ error: 'Method Not Allowed' }, 405)
 }
-

@@ -29,9 +29,34 @@ describe('session repository (structured mode)', () => {
 
     expect(session1.order.length).toBeGreaterThanOrEqual(3)
     expect(session1.currentSpeakerId).toBe(session1.order[0]!.id)
+    expect(session1.turnSeconds).toBe(90)
 
     const session2 = await sessionRepo.advanceTurn(room.id)
     expect(session2.currentSpeakerId).toBe(session2.order[1]!.id)
+  })
+
+  test('ensureSession can expand to targetParticipants with AI knights', async () => {
+    const roomRepo = createLocalRoomRepository(localStorage, { seedDemo: false })
+    const room = await roomRepo.createRoom({
+      title: 'Structured',
+      topic: 'T',
+      prompt: 'P',
+      mode: 'structured',
+      capacity: 7,
+      participants: 6,
+      aiGuardEnabled: true,
+    })
+
+    const seatRepo = createLocalSeatRepository(localStorage)
+    const seat = await seatRepo.claimSeat(room.id, { displayName: 'Alice', isAnonymous: false })
+
+    const sessionRepo = createLocalSessionRepository(localStorage)
+    const session = await sessionRepo.ensureSession(room.id, seat, { targetParticipants: 6 })
+
+    expect(session.order.length).toBe(6)
+    expect(session.order[0]!.id).toBe(seat.id)
+    expect(session.order.slice(1).every((p) => p.isBot)).toBe(true)
+    expect(session.order.some((p) => p.label === 'Anonymous Knight' && p.isBot)).toBe(false)
   })
 
   test('setCurrentSpeaker and moveParticipant update the order and current speaker', async () => {

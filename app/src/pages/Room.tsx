@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Clock3, Heart, Menu, Send, Shield, Sparkles, Users } from 'lucide-react'
 
@@ -53,6 +53,7 @@ export default function Room() {
     poll?: { id: string; question: string; options: string[]; createdAt: number }
   } | null>(null)
   const [pollVote, setPollVote] = useState<string | null>(null)
+  const lastAiTurnKeyRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (!roomId) return
@@ -131,7 +132,8 @@ export default function Room() {
     if (!room) return
     if (!seat) return
     if (room.mode !== 'structured') return
-    sessionRepo.ensureSession(roomId, seat).then(setSession)
+    const target = Math.max(2, Math.min(room.capacity, room.participants || 2))
+    sessionRepo.ensureSession(roomId, seat, { targetParticipants: target }).then(setSession)
   }, [room, roomId, seat, sessionRepo])
 
   useEffect(() => {
@@ -171,6 +173,52 @@ export default function Room() {
     if (turnRemainingSeconds > 0) return
     sessionRepo.advanceTurn(roomId).then(setSession)
   }, [isStructured, roomId, session, sessionRepo, turnRemainingSeconds])
+
+  useEffect(() => {
+    if (!roomId) return
+    if (!room) return
+    if (!isStructured) return
+    if (!session) return
+    if (!currentSpeaker?.isBot) return
+    if (turnRemainingSeconds <= 0) return
+
+    const aiTurnKey = `${session.currentSpeakerId}:${session.turnEndsAt}`
+    if (lastAiTurnKeyRef.current === aiTurnKey) return
+    lastAiTurnKeyRef.current = aiTurnKey
+
+    const run = async () => {
+      await new Promise((r) => window.setTimeout(r, 600))
+      const recent = posts
+        .slice(0, 8)
+        .slice()
+        .reverse()
+        .map((p) => `${p.authorLabel}: ${p.content}`)
+        .join('\n')
+
+      const res = await ai.weaveContribution({
+        contribution: recent || 'No messages yet.',
+        context: {
+          roomId,
+          roomTitle: room.title,
+          prompt: room.prompt,
+          topic: room.topic,
+          mode: room.mode,
+          security: room.security,
+          shieldStrength: room.shieldStrength,
+        },
+      })
+
+      await postRepo.createPost(roomId, {
+        authorId: session.currentSpeakerId,
+        authorLabel: currentSpeaker.label,
+        content: res.script,
+      })
+      setPosts(await postRepo.listPosts(roomId))
+      setSession(await sessionRepo.advanceTurn(roomId))
+    }
+
+    run()
+  }, [ai, currentSpeaker, isStructured, postRepo, posts, room, roomId, session, sessionRepo, turnRemainingSeconds])
 
   async function onPublish() {
     if (!roomId) return
@@ -233,7 +281,15 @@ export default function Room() {
     try {
       const res = await ai.rewriteDraft({
         text: privateDraft,
-        context: { roomId, roomTitle: room?.title, prompt: room?.prompt, topic: room?.topic, mode: room?.mode },
+        context: {
+          roomId,
+          roomTitle: room?.title,
+          prompt: room?.prompt,
+          topic: room?.topic,
+          mode: room?.mode,
+          security: room?.security,
+          shieldStrength: room?.shieldStrength,
+        },
       })
       setDraftAiRewrite(res.rewrite)
       setDraftAiBullets(res.bulletPoints)

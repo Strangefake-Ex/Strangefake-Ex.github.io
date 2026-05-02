@@ -6,6 +6,8 @@ export type AiContext = {
   prompt?: string
   topic?: string
   mode?: string
+  security?: string
+  shieldStrength?: number
 }
 
 export type RewriteDraftInput = {
@@ -91,4 +93,3 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
     },
   }
 }
-

@@ -14,12 +14,17 @@ export default async function handler(req: Request) {
   const security = String((context as Record<string, unknown>)?.security ?? 'guarded')
   const shieldStrength = Number((context as Record<string, unknown>)?.shieldStrength ?? 78)
 
-  const profile =
+  function clamp(n: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, n))
+  }
+
+  const baseProfile =
     security === 'fortified'
-      ? { temperature: 0.2, style: 'very careful, safety-first, formal, and concise' }
+      ? { temperature: 0.2, style: 'safety-first, very careful, formal, and concise', intensity: 'minimal edits' as const }
       : security === 'open'
-        ? { temperature: 0.65, style: 'more expressive while staying respectful; preserve the writer voice' }
-        : { temperature: 0.4, style: 'balanced, clear, and respectful' }
+        ? { temperature: 0.75, style: 'expressive while staying respectful; preserve the writer voice', intensity: 'substantial rewrite' as const }
+        : { temperature: 0.5, style: 'balanced, clear, and respectful', intensity: 'moderate edits' as const }
+  const temperature = clamp(baseProfile.temperature + (50 - clamp(shieldStrength, 0, 100)) / 500, 0.1, 0.9)
 
   if (!text.trim()) {
     return jsonResponse({ rewrite: 'Draft something first, then ask the AI to polish it.', tone: 'academic', bulletPoints: [] })
@@ -31,13 +36,18 @@ export default async function handler(req: Request) {
     bulletPoints: string[]
   }>({
     system:
-      `You rewrite a student draft for a seminar room app. Follow the safety profile: ${profile.style}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]).`,
-    user: JSON.stringify({
-      task: 'Rewrite the draft to be clearer and more respectful, keep the meaning, keep it concise.',
-      draft: text,
-      context: { ...context, shieldStrength },
-    }),
-    temperature: profile.temperature,
+      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]).`,
+    user: [
+      'Task: Rewrite the draft to be clearer and more respectful.',
+      baseProfile.intensity === 'minimal edits' ? 'Rules: keep wording close; only fix clarity/grammar and soften tone.' : null,
+      baseProfile.intensity === 'moderate edits' ? 'Rules: moderate rephrasing is allowed; keep meaning; improve structure.' : null,
+      baseProfile.intensity === 'substantial rewrite' ? 'Rules: you may substantially restructure for clarity and flow; keep meaning; preserve the writer voice.' : null,
+      `Draft:\n${text}`,
+      `Security: ${security}\nShieldStrength: ${shieldStrength}`,
+    ]
+      .filter((v) => !!v)
+      .join('\n\n'),
+    temperature,
   })
 
   return jsonResponse(result)

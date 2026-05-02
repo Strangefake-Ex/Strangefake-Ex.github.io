@@ -188,15 +188,22 @@ export default function Room() {
 
     const run = async () => {
       await new Promise((r) => window.setTimeout(r, 600))
-      const recent = posts
+      const recentMessages = posts
         .slice(0, 8)
         .slice()
         .reverse()
         .map((p) => `${p.authorLabel}: ${p.content}`)
         .join('\n')
+      const contribution = [
+        room.topic ? `Topic: ${room.topic}` : null,
+        room.prompt ? `Prompt: ${room.prompt}` : null,
+        `Recent messages:\n${recentMessages || 'No messages yet.'}`,
+      ]
+        .filter((v) => !!v)
+        .join('\n\n')
 
       const res = await ai.weaveContribution({
-        contribution: recent || 'No messages yet.',
+        contribution,
         context: {
           roomId,
           roomTitle: room.title,

@@ -86,8 +86,11 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
     },
     async weaveContribution(input) {
       const base = input.contribution.trim() || '—'
+      const topic = input.context?.topic?.trim()
+      const prompt = input.context?.prompt?.trim()
+      const anchor = topic || prompt || null
       return {
-        script: `Let me pull a thread from the chat: “${base}”. How does this connect to our prompt, and does anyone want to build on it?`,
+        script: `Let me pull a thread from the chat${anchor ? ` on “${anchor}”` : ''}: “${base}”. How does this connect to our prompt, and does anyone want to build on it?`,
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],
       }
     },

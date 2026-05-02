@@ -12,5 +12,13 @@ describe('ai client', () => {
     expect(res.rewrite.length).toBeGreaterThan(0)
     expect(res.tone).toBeDefined()
   })
-})
 
+  test('fallback weaveContribution references topic or prompt when provided', async () => {
+    const client = createAiClient({ mode: 'stub' })
+    const res = await client.weaveContribution({
+      contribution: 'Alice: I think we should consider edge cases.',
+      context: { topic: 'Testing culture', prompt: 'How should we discuss responsibly?' },
+    })
+    expect(res.script.includes('Testing culture') || res.script.includes('How should we discuss responsibly?')).toBe(true)
+  })
+})

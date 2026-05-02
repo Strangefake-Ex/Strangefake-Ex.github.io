@@ -161,7 +161,8 @@ export default function Room() {
   const paused = !!facControl?.paused
   const canSpeakNow = canSpeak && !paused
   const currentSpeaker = isStructured && session ? session.order.find((p) => p.id === session.currentSpeakerId) ?? null : null
-  const turnRemainingSeconds = isStructured && session ? Math.max(0, Math.ceil((session.turnEndsAt - now) / 1000)) : 0
+  const turnRemainingSeconds =
+    isStructured && session ? Math.min(session.turnSeconds, Math.max(0, Math.ceil((session.turnEndsAt - now) / 1000))) : 0
   const guardianKeywords = useMemo(() => (room?.aiGuardEnabled ? computeKeywords(posts) : []), [posts, room?.aiGuardEnabled])
   const maxVisible = 30
   const visiblePosts = useMemo(() => (showAllMessages ? posts : posts.slice(0, maxVisible)), [maxVisible, posts, showAllMessages])

@@ -107,6 +107,25 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         })
       }
 
+      let botIdx = 0
+      for (let i = 0; i < baseOrder.length; i++) {
+        const p = baseOrder[i]!
+        if (p.id === seat.id) {
+          baseOrder[i] = { ...p, label: seat.isAnonymous ? 'Anonymous Knight' : seat.displayName, isBot: false }
+          continue
+        }
+        if (!p.isBot && p.label !== 'Anonymous Knight') {
+          baseOrder[i] = { ...p, isBot: true }
+          continue
+        }
+        if (p.isBot && p.label === 'Anonymous Knight') {
+          botIdx += 1
+          baseOrder[i] = { ...p, label: botName(botIdx), isBot: true }
+          continue
+        }
+        if (p.isBot) botIdx += 1
+      }
+
       while (baseOrder.length < targetParticipants) {
         baseOrder.push({ id: createId(), label: botName(baseOrder.length), isBot: true })
       }

@@ -59,6 +59,52 @@ describe('session repository (structured mode)', () => {
     expect(session.order.some((p) => p.label === 'Anonymous Knight' && p.isBot)).toBe(false)
   })
 
+  test('ensureSession replaces room-configured knights with AI except Anonymous Knight and the current seat', async () => {
+    const roomRepo = createLocalRoomRepository(localStorage, { seedDemo: false })
+    const room = await roomRepo.createRoom({
+      title: 'Structured',
+      topic: 'T',
+      prompt: 'P',
+      mode: 'structured',
+      capacity: 6,
+      participants: 4,
+      aiGuardEnabled: true,
+    })
+
+    const seatRepo = createLocalSeatRepository(localStorage)
+    const seat = await seatRepo.claimSeat(room.id, { displayName: 'Alice', isAnonymous: false })
+
+    localStorage.setItem(
+      `rt:session:${room.id}`,
+      JSON.stringify({
+        roomId: room.id,
+        order: [
+          { id: 'anon', label: 'Anonymous Knight', isBot: false },
+          { id: 'bob', label: 'Sir Bob', isBot: false },
+        ],
+        currentIndex: 0,
+        currentSpeakerId: 'anon',
+        turnSeconds: 90,
+        maxSpeeches: 3,
+        maxSeconds: 180,
+        stats: {},
+        turnEndsAt: Date.now() + 90_000,
+        updatedAt: Date.now(),
+      }),
+    )
+
+    const sessionRepo = createLocalSessionRepository(localStorage)
+    const session = await sessionRepo.ensureSession(room.id, seat, { targetParticipants: 4 })
+
+    const anon = session.order.find((p) => p.id === 'anon')
+    const bob = session.order.find((p) => p.id === 'bob')
+
+    expect(session.order.some((p) => p.id === seat.id && p.isBot)).toBe(false)
+    expect(anon?.isBot).toBe(false)
+    expect(bob?.isBot).toBe(true)
+    expect(bob?.label).toBe('Sir Bob')
+  })
+
   test('setCurrentSpeaker and moveParticipant update the order and current speaker', async () => {
     const roomRepo = createLocalRoomRepository(localStorage, { seedDemo: false })
     const room = await roomRepo.createRoom({

@@ -35,6 +35,46 @@ describe('session repository (structured mode)', () => {
     expect(session2.currentSpeakerId).toBe(session2.order[1]!.id)
   })
 
+  test('ensureSession migrates persisted 45s turns to 90s even when seat already exists in session', async () => {
+    const roomRepo = createLocalRoomRepository(localStorage, { seedDemo: false })
+    const room = await roomRepo.createRoom({
+      title: 'Structured',
+      topic: 'T',
+      prompt: 'P',
+      mode: 'structured',
+      capacity: 5,
+      participants: 0,
+      aiGuardEnabled: true,
+    })
+
+    const seatRepo = createLocalSeatRepository(localStorage)
+    const seat = await seatRepo.claimSeat(room.id, { displayName: 'Alice', isAnonymous: false })
+
+    const now = Date.now()
+    const oldEndsAt = now + 45_000
+    localStorage.setItem(
+      `rt:session:${room.id}`,
+      JSON.stringify({
+        roomId: room.id,
+        order: [{ id: seat.id, label: seat.displayName, isBot: false }],
+        currentIndex: 0,
+        currentSpeakerId: seat.id,
+        turnSeconds: 45,
+        maxSpeeches: 3,
+        maxSeconds: 180,
+        stats: {},
+        turnEndsAt: oldEndsAt,
+        updatedAt: now,
+      }),
+    )
+
+    const sessionRepo = createLocalSessionRepository(localStorage)
+    const session = await sessionRepo.ensureSession(room.id, seat)
+
+    expect(session.turnSeconds).toBe(90)
+    expect(session.turnEndsAt).toBe(oldEndsAt + 45_000)
+  })
+
   test('ensureSession can expand to targetParticipants with AI knights', async () => {
     const roomRepo = createLocalRoomRepository(localStorage, { seedDemo: false })
     const room = await roomRepo.createRoom({

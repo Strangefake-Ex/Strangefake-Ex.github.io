@@ -64,6 +64,23 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
 }
 
+function persistSession(storage: Storage, roomId: RoomId, session: StructuredSession) {
+  if (storage === localStorage) setJson(sessionKey(roomId), session)
+  else storage.setItem(sessionKey(roomId), JSON.stringify(session))
+}
+
+function migrateSession(session: StructuredSession): StructuredSession {
+  if (session.turnSeconds !== 45) return session
+  const now = nowMs()
+  const nextTurnSeconds = 90
+  const nextTurnEndsAt = session.turnEndsAt
+    ? session.turnEndsAt <= now
+      ? now + nextTurnSeconds * 1000
+      : session.turnEndsAt + (nextTurnSeconds - session.turnSeconds) * 1000
+    : now + nextTurnSeconds * 1000
+  return { ...session, turnSeconds: nextTurnSeconds, turnEndsAt: nextTurnEndsAt, updatedAt: now }
+}
+
 function ensureStats(
   base: Record<string, { speeches: number; seconds: number }> | undefined,
   order: SessionParticipant[],
@@ -78,14 +95,21 @@ function ensureStats(
 export function createLocalSessionRepository(storage: Storage = localStorage): SessionRepository {
   return {
     async getSession(roomId) {
-      return storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      const existing =
+        storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      if (!existing) return null
+      const migrated = migrateSession(existing)
+      if (migrated !== existing) persistSession(storage, roomId, migrated)
+      return migrated
     },
     async ensureSession(roomId, seat, options) {
-      const existing = storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      const existingRaw =
+        storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      const existing = existingRaw ? migrateSession(existingRaw) : null
+      if (existing && existingRaw && existing !== existingRaw) persistSession(storage, roomId, existing)
       if (existing && existing.order.some((p) => p.id === seat.id)) return existing
 
-      const persistedTurnSeconds = existing?.turnSeconds
-      const turnSeconds = persistedTurnSeconds ? (persistedTurnSeconds === 45 ? 90 : persistedTurnSeconds) : 90
+      const turnSeconds = existing?.turnSeconds ?? 90
       const maxSpeeches = existing?.maxSpeeches ?? 3
       const maxSeconds = existing?.maxSeconds ?? 180
       const targetParticipants = Math.max(2, Math.round(options?.targetParticipants ?? 3))
@@ -143,8 +167,7 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         updatedAt: nowMs(),
       }
 
-      if (storage === localStorage) setJson(sessionKey(roomId), next)
-      else storage.setItem(sessionKey(roomId), JSON.stringify(next))
+      persistSession(storage, roomId, next)
       return next
     },
     async advanceTurn(roomId) {
@@ -158,8 +181,7 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         turnEndsAt: computeEndsAt(existing.turnSeconds),
         updatedAt: nowMs(),
       }
-      if (storage === localStorage) setJson(sessionKey(roomId), next)
-      else storage.setItem(sessionKey(roomId), JSON.stringify(next))
+      persistSession(storage, roomId, next)
       return next
     },
     async setCurrentSpeaker(roomId, speakerId) {
@@ -174,8 +196,7 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         turnEndsAt: computeEndsAt(existing.turnSeconds),
         updatedAt: nowMs(),
       }
-      if (storage === localStorage) setJson(sessionKey(roomId), next)
-      else storage.setItem(sessionKey(roomId), JSON.stringify(next))
+      persistSession(storage, roomId, next)
       return next
     },
     async moveParticipant(roomId, participantId, delta) {
@@ -198,8 +219,7 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         stats: ensureStats(existing.stats, order),
         updatedAt: nowMs(),
       }
-      if (storage === localStorage) setJson(sessionKey(roomId), next)
-      else storage.setItem(sessionKey(roomId), JSON.stringify(next))
+      persistSession(storage, roomId, next)
       return next
     },
     async recordSpeech(roomId, speakerId, secondsUsed) {
@@ -222,8 +242,7 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         stats: { ...stats, [speakerId]: nextEntry },
         updatedAt: nowMs(),
       }
-      if (storage === localStorage) setJson(sessionKey(roomId), next)
-      else storage.setItem(sessionKey(roomId), JSON.stringify(next))
+      persistSession(storage, roomId, next)
       return next
     },
     async resetSession(roomId) {

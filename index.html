@@ -259,20 +259,24 @@
             inset: 0;
             background-image: url('preview.jpg');
             background-size: cover;
-            background-position: center center;
-            filter: blur(4px) saturate(0.92) brightness(0.6) contrast(1.03);
+            background-position: center 20%;
+            filter: blur(3px) saturate(0.9) brightness(0.65) contrast(1.1);
             transform: scale(1.02);
             z-index: -30;
             pointer-events: none;
+            /* Fade out the bottom of the image itself */
+            mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
         }
 
         .hero-royal-overlay {
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(circle at 18% 20%, rgba(255, 220, 135, 0.16) 0%, rgba(255, 220, 135, 0) 42%),
-                radial-gradient(circle at 78% 24%, rgba(139, 181, 255, 0.18) 0%, rgba(139, 181, 255, 0) 46%),
-                linear-gradient(180deg, rgba(13, 20, 37, 0.1) 0%, rgba(13, 20, 37, 0.72) 65%, rgba(13, 20, 37, 0.92) 100%);
+                radial-gradient(circle at 18% 20%, rgba(255, 220, 135, 0.12) 0%, rgba(255, 220, 135, 0) 42%),
+                radial-gradient(circle at 78% 24%, rgba(139, 181, 255, 0.15) 0%, rgba(139, 181, 255, 0) 46%),
+                /* Gradient that matches the body background #1a140f perfectly at the bottom */
+                linear-gradient(180deg, rgba(26, 20, 15, 0) 0%, rgba(26, 20, 15, 0.5) 60%, rgba(26, 20, 15, 1) 100%);
             z-index: -20;
             pointer-events: none;
         }
@@ -281,6 +285,7 @@
             width: 100vw;
             margin-left: calc(50% - 50vw);
             margin-right: calc(50% - 50vw);
+            margin-top: -7rem; /* offsets the py-28 from main */
         }
     </style>
 </head>
@@ -314,10 +319,10 @@
 
     <main class="max-w-7xl mx-auto px-6 py-28 space-y-40">
 
-        <!-- 1. Hero Section -->
-        <section class="hero-full-bleed text-center pt-32 relative min-h-screen flex flex-col justify-center overflow-hidden">
-            <div class="hero-illustration-layer"></div>
-            <div class="hero-royal-overlay"></div>
+    <!-- 1. Hero Section -->
+    <section class="hero-full-bleed text-center pt-40 pb-20 relative min-h-[100vh] flex flex-col justify-center overflow-hidden">
+        <div class="hero-illustration-layer"></div>
+        <div class="hero-royal-overlay"></div>
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[120px] -z-10 rotate-slow"></div>
             
             <div class="space-y-10 relative z-10 reveal max-w-7xl mx-auto px-6">
@@ -1516,11 +1521,7 @@
             <div class="space-y-12 reveal">
                 <h3 class="cinzel text-xl font-bold text-bright-gold tracking-widest">The "Crazy Eights" Sketches</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20">
-                        <img src="/images/crazy-eights/sketch1.jpg"
-                             alt="Sketch 1: Radial UI"
-                             class="w-full h-full object-cover">
-                    </div>
+                    <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 1: Radial UI</div>
                     <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 2: Shield Input</div>
                     <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 3: Scroll Feed</div>
                     <div class="aspect-video glass-card rounded-2xl overflow-hidden border border-gold/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gold/40 italic">Sketch 4: AI Nudge UI</div>
@@ -1552,7 +1553,7 @@
 
             <!-- Figma Link -->
             <div class="pt-10 reveal">
-                <a href="https://www.figma.com/proto/wB7GPLi49H2lbkoQ0A0j5H/Untitled?node-id=40-59&p=f&t=FY2IZ622wN60t0aA-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=40%3A59" target="_blank" class="inline-flex items-center gap-4 bg-navy-light px-12 py-6 rounded-full border border-gold/30 hover:border-gold transition-all group">
+                <a href="https://www.figma.com/proto/6JzxEeqOgoTovvw75tHS5e/Untitled?node-id=10-95&p=f&t=vlHTEDCJJuYfOkbC-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=10%3A95" target="_blank" class="inline-flex items-center gap-4 bg-navy-light px-12 py-6 rounded-full border border-gold/30 hover:border-gold transition-all group">
                     <span class="text-xl">🎨</span>
                     <span class="cinzel text-sm font-bold text-bright-gold tracking-widest">Clickable Figma Prototype</span>
                     <span class="text-gold group-hover:translate-x-2 transition-transform">→</span>

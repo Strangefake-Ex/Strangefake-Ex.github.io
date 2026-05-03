@@ -1,0 +1,121 @@
+<section id="prototype" class="text-center space-y-20">
+            <div class="section-banner reveal">08 • Prototype: The Magical Mirror</div>
+            
+            <!-- System Architecture -->
+            <div class="max-w-6xl mx-auto glass-card p-14 rounded-[4rem] shadow-2xl border-gold/20 mb-24 reveal">
+                <h4 class="cinzel text-lg font-bold text-bright-gold mb-12 tracking-[0.3em]">System Architecture</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                    <div class="bg-navy-light p-6 rounded-2xl border border-gold/20">
+                        <p class="text-xs text-bright-gold font-black cinzel tracking-[0.2em] mb-3">INPUT LAYER</p>
+                        <ul class="text-xs text-slate-300 space-y-2 italic">
+                            <li>Student client input (draft / publish)</li>
+                            <li>Teacher dashboard actions</li>
+                            <li>Session metadata (group, topic, role)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-gold/20 to-bright-gold/10 p-6 rounded-2xl border border-gold/30">
+                        <p class="text-xs text-bright-gold font-black cinzel tracking-[0.2em] mb-3">STATE & LOGIC LAYER</p>
+                        <ul class="text-xs text-slate-200 space-y-2 italic">
+                            <li>Front-end session state (draft, sent, acknowledged)</li>
+                            <li>Prompt-response handler for AI scaffolding</li>
+                            <li>Nudge logic (silence threshold / stuck detection)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-navy-light p-6 rounded-2xl border border-gold/20">
+                        <p class="text-xs text-bright-gold font-black cinzel tracking-[0.2em] mb-3">OUTPUT LAYER</p>
+                        <ul class="text-xs text-slate-300 space-y-2 italic">
+                            <li>Public round-table thread updates</li>
+                            <li>Participation analytics aggregation</li>
+                            <li>Teacher notifications and equity report</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 text-left">
+                    <div class="bg-black/20 rounded-2xl p-6 border border-white/10">
+                        <p class="text-[11px] font-black text-gold mb-3 uppercase tracking-[0.2em]">Data Handling Evidence</p>
+                        <p class="text-xs text-slate-400 italic">Each student interaction updates local state and is mirrored to session logs used by analytics cards (talk-time ratio, silent-window, contribution count).</p>
+                    </div>
+                    <div class="bg-black/20 rounded-2xl p-6 border border-white/10">
+                        <p class="text-[11px] font-black text-gold mb-3 uppercase tracking-[0.2em]">Implementation Scope</p>
+                        <p class="text-xs text-slate-400 italic">Alpha uses front-end mock data plus deterministic rules to simulate AI nudges while preserving the same state transitions planned for production APIs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Iterative Design -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24 max-w-5xl mx-auto reveal">
+                <div class="glass-card p-12 rounded-[3rem] shadow-2xl border-gold/20 text-left spring-interact">
+                    <h4 class="cinzel text-xs font-black text-bright-gold mb-6 tracking-[0.3em]">V1.0 Low-Fi Insights</h4>
+                    <p class="text-sm text-slate-300 italic leading-relaxed text-readable">
+                        Initial testing showed that students felt 'over-monitored' by the AI. We pivoted to a 'Pull' model where the AI only intervenes when requested or during prolonged silence.
+                    </p>
+                </div>
+                <div class="glass-card p-12 rounded-[3rem] shadow-2xl border-gold/20 text-left spring-interact">
+                    <h4 class="cinzel text-xs font-black text-bright-gold mb-6 tracking-[0.3em]">V2.0 High-Fi Refinement</h4>
+                    <p class="text-sm text-slate-300 italic leading-relaxed text-readable">
+                        Added the 'Sanctuary Mode'—a private drafting space that uses Arthurian metaphors to make the technology feel more like a supportive companion than a rigid tool.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Chat Prototype -->
+            <div class="bg-[#0F172A] rounded-[5rem] overflow-hidden border-[16px] border-navy-light shadow-[0_0_100px_rgba(0,0,0,0.8)] max-w-6xl mx-auto h-[750px] flex flex-col relative group reveal">
+                <div class="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
+                
+                <!-- Terminal Header -->
+                <div class="bg-black/60 p-8 flex items-center justify-between px-16 border-b border-white/10 backdrop-blur-md">
+                    <div class="flex gap-4">
+                        <div class="w-4 h-4 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"></div>
+                        <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.5)]"></div>
+                        <div class="w-4 h-4 rounded-full bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
+                    </div>
+                    <div class="text-bright-gold cinzel text-xs tracking-[0.4em] font-black italic opacity-90">RoundTable Terminal V1.2.4</div>
+                    <div class="text-gold/30 text-xs font-mono tracking-widest">SECURE_ENCRYPTED_LINK</div>
+                </div>
+                
+                <!-- Chat Content -->
+                <div class="flex-1 p-16 space-y-16 overflow-y-auto flex flex-col justify-end bg-gradient-to-b from-slate-900/80 to-slate-950" id="chat-content">
+                    <!-- Dialogue 1: Sarah -->
+                    <div class="flex gap-8 items-start">
+                        <div class="w-16 h-16 rounded-full border-4 border-gold/30 overflow-hidden flex-shrink-0 shadow-2xl ring-4 ring-white/5 pulse-gold">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" class="w-full h-full object-cover" alt="Dr. Sarah">
+                        </div>
+                        <div class="bg-white/5 text-parchment p-10 rounded-[3rem] rounded-tl-none text-sm text-left max-w-[80%] backdrop-blur-2xl border border-white/10 shadow-2xl text-readable">
+                            <span class="text-bright-gold font-black block mb-3 uppercase tracking-[0.3em] text-[10px] cinzel">Mentor: Dr. Sarah</span>
+                            "How does Arthurian legend influence modern cooperative strategy in decentralized organizations?"
+                        </div>
+                    </div>
+                    
+                    <!-- Dialogue 2: AI Agent (Private) -->
+                    <div class="flex flex-row-reverse gap-8 items-start">
+                        <div class="w-16 h-16 bg-gradient-to-br from-gold to-bright-gold rounded-2xl flex items-center justify-center text-navy text-2xl shadow-2xl font-black ring-4 ring-gold/20 float">🛡️</div>
+                        <div class="bg-gold/10 border border-gold/30 text-bright-gold p-10 rounded-[3rem] rounded-tr-none text-sm text-left max-w-[80%] italic backdrop-blur-2xl shadow-2xl text-readable">
+                            <span class="text-gold font-black block mb-3 uppercase tracking-[0.3em] text-[10px] cinzel">Scaffolding Agent (Private)</span>
+                            <span class="typing" id="ai-typing">"Yifei, I've detected a silence. You have notes on 'Egalitarianism'. Would you like me to polish your draft into a more academic structure?"</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dialogue 3: Yifei -->
+                    <div class="flex gap-8 flex-row-reverse items-start">
+                        <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-gold/30 flex-shrink-0 shadow-2xl ring-4 ring-white/10 pulse-gold">
+                             <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" class="w-full h-full object-cover" alt="Yifei">
+                        </div>
+                        <div class="bg-gradient-to-br from-gold to-bright-gold text-navy p-10 rounded-[3rem] rounded-tr-none text-sm text-left max-w-[80%] shadow-2xl font-bold border border-white/20">
+                            <span class="text-navy font-black block mb-3 uppercase tracking-[0.3em] text-[10px] cinzel">Knight: Yifei</span>
+                            "The round table eliminates hierarchies, allowing for a decentralized flow of strategic wisdom where the value of an idea is independent of the speaker's rank..."
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input Area -->
+                <div class="p-10 bg-black/80 border-t border-white/10 flex gap-8 items-center backdrop-blur-2xl">
+                    <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gold/40 hover:text-bright-gold transition-all cursor-pointer hover:bg-white/10 shadow-inner">📎</div>
+                    <input type="text" placeholder="Draft your thoughts in the sanctuary..." class="flex-1 bg-white/5 border-none focus:ring-0 text-white text-sm px-10 italic rounded-full h-14 placeholder:text-white/10 shadow-inner">
+                    <button class="bg-gradient-to-r from-gold to-bright-gold text-navy font-black cinzel text-[11px] tracking-[0.4em] px-14 h-14 rounded-full hover:scale-110 transition-all shadow-[0_0_30px_rgba(212,175,55,0.4)]">SEND</button>
+                </div>
+            </div>
+            
+            <div class="pt-16 reveal">
+                <p class="text-sm text-gold/40 italic cinzel tracking-[0.5em]">"Technology is the sword, but equality is the hand that wields it."</p>
+            </div>
+        </section>

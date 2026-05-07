@@ -83,14 +83,15 @@ function pickByHash<T>(items: T[], seed: string) {
   return items[shortHash(seed) % items.length]!
 }
 
-function pickNonDuplicate(items: string[], seed: string, recent: string[]) {
+function pickNonDuplicate(items: string[], seed: string, recent: string[], dynamicSuffix?: string) {
   const lowerRecent = new Set(recent.map((x) => toSingleLine(x).toLowerCase()))
   for (let i = 0; i < items.length; i++) {
     const idx = (shortHash(seed) + i) % items.length
     const candidate = items[idx]!
     if (!lowerRecent.has(toSingleLine(candidate).toLowerCase())) return candidate
   }
-  return items[shortHash(seed) % items.length]!
+  // 耗尽后，加动态后缀打破重复
+  return items[shortHash(seed) % items.length]! + (dynamicSuffix ? ` ${dynamicSuffix}` : '')
 }
 
 function uniq(items: string[]) {
@@ -186,28 +187,41 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
 
       const continuePool = cjk
         ? [
-            `${speakerLabel}：我接着${latestSpeakerLabel || '上一位'}的发言补充，关键在于把判断落到可验证的具体场景。`,
+            `${speakerLabel}：接着上一位的发言，关键在于把判断落到可验证的具体场景。`,
             `${speakerLabel}：延续刚才的观点，我认为还要补上边界条件，否则结论容易被误用。`,
             `${speakerLabel}：基于上一条发言，我建议给出一个反例来检验结论是否稳健。`,
+            `${speakerLabel}：补充一点，前面的看法如果放到极端情况下，可能会得出相反的结论。`,
+            `${speakerLabel}：顺着这个思路，我们还需要考虑实际执行时的资源限制和阻力。`,
+            `${speakerLabel}：我也认同上一位的看法，不过在定义核心概念时还可以更精准些。`,
           ]
         : [
-            `${speakerLabel}: Building from ${latestSpeakerLabel || 'the previous point'}, we should ground the claim in one testable scenario.`,
+            `${speakerLabel}: Adding to the previous point, we should ground the claim in one testable scenario.`,
             `${speakerLabel}: I would extend that point by adding boundary conditions so the conclusion is not overgeneralized.`,
             `${speakerLabel}: To continue the previous idea, we should add one counterexample to stress-test the claim.`,
+            `${speakerLabel}: As a supplement, if we push the previous logic to the extreme, it might backfire.`,
+            `${speakerLabel}: Following that train of thought, we must also consider practical constraints and friction.`,
+            `${speakerLabel}: I agree with the previous speaker, but we could define the core concepts more sharply.`,
           ]
       const stancePool = cjk
         ? [
             `${speakerLabel}：关于“${anchor}”，我的看法是先给明确立场，再用证据说明为什么成立。`,
             `${speakerLabel}：围绕“${anchor}”，我更关注结论对下一步行动的实际影响。`,
             `${speakerLabel}：就“${anchor}”而言，最重要的是把观点写成可被反驳也可被验证的判断。`,
+            `${speakerLabel}：对于“${anchor}”，我们需要区分表象和本质，不能只看短期效应。`,
+            `${speakerLabel}：针对“${anchor}”这个议题，我的立场是必须结合具体业务场景来谈，不能空对空。`,
+            `${speakerLabel}：探讨“${anchor}”时，往往被忽略的是不同利益相关者的诉求差异。`,
           ]
         : [
             `${speakerLabel}: On "${anchor}", my view is that a clear stance must be paired with concrete evidence.`,
             `${speakerLabel}: For "${anchor}", the key is explaining the practical consequence of the claim.`,
             `${speakerLabel}: Regarding "${anchor}", a strong point should be both testable and falsifiable.`,
+            `${speakerLabel}: When discussing "${anchor}", we need to separate the symptoms from the root cause.`,
+            `${speakerLabel}: My stance on "${anchor}" is that it must be evaluated within a specific business context.`,
+            `${speakerLabel}: A critical aspect of "${anchor}" that is often overlooked is the divergence of stakeholder interests.`,
           ]
       const pool = latestSpeakerContent ? [...continuePool, ...stancePool] : stancePool
-      const script = pickNonDuplicate(pool, seed, recentAiLines)
+      const suffix = cjk ? `(轮次:${turn})` : `(Turn:${turn})`
+      const script = pickNonDuplicate(pool, seed, recentAiLines, suffix)
       return {
         script,
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],

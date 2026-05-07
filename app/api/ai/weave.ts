@@ -65,21 +65,35 @@ export default async function handler(req: Request) {
   if (charCount(cleaned) > 20 && charCount(cleaned) <= 180) return jsonResponse({ ...result, script: cleaned })
 
   const compact = await deepseekChatJson<{ script: string }>({
-    system: 'Rewrite into one dialogue-style line, over 20 and <= 180 characters, no quotes, no repeated wording, keep topic-specific angle. Output JSON key script.',
+    system: 'Rewrite into one dialogue-style line, over 20 and <= 250 characters, no quotes, no repeated wording, keep topic-specific angle. Output JSON key script.',
     user: [`Original line: ${cleaned}`, recentAiLines.length ? `Avoid overlap:\n${recentAiLines.join('\n')}` : null].filter((v) => !!v).join('\n\n'),
-    temperature: 0.3,
+    temperature: 0.6,
   })
   const compactScript = typeof compact?.script === 'string' ? compact.script.replace(/\s+/g, ' ').trim() : ''
   const useCjkFallback = /[\u3400-\u9fff]/.test(topic) || /[\u3400-\u9fff]/.test(prompt)
+  
+  const cjkFallbacks = [
+    `我接着上一位的观点补充，建议给出一个具体情境并说明这条结论在什么条件下会失效。(轮次:${turnNumber})`,
+    `围绕“${topic || prompt || '当前议题'}”，我的看法是先明确立场，再用一个具体例子说明理由。(轮次:${turnNumber})`,
+    `顺着这个思路，我们需要考虑实际执行时的资源限制和潜在阻力。(轮次:${turnNumber})`,
+    `探讨这个问题时，往往被忽略的是不同利益相关者的诉求差异。(轮次:${turnNumber})`
+  ]
+  const enFallbacks = [
+    `I would continue the previous point by adding one concrete scenario and clarifying when the claim fails. (Turn:${turnNumber})`,
+    `On "${topic || prompt || 'this topic'}", my view is to state a clear position and support it with one concrete case. (Turn:${turnNumber})`,
+    `Following that train of thought, we must also consider practical constraints and friction. (Turn:${turnNumber})`,
+    `A critical aspect that is often overlooked here is the divergence of stakeholder interests. (Turn:${turnNumber})`
+  ]
+  
+  const fallbackPool = useCjkFallback ? cjkFallbacks : enFallbacks
+  // 使用 turnNumber 和 aiAttempt 计算一个简单的哈希索引
+  const fallbackIdx = (turnNumber * 7 + aiAttempt * 3) % fallbackPool.length
+  const fallbackText = `${speakerLabel}：${fallbackPool[fallbackIdx]}`
+
   const safeScript =
-    charCount(compactScript) > 20 && charCount(compactScript) <= 180
+    charCount(compactScript) > 20 && charCount(compactScript) <= 250
       ? compactScript
-      : useCjkFallback
-        ? latestSpeakerContent
-          ? `${speakerLabel}：我接着上一位的观点补充，建议给出一个具体情境并说明这条结论在什么条件下会失效。`
-          : `${speakerLabel}：围绕“${topic || prompt || '当前议题'}”，我的看法是先明确立场，再用一个具体例子说明理由。`
-        : latestSpeakerContent
-          ? `${speakerLabel}: I would continue the previous point by adding one concrete scenario and clarifying when the claim fails.`
-          : `${speakerLabel}: On "${topic || prompt || 'this topic'}", my view is to state a clear position and support it with one concrete case.`
+      : fallbackText
+      
   return jsonResponse({ ...result, script: safeScript })
 }

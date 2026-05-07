@@ -38,6 +38,7 @@ export default function CreateChamber() {
 
   const [name, setName] = useState('')
   const [topic, setTopic] = useState('')
+  const [prompt, setPrompt] = useState('')
   const [mode, setMode] = useState<DiscussionMode>('structured')
   const [security, setSecurity] = useState<SecurityLevel>('fortified')
   const [shieldStrength, setShieldStrength] = useState(85)
@@ -51,7 +52,7 @@ export default function CreateChamber() {
     const created = await repo.createRoom({
       title: name.trim(),
       topic: topic.trim(),
-      prompt: topic.trim(),
+      prompt: prompt.trim() || topic.trim(),
       mode,
       security,
       shieldStrength,
@@ -132,6 +133,19 @@ export default function CreateChamber() {
                   placeholder="What shall we deliberate upon…"
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <div className="text-xs font-semibold tracking-[0.14em] text-[#7a5b10]">DISCUSSION PROMPT</div>
+                <textarea
+                  aria-label="Guiding question for the discussion…"
+                  autoComplete="off"
+                  className="min-h-24 rounded-2xl border border-[#b9902e]/18 bg-white/70 px-4 py-3 text-sm leading-7 text-[#1c1917] placeholder:text-[#6b645c] focus:border-[#b9902e]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                  name="prompt"
+                  placeholder="Write a guiding question for this discussion…"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
                 />
               </div>
             </div>

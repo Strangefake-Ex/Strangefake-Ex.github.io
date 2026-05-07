@@ -39,7 +39,7 @@ export default async function handler(req: Request) {
     followUps: string[]
   }>({
     system:
-      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 1-3 sentences, must be <= 100 words, must connect to the prompt/topic when available, and must directly continue from at least one line in recent messages (no generic preface).`,
+      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 1-3 sentences, must be <= 100 words, must connect to the prompt/topic when available, and must directly continue from at least one line in recent messages (no generic preface). Do not start with phrases like "Building on", "Building upon", or "To build on".`,
     user: [
       'Task: Speak as the current AI knight. In 1-3 sentences, continue the discussion by responding to the latest relevant message and tying it back to the prompt/topic.',
       prompt || topic ? `Prompt: ${prompt}\nTopic: ${topic}` : null,
@@ -51,5 +51,6 @@ export default async function handler(req: Request) {
     temperature,
   })
 
-  return jsonResponse({ ...result, script: limitWords(result.script ?? '', 100) })
+  const cleaned = limitWords(result.script ?? '', 100).replace(/^(building on|building upon|to build on)\b[^\w]*/i, '').trim()
+  return jsonResponse({ ...result, script: cleaned })
 }

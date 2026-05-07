@@ -131,8 +131,8 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
           ].join(' ')
 
       const bulletPoints = cjk
-        ? ['用一句话明确结论与立场。', '补上一个可验证的理由或例子。', '用一个可讨论的问题收束并引导回应。']
-        : ['Lead with a one-sentence thesis.', 'Add one concrete reason or example.', 'End with a discussion question.']
+        ? ['一句话结论', '补一个例子', '抛出问题']
+        : ['Clear thesis', 'Add one example', 'Ask a question']
       return { rewrite, tone: 'academic', bulletPoints }
     },
     async suggestPrompt(input) {
@@ -156,7 +156,9 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       const anchor = topic || prompt || null
       const lastLine = extractLastLine(input.contribution)
       const base = lastLine.trim() || '—'
-      const script = `Building on “${base}”${anchor ? ` in our discussion on “${anchor}”` : ''}, I’d add one point: how does this shape our next step or counterexample?`
+      const script = anchor
+        ? `“${base}” ties directly to “${anchor}”. My take: what concrete example best supports (or challenges) this point?`
+        : `“${base}” is worth unpacking. What concrete example best supports (or challenges) this point?`
       return {
         script: limitWords(script, 100),
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],

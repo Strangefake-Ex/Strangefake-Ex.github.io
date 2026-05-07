@@ -717,85 +717,81 @@ export default function Room() {
           ) : null}
         </div>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-5">
-          <div className="lg:col-span-3">
-            {room?.aiGuardEnabled ? <AiGuardianPanel room={room} posts={posts} /> : null}
-          </div>
+        <div className="mt-6 grid gap-6">
+          {room?.aiGuardEnabled ? <AiGuardianPanel room={room} posts={posts} /> : null}
 
-          <div className="lg:col-span-2">
-            <div className="rt-surface rt-gild rounded-3xl p-6">
-              <div className="text-sm font-semibold tracking-tight">Live Scroll</div>
+          <div className="rt-surface rt-gild rounded-3xl p-6">
+            <div className="text-sm font-semibold tracking-tight">Live Scroll</div>
 
-              <div className="mt-4 grid gap-3">
-                {posts.length === 0 ? (
-                  <div className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
-                    <div className="text-sm font-semibold text-[#1c1917]">No messages yet.</div>
-                    <div className="mt-2 text-sm leading-7 text-[#4b463f]">
-                      Start in Thought Space: write a private draft, then press “Publish from Draft”.
-                    </div>
+            <div className="mt-4 grid gap-3">
+              {posts.length === 0 ? (
+                <div className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
+                  <div className="text-sm font-semibold text-[#1c1917]">No messages yet.</div>
+                  <div className="mt-2 text-sm leading-7 text-[#4b463f]">
+                    Start in Thought Space: write a private draft, then press “Publish from Draft”.
                   </div>
-                ) : (
-                  <>
-                    {posts.length > maxVisible && !showAllMessages ? (
-                      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
-                        <div className="text-xs text-[#4b463f]">Showing latest {maxVisible} messages.</div>
-                        <button
-                          className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
-                          type="button"
-                          onClick={() => setShowAllMessages(true)}
-                        >
-                          Show all messages
-                        </button>
-                      </div>
-                    ) : null}
+                </div>
+              ) : (
+                <>
+                  {posts.length > maxVisible && !showAllMessages ? (
+                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
+                      <div className="text-xs text-[#4b463f]">Showing latest {maxVisible} messages.</div>
+                      <button
+                        className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                        type="button"
+                        onClick={() => setShowAllMessages(true)}
+                      >
+                        Show all messages
+                      </button>
+                    </div>
+                  ) : null}
 
-                    {showAllMessages && posts.length > maxVisible ? (
-                      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
-                        <div className="text-xs text-[#4b463f]">Showing all messages.</div>
-                        <button
-                          className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
-                          type="button"
-                          onClick={() => setShowAllMessages(false)}
-                        >
-                          Show latest {maxVisible}
-                        </button>
-                      </div>
-                    ) : null}
+                  {showAllMessages && posts.length > maxVisible ? (
+                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
+                      <div className="text-xs text-[#4b463f]">Showing all messages.</div>
+                      <button
+                        className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                        type="button"
+                        onClick={() => setShowAllMessages(false)}
+                      >
+                        Show latest {maxVisible}
+                      </button>
+                    </div>
+                  ) : null}
 
-                    {visiblePosts.map((p) => (
-                      <div key={p.id} className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
-                        <div className="text-xs text-[#6b645c]">{p.authorLabel}</div>
-                        <div className="mt-2 text-sm leading-7 text-[#1c1917]">
-                          {room?.aiGuardEnabled && guardianKeywords.length > 0
-                            ? highlightTextParts(p.content, guardianKeywords.slice(0, 8)).map((part, idx) =>
-                                part.isHighlight ? (
-                                  <span
-                                    key={`${p.id}-${idx}-${part.text}`}
-                                    data-guardian-highlight="true"
-                                    className="rounded-md bg-[#e0c06a]/35 px-1 font-semibold text-[#7a5b10]"
-                                  >
-                                    {part.text}
-                                  </span>
-                                ) : (
-                                  <span key={`${p.id}-${idx}-${part.text}`}>{part.text}</span>
-                                ),
-                              )
-                            : p.content}
-                        </div>
-                        <button
-                          className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#b9902e]/18 bg-white/55 px-3 py-2 text-xs text-[#1c1917] transition hover:bg-white/75"
-                          type="button"
-                          onClick={() => onLike(p.id)}
-                        >
-                          <Heart className="h-3.5 w-3.5" />
-                          Like
-                          <span className="min-w-4 text-center text-[#7a5b10]">{p.likes}</span>
-                        </button>
+                  {visiblePosts.map((p) => (
+                    <div key={p.id} className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
+                      <div className="text-xs text-[#6b645c]">{p.authorLabel}</div>
+                      <div className="mt-2 text-sm leading-7 text-[#1c1917]">
+                        {room?.aiGuardEnabled && guardianKeywords.length > 0
+                          ? highlightTextParts(p.content, guardianKeywords.slice(0, 8)).map((part, idx) =>
+                              part.isHighlight ? (
+                                <span
+                                  key={`${p.id}-${idx}-${part.text}`}
+                                  data-guardian-highlight="true"
+                                  className="rounded-md bg-[#e0c06a]/35 px-1 font-semibold text-[#7a5b10]"
+                                >
+                                  {part.text}
+                                </span>
+                              ) : (
+                                <span key={`${p.id}-${idx}-${part.text}`}>{part.text}</span>
+                              ),
+                            )
+                          : p.content}
                       </div>
-                    ))}
-                  </>
-                )}
-              </div>
+                      <button
+                        className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#b9902e]/18 bg-white/55 px-3 py-2 text-xs text-[#1c1917] transition hover:bg-white/75"
+                        type="button"
+                        onClick={() => onLike(p.id)}
+                      >
+                        <Heart className="h-3.5 w-3.5" />
+                        Like
+                        <span className="min-w-4 text-center text-[#7a5b10]">{p.likes}</span>
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </div>
         </div>

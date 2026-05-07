@@ -17,6 +17,20 @@ import { facControlKey, facPollVotesKey, POSTS_INDEX_KEY, postsKey, sessionKey }
 import { createAiClient } from '@/services/aiClient'
 import CrestSeal from '@/components/CrestSeal'
 
+function normalizeLine(text: string) {
+  return text.replace(/\s+/g, ' ').trim().toLowerCase()
+}
+
+function fallbackAiLine(topic?: string, latestSpeakerLabel?: string, latestSpeakerContent?: string) {
+  if (latestSpeakerLabel && latestSpeakerContent) {
+    return `我补充 ${latestSpeakerLabel} 的观点：${latestSpeakerContent} 还需要一个可验证的例子和边界条件，才能更有说服力。`
+  }
+  if (topic) {
+    return `关于“${topic}”，我的看法是先明确判断，再给一个具体场景支撑，并说明它在什么条件下不成立。`
+  }
+  return '我补充一点：结论需要配合具体情境和可验证证据，讨论才会更扎实。'
+}
+
 export default function Room() {
   const { roomId } = useParams()
   const repo = useMemo(() => createLocalRoomRepository(), [])
@@ -191,8 +205,10 @@ export default function Room() {
     if (lastAiTurnKeyRef.current === aiTurnKey) return
     lastAiTurnKeyRef.current = aiTurnKey
 
+    let cancelled = false
     const run = async () => {
       await new Promise((r) => window.setTimeout(r, 600))
+      if (cancelled) return
       const botIds = new Set(session.order.filter((p) => p.isBot).map((p) => p.id))
       const recentMessages = posts
         .slice(0, 8)
@@ -204,6 +220,7 @@ export default function Room() {
         .filter((p) => botIds.has(p.authorId))
         .slice(0, 5)
         .map((p) => p.content)
+      const latestHumanPost = posts.find((p) => !botIds.has(p.authorId))
       const contribution = [
         room.topic ? `Topic: ${room.topic}` : null,
         room.prompt ? `Prompt: ${room.prompt}` : null,
@@ -212,32 +229,55 @@ export default function Room() {
         .filter((v) => !!v)
         .join('\n\n')
 
-      const res = await ai.weaveContribution({
-        contribution,
-        context: {
-          roomId,
-          roomTitle: room.title,
-          prompt: room.prompt,
-          topic: room.topic,
-          mode: room.mode,
-          security: room.security,
-          shieldStrength: room.shieldStrength,
-          speakerId: currentSpeaker.id,
-          speakerLabel: currentSpeaker.label,
-          recentAiLines,
-        },
-      })
+      let script = ''
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (cancelled) return
+        const res = await ai.weaveContribution({
+          contribution,
+          context: {
+            roomId,
+            roomTitle: room.title,
+            prompt: room.prompt,
+            topic: room.topic,
+            mode: room.mode,
+            security: room.security,
+            shieldStrength: room.shieldStrength,
+            speakerId: currentSpeaker.id,
+            speakerLabel: currentSpeaker.label,
+            recentAiLines,
+            latestSpeakerLabel: latestHumanPost?.authorLabel,
+            latestSpeakerContent: latestHumanPost?.content,
+            turnNumber: session.turnNumber,
+            aiAttempt: attempt,
+          },
+        })
+        const normalized = normalizeLine(res.script)
+        const isDuplicate = recentAiLines.some((line) => normalizeLine(line) === normalized)
+        if (!isDuplicate && Array.from(res.script).length > 20) {
+          script = res.script
+          break
+        }
+      }
+      if (cancelled) return
+      if (!script) {
+        script = fallbackAiLine(room.topic, latestHumanPost?.authorLabel, latestHumanPost?.content)
+      }
 
       await postRepo.createPost(roomId, {
         authorId: session.currentSpeakerId,
         authorLabel: currentSpeaker.label,
-        content: res.script,
+        content: script,
       })
+      if (cancelled) return
       setPosts(await postRepo.listPosts(roomId))
+      if (cancelled) return
       setSession(await sessionRepo.advanceTurn(roomId))
     }
 
-    run()
+    run().catch(() => {})
+    return () => {
+      cancelled = true
+    }
   }, [ai, currentSpeaker, isStructured, postRepo, posts, room, roomId, session, sessionRepo, turnRemainingSeconds])
 
   async function onRestart() {

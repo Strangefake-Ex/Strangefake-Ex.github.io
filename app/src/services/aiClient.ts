@@ -11,6 +11,10 @@ export type AiContext = {
   speakerId?: string
   speakerLabel?: string
   recentAiLines?: string[]
+  latestSpeakerLabel?: string
+  latestSpeakerContent?: string
+  turnNumber?: number
+  aiAttempt?: number
 }
 
 export type RewriteDraftInput = {
@@ -172,26 +176,37 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       const prompt = input.context?.prompt?.trim()
       const speakerLabel = input.context?.speakerLabel?.trim() || 'AI Knight'
       const recentAiLines = input.context?.recentAiLines ?? []
-      const anchor = topic || prompt || null
-      const cjk = hasCjk(`${anchor ?? ''}`)
-      const seed = `${speakerLabel}|${anchor ?? ''}|${input.contribution.slice(-80)}`
-      const pool = cjk
+      const latestSpeakerLabel = input.context?.latestSpeakerLabel?.trim()
+      const latestSpeakerContent = toSingleLine(input.context?.latestSpeakerContent ?? '')
+      const anchor = topic || prompt || 'the current topic'
+      const cjk = hasCjk(`${anchor} ${latestSpeakerContent}`)
+      const attempt = input.context?.aiAttempt ?? 0
+      const turn = input.context?.turnNumber ?? 0
+      const seed = `${speakerLabel}|${anchor}|${latestSpeakerContent}|${turn}|${attempt}|${input.contribution.slice(-80)}`
+
+      const continuePool = cjk
         ? [
-            `${speakerLabel}：围绕“${anchor || '当前议题'}”，请给一个能落地的例子并说明结果。`,
-            `${speakerLabel}：这个观点在什么边界条件下不成立，请给出反例。`,
-            `${speakerLabel}：若要验证该判断，最小可行的检验步骤是什么？`,
-            `${speakerLabel}：请说明这条结论对下一步讨论的具体影响。`,
-            `${speakerLabel}：同样结论在另一情境下是否成立？请对比说明。`,
-            `${speakerLabel}：请把主张拆成“条件-动作-结果”三段再论证。`,
+            `${speakerLabel}：我接着${latestSpeakerLabel || '上一位'}的发言补充，关键在于把判断落到可验证的具体场景。`,
+            `${speakerLabel}：延续刚才的观点，我认为还要补上边界条件，否则结论容易被误用。`,
+            `${speakerLabel}：基于上一条发言，我建议给出一个反例来检验结论是否稳健。`,
           ]
         : [
-            `${speakerLabel}: Give one concrete example for "${anchor || 'this topic'}" and explain the outcome.`,
-            `${speakerLabel}: Under which boundary condition does this claim fail? Add one counterexample.`,
-            `${speakerLabel}: What is the smallest test we can run to validate this point?`,
-            `${speakerLabel}: Explain one practical implication this claim has for our next step.`,
-            `${speakerLabel}: Would the same claim hold in a different context? Compare briefly.`,
-            `${speakerLabel}: Reframe the argument as condition, action, and result.`,
+            `${speakerLabel}: Building from ${latestSpeakerLabel || 'the previous point'}, we should ground the claim in one testable scenario.`,
+            `${speakerLabel}: I would extend that point by adding boundary conditions so the conclusion is not overgeneralized.`,
+            `${speakerLabel}: To continue the previous idea, we should add one counterexample to stress-test the claim.`,
           ]
+      const stancePool = cjk
+        ? [
+            `${speakerLabel}：关于“${anchor}”，我的看法是先给明确立场，再用证据说明为什么成立。`,
+            `${speakerLabel}：围绕“${anchor}”，我更关注结论对下一步行动的实际影响。`,
+            `${speakerLabel}：就“${anchor}”而言，最重要的是把观点写成可被反驳也可被验证的判断。`,
+          ]
+        : [
+            `${speakerLabel}: On "${anchor}", my view is that a clear stance must be paired with concrete evidence.`,
+            `${speakerLabel}: For "${anchor}", the key is explaining the practical consequence of the claim.`,
+            `${speakerLabel}: Regarding "${anchor}", a strong point should be both testable and falsifiable.`,
+          ]
+      const pool = latestSpeakerContent ? [...continuePool, ...stancePool] : stancePool
       const script = pickNonDuplicate(pool, seed, recentAiLines)
       return {
         script,

@@ -20,6 +20,10 @@ export default async function handler(req: Request) {
   const prompt = String((context as Record<string, unknown>)?.prompt ?? '')
   const topic = String((context as Record<string, unknown>)?.topic ?? '')
   const speakerLabel = String((context as Record<string, unknown>)?.speakerLabel ?? 'AI Knight')
+  const latestSpeakerLabel = String((context as Record<string, unknown>)?.latestSpeakerLabel ?? '')
+  const latestSpeakerContent = String((context as Record<string, unknown>)?.latestSpeakerContent ?? '')
+  const turnNumber = Number((context as Record<string, unknown>)?.turnNumber ?? 0)
+  const aiAttempt = Number((context as Record<string, unknown>)?.aiAttempt ?? 0)
   const recentAiLines = Array.isArray((context as Record<string, unknown>)?.recentAiLines)
     ? ((context as Record<string, unknown>).recentAiLines as unknown[])
         .filter((x) => typeof x === 'string')
@@ -43,10 +47,11 @@ export default async function handler(req: Request) {
     followUps: string[]
   }>({
     system:
-      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 2-3 concise sentences, between 60 and 160 characters, and must move the discussion forward with a fresh, topic-specific angle. Do not quote or restate any recent message. Do not start with phrases like "Building on", "Building upon", or "To build on".`,
+      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be over 20 characters and at most 180 characters, and should sound natural in dialogue. Content rule: either (A) continue the previous speaker by adding a concrete supplement, or (B) state your own view on the discussion topic. Do not quote or restate recent AI lines. Do not start with phrases like "Building on", "Building upon", or "To build on".`,
     user: [
-      `Task: ${speakerLabel} should provide one concise sentence with a new angle.`,
+      `Task: ${speakerLabel} should provide a fresh line for turn ${turnNumber}, attempt ${aiAttempt}.`,
       prompt || topic ? `Prompt: ${prompt}\nTopic: ${topic}` : null,
+      latestSpeakerContent ? `Latest speaker: ${latestSpeakerLabel || 'Previous speaker'}\nLatest content: ${latestSpeakerContent}` : null,
       `Recent:\n${contribution.trim() || 'No messages yet.'}`,
       recentAiLines.length ? `Recent AI lines (avoid wording overlap):\n${recentAiLines.join('\n')}` : null,
       `Security: ${security}\nShieldStrength: ${shieldStrength}`,
@@ -57,20 +62,24 @@ export default async function handler(req: Request) {
   })
 
   const cleaned = (result.script ?? '').replace(/^(building on|building upon|to build on)\b[^\w]*/i, '').replace(/\s+/g, ' ').trim()
-  if (charCount(cleaned) >= 60 && charCount(cleaned) <= 160) return jsonResponse({ ...result, script: cleaned })
+  if (charCount(cleaned) > 20 && charCount(cleaned) <= 180) return jsonResponse({ ...result, script: cleaned })
 
   const compact = await deepseekChatJson<{ script: string }>({
-    system: 'Rewrite into 2-3 concise sentences, 60-160 characters, no quotes, no repetition of recent AI lines, and keep topic-specific angle. Output JSON key script.',
+    system: 'Rewrite into one dialogue-style line, over 20 and <= 180 characters, no quotes, no repeated wording, keep topic-specific angle. Output JSON key script.',
     user: [`Original line: ${cleaned}`, recentAiLines.length ? `Avoid overlap:\n${recentAiLines.join('\n')}` : null].filter((v) => !!v).join('\n\n'),
     temperature: 0.3,
   })
   const compactScript = typeof compact?.script === 'string' ? compact.script.replace(/\s+/g, ' ').trim() : ''
   const useCjkFallback = /[\u3400-\u9fff]/.test(topic) || /[\u3400-\u9fff]/.test(prompt)
   const safeScript =
-    charCount(compactScript) >= 60 && charCount(compactScript) <= 160
+    charCount(compactScript) > 20 && charCount(compactScript) <= 180
       ? compactScript
       : useCjkFallback
-        ? `围绕“${topic || prompt || '当前议题'}”，请给出一个具体情境来验证这个判断，并说明它在什么条件下会失效。`
-        : `For "${topic || prompt || 'this topic'}", provide one concrete scenario that supports the claim, then explain when it would fail.`
+        ? latestSpeakerContent
+          ? `${speakerLabel}：我接着上一位的观点补充，建议给出一个具体情境并说明这条结论在什么条件下会失效。`
+          : `${speakerLabel}：围绕“${topic || prompt || '当前议题'}”，我的看法是先明确立场，再用一个具体例子说明理由。`
+        : latestSpeakerContent
+          ? `${speakerLabel}: I would continue the previous point by adding one concrete scenario and clarifying when the claim fails.`
+          : `${speakerLabel}: On "${topic || prompt || 'this topic'}", my view is to state a clear position and support it with one concrete case.`
   return jsonResponse({ ...result, script: safeScript })
 }

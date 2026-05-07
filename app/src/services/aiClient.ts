@@ -83,15 +83,19 @@ function pickByHash<T>(items: T[], seed: string) {
   return items[shortHash(seed) % items.length]!
 }
 
-function pickNonDuplicate(items: string[], seed: string, recent: string[]) {
-  const lowerRecent = new Set(recent.map((x) => toSingleLine(x).toLowerCase()))
-  for (let i = 0; i < items.length; i++) {
-    const idx = (shortHash(seed) + i) % items.length
-    const candidate = items[idx]!
-    if (!lowerRecent.has(toSingleLine(candidate).toLowerCase())) return candidate
+function pickNonDuplicate(coreItems: string[], seed: string, recent: string[], renderCandidate: (core: string) => string) {
+  const lowerRecent = recent.map((x) => toSingleLine(x).toLowerCase())
+  for (let i = 0; i < coreItems.length; i++) {
+    const idx = (shortHash(seed) + i) % coreItems.length
+    const core = coreItems[idx]!
+    const coreLower = toSingleLine(core).toLowerCase()
+    
+    // 如果任何一条近期历史记录包含了这个核心句式，就视为重复
+    const isDup = lowerRecent.some(r => r.includes(coreLower))
+    if (!isDup) return renderCandidate(core)
   }
   // 耗尽后
-  return items[shortHash(seed) % items.length]!
+  return renderCandidate(coreItems[shortHash(seed) % coreItems.length]!)
 }
 
 function uniq(items: string[]) {
@@ -192,41 +196,45 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
 
       const continuePool = cjk
         ? [
-            `${speakerLabel}：${prefix}接着上一位的发言，关键在于把判断落到可验证的具体场景。`,
-            `${speakerLabel}：${prefix}延续刚才的观点，我认为还要补上边界条件，否则结论容易被误用。`,
-            `${speakerLabel}：${prefix}基于上一条发言，我建议给出一个反例来检验结论是否稳健。`,
-            `${speakerLabel}：${prefix}补充一点，前面的看法如果放到极端情况下，可能会得出相反的结论。`,
-            `${speakerLabel}：${prefix}顺着这个思路，我们还需要考虑实际执行时的资源限制和阻力。`,
-            `${speakerLabel}：${prefix}我也认同上一位的看法，不过在定义核心概念时还可以更精准些。`,
+            `接着上一位的发言，关键在于把判断落到可验证的具体场景。`,
+            `延续刚才的观点，我认为还要补上边界条件，否则结论容易被误用。`,
+            `基于上一条发言，我建议给出一个反例来检验结论是否稳健。`,
+            `补充一点，前面的看法如果放到极端情况下，可能会得出相反的结论。`,
+            `顺着这个思路，我们还需要考虑实际执行时的资源限制和阻力。`,
+            `我也认同上一位的看法，不过在定义核心概念时还可以更精准些。`,
           ]
         : [
-            `${speakerLabel}: ${prefix}Adding to the previous point, we should ground the claim in one testable scenario.`,
-            `${speakerLabel}: ${prefix}I would extend that point by adding boundary conditions so the conclusion is not overgeneralized.`,
-            `${speakerLabel}: ${prefix}To continue the previous idea, we should add one counterexample to stress-test the claim.`,
-            `${speakerLabel}: ${prefix}As a supplement, if we push the previous logic to the extreme, it might backfire.`,
-            `${speakerLabel}: ${prefix}Following that train of thought, we must also consider practical constraints and friction.`,
-            `${speakerLabel}: ${prefix}I agree with the previous speaker, but we could define the core concepts more sharply.`,
+            `Adding to the previous point, we should ground the claim in one testable scenario.`,
+            `I would extend that point by adding boundary conditions so the conclusion is not overgeneralized.`,
+            `To continue the previous idea, we should add one counterexample to stress-test the claim.`,
+            `As a supplement, if we push the previous logic to the extreme, it might backfire.`,
+            `Following that train of thought, we must also consider practical constraints and friction.`,
+            `I agree with the previous speaker, but we could define the core concepts more sharply.`,
           ]
       const stancePool = cjk
         ? [
-            `${speakerLabel}：${prefix}关于“${anchor}”，我的看法是先给明确立场，再用证据说明为什么成立。`,
-            `${speakerLabel}：${prefix}围绕“${anchor}”，我更关注结论对下一步行动的实际影响。`,
-            `${speakerLabel}：${prefix}就“${anchor}”而言，最重要的是把观点写成可被反驳也可被验证的判断。`,
-            `${speakerLabel}：${prefix}对于“${anchor}”，我们需要区分表象和本质，不能只看短期效应。`,
-            `${speakerLabel}：${prefix}针对“${anchor}”这个议题，我的立场是必须结合具体业务场景来谈，不能空对空。`,
-            `${speakerLabel}：${prefix}探讨“${anchor}”时，往往被忽略的是不同利益相关者的诉求差异。`,
+            `关于“${anchor}”，我的看法是先给明确立场，再用证据说明为什么成立。`,
+            `围绕“${anchor}”，我更关注结论对下一步行动的实际影响。`,
+            `就“${anchor}”而言，最重要的是把观点写成可被反驳也可被验证的判断。`,
+            `对于“${anchor}”，我们需要区分表象和本质，不能只看短期效应。`,
+            `针对“${anchor}”这个议题，我的立场是必须结合具体业务场景来谈，不能空对空。`,
+            `探讨“${anchor}”时，往往被忽略的是不同利益相关者的诉求差异。`,
           ]
         : [
-            `${speakerLabel}: ${prefix}On "${anchor}", my view is that a clear stance must be paired with concrete evidence.`,
-            `${speakerLabel}: ${prefix}For "${anchor}", the key is explaining the practical consequence of the claim.`,
-            `${speakerLabel}: ${prefix}Regarding "${anchor}", a strong point should be both testable and falsifiable.`,
-            `${speakerLabel}: ${prefix}When discussing "${anchor}", we need to separate the symptoms from the root cause.`,
-            `${speakerLabel}: ${prefix}My stance on "${anchor}" is that it must be evaluated within a specific business context.`,
-            `${speakerLabel}: ${prefix}A critical aspect of "${anchor}" that is often overlooked is the divergence of stakeholder interests.`,
+            `On "${anchor}", my view is that a clear stance must be paired with concrete evidence.`,
+            `For "${anchor}", the key is explaining the practical consequence of the claim.`,
+            `Regarding "${anchor}", a strong point should be both testable and falsifiable.`,
+            `When discussing "${anchor}", we need to separate the symptoms from the root cause.`,
+            `My stance on "${anchor}" is that it must be evaluated within a specific business context.`,
+            `A critical aspect of "${anchor}" that is often overlooked is the divergence of stakeholder interests.`,
           ]
       const pool = latestSpeakerContent ? [...continuePool, ...stancePool] : stancePool
 
-      const script = pickNonDuplicate(pool, seed, recentAiLines)
+      const script = pickNonDuplicate(pool, seed, recentAiLines, (core) => {
+        const p = prefixPool[(turn * 11 + attempt * 5) % prefixPool.length]
+        const separator = cjk ? '：' : ': '
+        return `${speakerLabel}${separator}${p}${core}`
+      })
       return {
         script,
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],

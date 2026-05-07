@@ -44,5 +44,5 @@ test('facilitator uses per-room fairness thresholds for alerts', async () => {
 
   await screen.findByText(/facilitator's helm/i)
   await screen.findAllByText(/guardian alerts/i)
-  await expect(screen.findByText(/participation imbalance/i)).rejects.toThrow()
+  expect(screen.queryByText(/participation imbalance/i)).not.toBeInTheDocument()
 })

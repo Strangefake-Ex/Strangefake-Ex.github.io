@@ -32,8 +32,8 @@ test('structured room enforces max speeches quota', async () => {
   await userEvent.type(screen.getByRole('textbox', { name: /your name/i }), 'Alice')
   await userEvent.click(screen.getByRole('button', { name: /claim seat/i }))
 
-  const publish = screen.getByRole('button', { name: /publish from draft/i })
-  const advance = screen.getByRole('button', { name: /advance turn/i })
+  const publish = screen.getByRole('button', { name: /publish from draft/i }) as HTMLButtonElement
+  const advance = screen.getByRole('button', { name: /advance turn/i }) as HTMLButtonElement
   const draft = screen.getByRole('textbox', { name: /private draft/i })
 
   async function confirmAdvance() {

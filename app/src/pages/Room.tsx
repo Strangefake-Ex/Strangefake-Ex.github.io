@@ -17,12 +17,6 @@ import { facControlKey, facPollVotesKey, postsKey, sessionKey } from '@/lib/stor
 import { createAiClient } from '@/services/aiClient'
 import CrestSeal from '@/components/CrestSeal'
 
-function useLatestRef<T>(value: T) {
-  const ref = useRef(value)
-  ref.current = value
-  return ref
-}
-
 export default function Room() {
   const { roomId } = useParams()
   const repo = useMemo(() => createLocalRoomRepository(), [])
@@ -676,7 +670,8 @@ export default function Room() {
                       onClick={() => {
                         if (!roomId) return
                         if (!seat) return
-                        const poll = facControl.poll
+                        const poll = facControl?.poll
+                        if (!poll) return
                         try {
                           const key = facPollVotesKey(roomId, poll.id)
                           const votes = (getJson<Record<string, string>>(key) ?? {}) as Record<string, string>

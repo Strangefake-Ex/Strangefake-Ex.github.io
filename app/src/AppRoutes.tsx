@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
 
-import Home from '@/pages/Home'
 import Lobby from '@/pages/Lobby'
 import Room from '@/pages/Room'
 import Facilitator from '@/pages/Facilitator'

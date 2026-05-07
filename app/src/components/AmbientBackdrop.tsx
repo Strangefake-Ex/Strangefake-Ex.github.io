@@ -37,7 +37,7 @@ export default function AmbientBackdrop({ seed = 1123 }: { seed?: number }) {
     if (!canvas) return
     if (reduced) return
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     if (!ctx) return
 
     const rand = mulberry32(seed)
@@ -50,6 +50,7 @@ export default function AmbientBackdrop({ seed = 1123 }: { seed?: number }) {
     const target = 28
 
     function resize() {
+      if (!canvas) return
       const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1))
       w = Math.floor(window.innerWidth)
       h = Math.floor(window.innerHeight)

@@ -40,6 +40,5 @@ test('structured session posts an AI knight message when it is the bot turn', as
   )
 
   await screen.findByRole('heading', { name: /session/i })
-  expect(await screen.findByText(/let me pull a thread from the chat/i)).toBeInTheDocument()
+  expect(await screen.findByText(/building on/i)).toBeInTheDocument()
 })
-

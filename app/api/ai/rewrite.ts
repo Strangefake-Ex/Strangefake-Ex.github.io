@@ -36,7 +36,7 @@ export default async function handler(req: Request) {
     bulletPoints: string[]
   }>({
     system:
-      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]).`,
+      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]).`,
     user: [
       'Task: Rewrite the draft to be clearer and more respectful.',
       baseProfile.intensity === 'minimal edits' ? 'Rules: keep wording close; only fix clarity/grammar and soften tone.' : null,

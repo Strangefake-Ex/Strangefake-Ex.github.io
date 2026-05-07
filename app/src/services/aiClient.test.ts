@@ -11,6 +11,7 @@ describe('ai client', () => {
     })
     expect(res.rewrite.length).toBeGreaterThan(0)
     expect(res.tone).toBeDefined()
+    expect(res.rewrite.toLowerCase()).not.toContain('in response to the prompt')
   })
 
   test('fallback weaveContribution references topic or prompt when provided', async () => {
@@ -20,5 +21,15 @@ describe('ai client', () => {
       context: { topic: 'Testing culture', prompt: 'How should we discuss responsibly?' },
     })
     expect(res.script.includes('Testing culture') || res.script.includes('How should we discuss responsibly?')).toBe(true)
+  })
+
+  test('fallback weaveContribution script is within 100 words', async () => {
+    const client = createAiClient({ mode: 'stub' })
+    const res = await client.weaveContribution({
+      contribution: Array.from({ length: 200 }, (_, i) => `word${i}`).join(' '),
+      context: { topic: 'T' },
+    })
+    const words = res.script.trim().split(/\s+/g).filter(Boolean)
+    expect(words.length).toBeLessThanOrEqual(100)
   })
 })

@@ -3,24 +3,10 @@ import { AlertTriangle, RefreshCw, ShieldCheck, Sparkles } from 'lucide-react'
 
 import type { Post } from '@/repositories/postRepository'
 import type { Room } from '@/repositories/roomRepository'
-import { computeKeywords as computeKeywordsFromPosts } from '@/lib/guardian'
+import { computeKeywords as computeKeywordsFromPosts, computeParticipationBalance, clamp } from '@/lib/guardian'
 import { createAiClient } from '@/services/aiClient'
 
 type TabKey = 'keyPoints' | 'keywords' | 'citations'
-
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n))
-}
-
-function computeParticipationBalance(posts: Post[]) {
-  if (posts.length === 0) return 78
-  const counts = new Map<string, number>()
-  for (const p of posts) counts.set(p.authorLabel, (counts.get(p.authorLabel) ?? 0) + 1)
-  const total = posts.length
-  const maxShare = Math.max(...[...counts.values()].map((c) => c / total))
-  const raw = 100 - (maxShare - 1 / Math.max(1, counts.size)) * 180
-  return clamp(Math.round(raw), 12, 98)
-}
 
 function computeKeyPoints(room: Room | null, posts: Post[]) {
   const base = posts

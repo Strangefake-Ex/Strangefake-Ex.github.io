@@ -8,6 +8,12 @@ function limitWords(text: string, maxWords: number) {
   return `${tokens.slice(0, maxWords).join(' ')}…`
 }
 
+function limitChars(text: string, maxChars: number) {
+  const chars = Array.from(text)
+  if (chars.length <= maxChars) return text
+  return chars.slice(0, maxChars).join('')
+}
+
 export default async function handler(req: Request) {
   if (req.method !== 'POST') return methodNotAllowed()
 
@@ -39,9 +45,9 @@ export default async function handler(req: Request) {
     followUps: string[]
   }>({
     system:
-      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 1-3 sentences, must be <= 100 words, must connect to the prompt/topic when available, and must directly continue from at least one line in recent messages (no generic preface). Do not start with phrases like "Building on", "Building upon", or "To build on".`,
+      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 1 sentence, must be <= 50 characters, must connect to the prompt/topic when available, and must add a new point without quoting or restating any recent message. Do not start with phrases like "Building on", "Building upon", or "To build on".`,
     user: [
-      'Task: Speak as the current AI knight. In 1-3 sentences, continue the discussion by responding to the latest relevant message and tying it back to the prompt/topic.',
+      'Task: Provide one concise, dialogue-like sentence that moves the discussion forward without repeating what someone already said.',
       prompt || topic ? `Prompt: ${prompt}\nTopic: ${topic}` : null,
       `Recent:\n${contribution.trim() || 'No messages yet.'}`,
       `Security: ${security}\nShieldStrength: ${shieldStrength}`,
@@ -51,6 +57,6 @@ export default async function handler(req: Request) {
     temperature,
   })
 
-  const cleaned = limitWords(result.script ?? '', 100).replace(/^(building on|building upon|to build on)\b[^\w]*/i, '').trim()
-  return jsonResponse({ ...result, script: cleaned })
+  const cleaned = limitWords(result.script ?? '', 50).replace(/^(building on|building upon|to build on)\b[^\w]*/i, '').replace(/\s+/g, ' ').trim()
+  return jsonResponse({ ...result, script: limitChars(cleaned, 50) })
 }

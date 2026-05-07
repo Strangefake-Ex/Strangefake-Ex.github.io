@@ -83,6 +83,12 @@ function toSingleLine(text: string) {
   return text.replace(/\s+/g, ' ').trim()
 }
 
+function limitChars(text: string, maxChars: number) {
+  const chars = Array.from(text)
+  if (chars.length <= maxChars) return text
+  return chars.slice(0, maxChars).join('')
+}
+
 export function createAiClient(config: { mode: AiClientMode; baseUrl?: string }): AiClient {
   if (config.mode === 'http') {
     const base = (config.baseUrl ?? '').replace(/\/$/, '')
@@ -114,35 +120,27 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       const topic = toSingleLine(input.context?.topic ?? input.context?.prompt ?? '')
       const cjk = hasCjk(cleaned) || hasCjk(topic)
 
-      const rewrite = cjk
-        ? [
-            `核心观点：${cleaned}${/[。！？]$/.test(cleaned) ? '' : '。'}`,
-            topic ? `围绕“${topic}”，我会把论点落在一个可检验的判断上，而不是停留在泛泛的态度表达。` : '我会把论点落在一个可检验的判断上，而不是停留在泛泛的态度表达。',
-            '更进一步，这一点之所以重要，在于它影响我们如何界定问题、权衡利弊，并决定接下来要验证什么。',
-            '值得追问的是：哪一个具体例子最能支持（或挑战）这句话？',
-          ].join('')
-        : [
-            `Thesis: ${cleaned}${/[.!?]$/.test(cleaned) ? '' : '.'}`,
-            topic
-              ? `Framed within “${topic}”, I would tighten the claim into a testable statement and make the reasoning explicit.`
-              : 'I would tighten the claim into a testable statement and make the reasoning explicit.',
-            'What makes this worth saying is the practical implication: it changes how we interpret the issue and what we should do next.',
-            'A good next question is: which concrete example best supports (or challenges) this claim?',
-          ].join(' ')
+      const rewriteRaw = cjk
+        ? topic
+          ? `围绕“${topic}”，${cleaned}。举一例说明？`
+          : `${cleaned}。举一例说明？`
+        : topic
+          ? `${cleaned}. What example supports this on “${topic}”?`
+          : `${cleaned}. What example supports this?`
 
       const bulletPoints = cjk
         ? ['一句话结论', '补一个例子', '抛出问题']
         : ['Clear thesis', 'Add one example', 'Ask a question']
-      return { rewrite, tone: 'academic', bulletPoints }
+      return { rewrite: limitChars(rewriteRaw, 50), tone: 'academic', bulletPoints }
     },
     async suggestPrompt(input) {
       const topic = toSingleLine(input.context?.topic ?? input.context?.prompt ?? input.context?.roomTitle ?? '')
       const cjk = hasCjk(topic)
       const label = topic || (cjk ? '当前主题' : 'the current topic')
-      const prompt = cjk
-        ? `在“${label}”的语境里，挑一个具体场景说明你的立场，并用一个问题邀请他人回应。`
-        : `Pick one concrete example related to “${label}”, state a clear position, and end with one question that invites a reply.`
-      return { prompt }
+      const promptRaw = cjk
+        ? `就“${label}”写一句结论，再补一个例子。`
+        : `State a clear claim about “${label}” and add one example.`
+      return { prompt: limitChars(promptRaw, 50) }
     },
     async explainAlert(input) {
       return {
@@ -154,13 +152,16 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       const topic = input.context?.topic?.trim()
       const prompt = input.context?.prompt?.trim()
       const anchor = topic || prompt || null
-      const lastLine = extractLastLine(input.contribution)
-      const base = lastLine.trim() || '—'
-      const script = anchor
-        ? `“${base}” ties directly to “${anchor}”. My take: what concrete example best supports (or challenges) this point?`
-        : `“${base}” is worth unpacking. What concrete example best supports (or challenges) this point?`
+      const cjk = hasCjk(String(anchor ?? ''))
+      const scriptRaw = cjk
+        ? anchor
+          ? `关于“${anchor}”，你能给一个具体例子吗？`
+          : '你能给一个具体例子吗？'
+        : anchor
+          ? `On “${anchor}”, what concrete example supports your point?`
+          : 'What concrete example supports your point?'
       return {
-        script: limitWords(script, 100),
+        script: limitChars(limitWords(scriptRaw, 50), 50),
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],
       }
     },

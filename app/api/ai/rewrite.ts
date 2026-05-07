@@ -2,6 +2,12 @@ import { deepseekChatJson, jsonResponse, methodNotAllowed } from './_deepseek'
 
 export const config = { runtime: 'edge' }
 
+function limitChars(text: string, maxChars: number) {
+  const chars = Array.from(text)
+  if (chars.length <= maxChars) return text
+  return chars.slice(0, maxChars).join('')
+}
+
 export default async function handler(req: Request) {
   if (req.method !== 'POST') return methodNotAllowed()
 
@@ -38,7 +44,7 @@ export default async function handler(req: Request) {
     bulletPoints: string[]
   }>({
     system:
-      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. The rewrite must feel noticeably more polished than the original: improve structure, vary sentence rhythm, tighten wording, and add clear transitions. If the draft is short or vague, you may add one supporting reason and one discussion question without introducing new factual claims. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]). The rewrite should be 2-5 sentences and should not exceed ~140 words. bulletPoints must be exactly 3 short, direct action phrases (each <= 4 words).`,
+      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. The rewrite must feel noticeably more polished than the original: tighten wording, add a clearer claim, and make it dialogue-ready. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]). The rewrite must be <= 50 characters, must be 1-2 sentences, and must not contain line breaks. bulletPoints must be exactly 3 short, direct action phrases (each <= 4 words).`,
     user: [
       'Task: Rewrite the draft so it reads like a stronger, more mature contribution to a seminar discussion.',
       baseProfile.intensity === 'moderate edits' ? 'Rules: moderate rephrasing is allowed; keep meaning; improve structure.' : null,
@@ -52,5 +58,6 @@ export default async function handler(req: Request) {
     temperature,
   })
 
-  return jsonResponse(result)
+  const rewrite = typeof result?.rewrite === 'string' ? result.rewrite.replace(/\s+/g, ' ').trim() : ''
+  return jsonResponse({ ...result, rewrite: limitChars(rewrite, 50) })
 }

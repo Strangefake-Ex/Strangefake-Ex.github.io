@@ -28,6 +28,12 @@ export type PostRepository = {
   likePost: (postId: PostId) => Promise<void>
 }
 
+function limitChars(text: string, maxChars: number) {
+  const chars = Array.from(text)
+  if (chars.length <= maxChars) return text
+  return chars.slice(0, maxChars).join('')
+}
+
 function safeParseJson<T>(value: string | null): T | null {
   if (!value) return null
   try {
@@ -118,7 +124,7 @@ export function createLocalPostRepository(storage: Storage = localStorage, optio
         roomId,
         authorId: input.authorId,
         authorLabel: input.authorLabel,
-        content: input.content,
+        content: limitChars(input.content.trim(), 50),
         replyToPostId: input.replyToPostId,
         createdAt: Date.now(),
         likes: 0,

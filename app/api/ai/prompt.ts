@@ -2,6 +2,12 @@ import { deepseekChatJson, jsonResponse, methodNotAllowed } from './_deepseek'
 
 export const config = { runtime: 'edge' }
 
+function limitChars(text: string, maxChars: number) {
+  const chars = Array.from(text)
+  if (chars.length <= maxChars) return text
+  return chars.slice(0, maxChars).join('')
+}
+
 export default async function handler(req: Request) {
   if (req.method !== 'POST') return methodNotAllowed()
 
@@ -19,7 +25,7 @@ export default async function handler(req: Request) {
 
   const result = await deepseekChatJson<{ prompt: string }>({
     system:
-      'You generate a single-sentence writing prompt for a seminar-room app. Output JSON only with key: prompt (string). The prompt must be exactly one sentence, no quotes, no markdown, no line breaks, and it must be specific and actionable rather than generic.',
+      'You generate a single-sentence writing prompt for a seminar-room app. Output JSON only with key: prompt (string). The prompt must be <= 50 characters, exactly one sentence, no quotes, no markdown, no line breaks, and it must be specific and actionable rather than generic.',
     user: [
       'Task: Provide one sentence that helps the user write a stronger private draft for the current discussion.',
       anchor ? `Topic/Prompt: ${anchor}` : null,
@@ -31,6 +37,5 @@ export default async function handler(req: Request) {
   })
 
   const out = typeof result?.prompt === 'string' ? result.prompt.replace(/\s+/g, ' ').trim() : ''
-  return jsonResponse({ prompt: out })
+  return jsonResponse({ prompt: limitChars(out, 50) })
 }
-

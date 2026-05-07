@@ -15,6 +15,9 @@ export type StructuredSession = {
   currentIndex: number
   currentSpeakerId: string
   turnSeconds: number
+  turnNumber: number
+  maxRounds: number
+  endedAt?: number
   maxSpeeches: number
   maxSeconds: number
   stats: Record<string, { speeches: number; seconds: number }>
@@ -70,15 +73,25 @@ function persistSession(storage: Storage, roomId: RoomId, session: StructuredSes
 }
 
 function migrateSession(session: StructuredSession): StructuredSession {
-  if (session.turnSeconds !== 45) return session
+  const raw = session as unknown as Record<string, unknown>
   const now = nowMs()
-  const nextTurnSeconds = 90
-  const nextTurnEndsAt = session.turnEndsAt
-    ? session.turnEndsAt <= now
-      ? now + nextTurnSeconds * 1000
-      : session.turnEndsAt + (nextTurnSeconds - session.turnSeconds) * 1000
-    : now + nextTurnSeconds * 1000
-  return { ...session, turnSeconds: nextTurnSeconds, turnEndsAt: nextTurnEndsAt, updatedAt: now }
+  const turnNumber = typeof raw.turnNumber === 'number' ? raw.turnNumber : 0
+  const maxRounds = typeof raw.maxRounds === 'number' ? raw.maxRounds : 5
+
+  let next: StructuredSession = session
+  if (session.turnSeconds === 45) {
+    const nextTurnSeconds = 90
+    const nextTurnEndsAt = session.turnEndsAt
+      ? session.turnEndsAt <= now
+        ? now + nextTurnSeconds * 1000
+        : session.turnEndsAt + (nextTurnSeconds - session.turnSeconds) * 1000
+      : now + nextTurnSeconds * 1000
+    next = { ...next, turnSeconds: nextTurnSeconds, turnEndsAt: nextTurnEndsAt, updatedAt: now }
+  }
+  if ((next as unknown as Record<string, unknown>).turnNumber !== turnNumber || (next as unknown as Record<string, unknown>).maxRounds !== maxRounds) {
+    next = { ...next, turnNumber, maxRounds, updatedAt: now }
+  }
+  return next
 }
 
 function ensureStats(
@@ -110,6 +123,8 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
       if (existing && existing.order.some((p) => p.id === seat.id)) return existing
 
       const turnSeconds = existing?.turnSeconds ?? 90
+      const turnNumber = existing?.turnNumber ?? 0
+      const maxRounds = existing?.maxRounds ?? 5
       const maxSpeeches = existing?.maxSpeeches ?? 3
       const maxSeconds = existing?.maxSeconds ?? 180
       const targetParticipants = Math.max(2, Math.round(options?.targetParticipants ?? 3))
@@ -160,6 +175,9 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
         currentIndex: existing?.currentIndex ?? 0,
         currentSpeakerId: existing?.currentSpeakerId ?? baseOrder[0]!.id,
         turnSeconds,
+        turnNumber,
+        maxRounds,
+        endedAt: existing?.endedAt,
         maxSpeeches,
         maxSeconds,
         stats: ensureStats(existing?.stats, baseOrder),
@@ -171,13 +189,27 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
       return next
     },
     async advanceTurn(roomId) {
-      const existing = storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
-      if (!existing || existing.order.length === 0) throw new Error('Session not started')
+      const existingRaw =
+        storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      if (!existingRaw || existingRaw.order.length === 0) throw new Error('Session not started')
+      const existing = migrateSession(existingRaw)
+      if (existing !== existingRaw) persistSession(storage, roomId, existing)
+      if (existing.endedAt) return existing
+
+      const maxTurns = Math.max(1, existing.order.length * (existing.maxRounds || 5))
+      if ((existing.turnNumber ?? 0) >= maxTurns - 1) {
+        const now = nowMs()
+        const ended: StructuredSession = { ...existing, endedAt: now, turnEndsAt: now, updatedAt: now }
+        persistSession(storage, roomId, ended)
+        return ended
+      }
+
       const nextIndex = (existing.currentIndex + 1) % existing.order.length
       const next: StructuredSession = {
         ...existing,
         currentIndex: nextIndex,
         currentSpeakerId: existing.order[nextIndex]!.id,
+        turnNumber: (existing.turnNumber ?? 0) + 1,
         turnEndsAt: computeEndsAt(existing.turnSeconds),
         updatedAt: nowMs(),
       }
@@ -185,8 +217,11 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
       return next
     },
     async setCurrentSpeaker(roomId, speakerId) {
-      const existing = storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
-      if (!existing || existing.order.length === 0) throw new Error('Session not started')
+      const existingRaw =
+        storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      if (!existingRaw || existingRaw.order.length === 0) throw new Error('Session not started')
+      const existing = migrateSession(existingRaw)
+      if (existing !== existingRaw) persistSession(storage, roomId, existing)
       const idx = existing.order.findIndex((p) => p.id === speakerId)
       if (idx < 0) throw new Error('Speaker not found')
       const next: StructuredSession = {
@@ -200,8 +235,11 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
       return next
     },
     async moveParticipant(roomId, participantId, delta) {
-      const existing = storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
-      if (!existing || existing.order.length === 0) throw new Error('Session not started')
+      const existingRaw =
+        storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      if (!existingRaw || existingRaw.order.length === 0) throw new Error('Session not started')
+      const existing = migrateSession(existingRaw)
+      if (existing !== existingRaw) persistSession(storage, roomId, existing)
       const idx = existing.order.findIndex((p) => p.id === participantId)
       if (idx < 0) throw new Error('Participant not found')
       const to = clamp(idx + delta, 0, existing.order.length - 1)
@@ -223,8 +261,11 @@ export function createLocalSessionRepository(storage: Storage = localStorage): S
       return next
     },
     async recordSpeech(roomId, speakerId, secondsUsed) {
-      const existing = storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
-      if (!existing) throw new Error('Session not started')
+      const existingRaw =
+        storage === localStorage ? getJson<StructuredSession>(sessionKey(roomId)) : safeParseJson<StructuredSession>(storage.getItem(sessionKey(roomId)))
+      if (!existingRaw) throw new Error('Session not started')
+      const existing = migrateSession(existingRaw)
+      if (existing !== existingRaw) persistSession(storage, roomId, existing)
       const stats = ensureStats(existing.stats, existing.order)
       const entry = stats[speakerId] ?? { speeches: 0, seconds: 0 }
       if (entry.speeches >= existing.maxSpeeches) throw new Error('Quota exceeded')

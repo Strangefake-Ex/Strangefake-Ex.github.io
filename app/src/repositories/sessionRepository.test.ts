@@ -199,4 +199,31 @@ describe('session repository (structured mode)', () => {
 
     await expect(sessionRepo.recordSpeech(room.id, seat.id, 3)).rejects.toThrow(/quota/i)
   })
+
+  test('advanceTurn ends the session after 5 rounds', async () => {
+    const roomRepo = createLocalRoomRepository(localStorage, { seedDemo: false })
+    const room = await roomRepo.createRoom({
+      title: 'Structured',
+      topic: 'T',
+      prompt: 'P',
+      mode: 'structured',
+      capacity: 5,
+      participants: 0,
+      aiGuardEnabled: true,
+    })
+
+    const seatRepo = createLocalSeatRepository(localStorage)
+    const seat = await seatRepo.claimSeat(room.id, { displayName: 'Alice', isAnonymous: false })
+
+    const sessionRepo = createLocalSessionRepository(localStorage)
+    const session0 = await sessionRepo.ensureSession(room.id, seat, { targetParticipants: 2 })
+    expect((session0 as any).endedAt).toBeUndefined()
+
+    for (let i = 0; i < 10; i++) {
+      await sessionRepo.advanceTurn(room.id)
+    }
+
+    const after = await sessionRepo.getSession(room.id)
+    expect((after as any)?.endedAt).toBeDefined()
+  })
 })

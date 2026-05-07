@@ -35,10 +35,15 @@ export default function Lobby() {
     navigate(`/room/${created.id}`)
   }
 
-  function onJoin() {
+  async function onJoin() {
     const code = joinCode.trim()
     if (!code) return
-    navigate(`/room/${code}`)
+    const room = await repo.findRoomByFacilitatorCode(code)
+    if (room) {
+      navigate(`/room/${room.id}`)
+    } else {
+      navigate(`/room/${code}`)
+    }
   }
 
   return (
@@ -149,14 +154,14 @@ export default function Lobby() {
                 <div className="mt-6 grid gap-4">
                   <div className="grid gap-2">
                     <label className="text-xs text-[#4b463f]" htmlFor="code">
-                      Room ID
+                      Room ID or Invite Code
                     </label>
                     <input
                       id="code"
                       autoComplete="off"
                       className="rt-field h-11 rounded-xl px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
                       name="inviteCode"
-                      placeholder="Paste a roomId…"
+                      placeholder="Paste a roomId or invite code…"
                       spellCheck={false}
                       value={joinCode}
                       onChange={(e) => setJoinCode(e.target.value)}

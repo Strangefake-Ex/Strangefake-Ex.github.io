@@ -48,6 +48,24 @@ export type AiClient = {
   weaveContribution: (input: WeaveContributionInput) => Promise<WeaveContributionResult>
 }
 
+function limitWords(text: string, maxWords: number) {
+  const tokens = text.trim().split(/\s+/g).filter(Boolean)
+  if (tokens.length <= maxWords) return text.trim()
+  return `${tokens.slice(0, maxWords).join(' ')}…`
+}
+
+function extractLastLine(contribution: string) {
+  const lines = contribution
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i]!
+    if (!/^topic:/i.test(line) && !/^prompt:/i.test(line) && !/^recent messages:/i.test(line)) return line
+  }
+  return contribution.trim()
+}
+
 export function createAiClient(config: { mode: AiClientMode; baseUrl?: string }): AiClient {
   if (config.mode === 'http') {
     const base = (config.baseUrl ?? '').replace(/\/$/, '')
@@ -70,8 +88,9 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
   return {
     async rewriteDraft(input) {
       const trimmed = input.text.trim()
-      const rewrite = trimmed
-        ? `In response to the prompt, ${trimmed[0]!.toLowerCase()}${trimmed.slice(1)}`
+      const base = trimmed ? `${trimmed[0]!.toUpperCase()}${trimmed.slice(1)}` : ''
+      const rewrite = base
+        ? `${base.replace(/\s+/g, ' ').replace(/\s+([.,!?;:])/g, '$1')}${/[.!?]$/.test(base) ? '' : '.'}`
         : 'Draft something first, then ask the AI to polish it.'
       const bulletPoints = trimmed
         ? ['Clarify your claim in one sentence.', 'Add one piece of evidence or example.', 'End with a question to invite others.']
@@ -85,12 +104,14 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       }
     },
     async weaveContribution(input) {
-      const base = input.contribution.trim() || '—'
       const topic = input.context?.topic?.trim()
       const prompt = input.context?.prompt?.trim()
       const anchor = topic || prompt || null
+      const lastLine = extractLastLine(input.contribution)
+      const base = lastLine.trim() || '—'
+      const script = `Building on “${base}”${anchor ? ` in our discussion on “${anchor}”` : ''}, I’d add one point: how does this shape our next step or counterexample?`
       return {
-        script: `Let me pull a thread from the chat${anchor ? ` on “${anchor}”` : ''}: “${base}”. How does this connect to our prompt, and does anyone want to build on it?`,
+        script: limitWords(script, 100),
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],
       }
     },

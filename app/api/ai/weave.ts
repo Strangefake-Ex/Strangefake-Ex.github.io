@@ -2,6 +2,12 @@ import { deepseekChatJson, jsonResponse, methodNotAllowed } from './_deepseek'
 
 export const config = { runtime: 'edge' }
 
+function limitWords(text: string, maxWords: number) {
+  const tokens = text.trim().split(/\s+/g).filter(Boolean)
+  if (tokens.length <= maxWords) return text.trim()
+  return `${tokens.slice(0, maxWords).join(' ')}…`
+}
+
 export default async function handler(req: Request) {
   if (req.method !== 'POST') return methodNotAllowed()
 
@@ -33,9 +39,9 @@ export default async function handler(req: Request) {
     followUps: string[]
   }>({
     system:
-      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 1-3 sentences, must connect to the prompt/topic when available, and must respond to at least one line from recent messages when available.`,
+      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 1-3 sentences, must be <= 100 words, must connect to the prompt/topic when available, and must directly continue from at least one line in recent messages (no generic preface).`,
     user: [
-      'Task: Speak as the current AI knight. Respond in 1-3 sentences based on the prompt/topic and the recent messages.',
+      'Task: Speak as the current AI knight. In 1-3 sentences, continue the discussion by responding to the latest relevant message and tying it back to the prompt/topic.',
       prompt || topic ? `Prompt: ${prompt}\nTopic: ${topic}` : null,
       `Recent:\n${contribution.trim() || 'No messages yet.'}`,
       `Security: ${security}\nShieldStrength: ${shieldStrength}`,
@@ -45,5 +51,5 @@ export default async function handler(req: Request) {
     temperature,
   })
 
-  return jsonResponse(result)
+  return jsonResponse({ ...result, script: limitWords(result.script ?? '', 100) })
 }

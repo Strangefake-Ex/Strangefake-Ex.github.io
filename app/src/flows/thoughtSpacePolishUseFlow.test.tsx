@@ -27,6 +27,6 @@ test('thought space can apply AI rewrite back into the private draft', async () 
   await screen.findByText(/ai suggestion/i)
   await userEvent.click(await screen.findByRole('button', { name: /use rewrite/i }))
 
-  expect((draft as HTMLTextAreaElement).value.toLowerCase()).toContain('in response to the prompt')
+  expect((draft as HTMLTextAreaElement).value.toLowerCase()).not.toContain('in response to the prompt')
+  expect((draft as HTMLTextAreaElement).value.trim()).not.toBe('I think this is good')
 })
-

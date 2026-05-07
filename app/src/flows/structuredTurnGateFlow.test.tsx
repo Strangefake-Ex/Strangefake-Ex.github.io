@@ -34,11 +34,12 @@ test('structured room disables sending when it is not your turn', async () => {
 
   expect(await screen.findByText(/structured order/i)).toBeInTheDocument()
 
-  await userEvent.type(screen.getByRole('textbox', { name: /share your thoughts/i }), 'Hi')
-  expect(screen.getByRole('button', { name: /send/i })).toBeEnabled()
+  await userEvent.type(screen.getByRole('textbox', { name: /private draft/i }), 'Hi')
+  const publish = screen.getByRole('button', { name: /publish from draft/i })
+  expect(publish).toBeEnabled()
 
   await userEvent.click(screen.getByRole('button', { name: /advance turn/i }))
   const dialog = await screen.findByRole('dialog', { name: /confirm advance turn/i })
   await userEvent.click(within(dialog).getByRole('button', { name: /^advance$/i }))
-  expect(screen.getByRole('button', { name: /send/i })).toBeDisabled()
+  expect(publish).toBeDisabled()
 })

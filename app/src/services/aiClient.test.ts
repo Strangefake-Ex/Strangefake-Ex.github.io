@@ -32,4 +32,11 @@ describe('ai client', () => {
     const words = res.script.trim().split(/\s+/g).filter(Boolean)
     expect(words.length).toBeLessThanOrEqual(100)
   })
+
+  test('fallback suggestPrompt returns a single-line hint', async () => {
+    const client = createAiClient({ mode: 'stub' })
+    const res = await client.suggestPrompt({ context: { topic: 'Testing culture' } })
+    expect(res.prompt.length).toBeGreaterThan(0)
+    expect(res.prompt.includes('\n')).toBe(false)
+  })
 })

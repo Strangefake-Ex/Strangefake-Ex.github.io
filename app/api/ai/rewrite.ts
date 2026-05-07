@@ -13,6 +13,8 @@ export default async function handler(req: Request) {
   const context = body?.context ?? {}
   const security = String((context as Record<string, unknown>)?.security ?? 'guarded')
   const shieldStrength = Number((context as Record<string, unknown>)?.shieldStrength ?? 78)
+  const prompt = String((context as Record<string, unknown>)?.prompt ?? '')
+  const topic = String((context as Record<string, unknown>)?.topic ?? '')
 
   function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n))
@@ -20,7 +22,7 @@ export default async function handler(req: Request) {
 
   const baseProfile =
     security === 'fortified'
-      ? { temperature: 0.2, style: 'safety-first, very careful, formal, and concise', intensity: 'minimal edits' as const }
+      ? { temperature: 0.2, style: 'safety-first, very careful, formal, and concise', intensity: 'moderate edits' as const }
       : security === 'open'
         ? { temperature: 0.75, style: 'expressive while staying respectful; preserve the writer voice', intensity: 'substantial rewrite' as const }
         : { temperature: 0.5, style: 'balanced, clear, and respectful', intensity: 'moderate edits' as const }
@@ -36,12 +38,12 @@ export default async function handler(req: Request) {
     bulletPoints: string[]
   }>({
     system:
-      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]).`,
+      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. The rewrite must feel noticeably more polished than the original: improve structure, vary sentence rhythm, tighten wording, and add clear transitions. If the draft is short or vague, you may add one supporting reason and one discussion question without introducing new factual claims. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]). The rewrite should be 2-5 sentences and should not exceed ~140 words.`,
     user: [
-      'Task: Rewrite the draft to be clearer and more respectful.',
-      baseProfile.intensity === 'minimal edits' ? 'Rules: keep wording close; only fix clarity/grammar and soften tone.' : null,
+      'Task: Rewrite the draft so it reads like a stronger, more mature contribution to a seminar discussion.',
       baseProfile.intensity === 'moderate edits' ? 'Rules: moderate rephrasing is allowed; keep meaning; improve structure.' : null,
       baseProfile.intensity === 'substantial rewrite' ? 'Rules: you may substantially restructure for clarity and flow; keep meaning; preserve the writer voice.' : null,
+      prompt || topic ? `Topic: ${topic}\nPrompt: ${prompt}` : null,
       `Draft:\n${text}`,
       `Security: ${security}\nShieldStrength: ${shieldStrength}`,
     ]

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Clock3, Heart, Menu, Send, Shield, Sparkles, Users } from 'lucide-react'
+import { ArrowLeft, Clock3, Heart, Menu, Shield, Sparkles, Users } from 'lucide-react'
 
 import { createLocalRoomRepository, type Room as RoomType } from '@/repositories/roomRepository'
 import { createLocalPostRepository, type Post } from '@/repositories/postRepository'
@@ -32,7 +32,6 @@ export default function Room() {
   const [seat, setSeat] = useState<Seat | null>(null)
   const [session, setSession] = useState<StructuredSession | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [draft, setDraft] = useState('')
   const [posts, setPosts] = useState<Post[]>([])
   const [now, setNow] = useState(() => Date.now())
   const [quotaError, setQuotaError] = useState<string | null>(null)
@@ -42,6 +41,8 @@ export default function Room() {
   const [draftAiBusy, setDraftAiBusy] = useState(false)
   const [draftAiRewrite, setDraftAiRewrite] = useState<string | null>(null)
   const [draftAiBullets, setDraftAiBullets] = useState<string[]>([])
+  const [draftPromptBusy, setDraftPromptBusy] = useState(false)
+  const [draftPrompt, setDraftPrompt] = useState<string | null>(null)
   const [confirmPublishOpen, setConfirmPublishOpen] = useState(false)
   const [showAllMessages, setShowAllMessages] = useState(false)
   const [confirmAdvanceOpen, setConfirmAdvanceOpen] = useState(false)
@@ -244,7 +245,6 @@ export default function Room() {
     }
     setJson(POSTS_INDEX_KEY, index)
     setPosts([])
-    setDraft('')
     setQuotaError(null)
     lastAiTurnKeyRef.current = null
     await sessionRepo.resetSession(roomId)
@@ -252,11 +252,17 @@ export default function Room() {
     setSession(await sessionRepo.ensureSession(roomId, seat, { targetParticipants: target }))
   }
 
-  async function onPublish() {
+  async function onPublishFromDraft() {
+    setConfirmPublishOpen(true)
+  }
+
+  async function onConfirmPublishFromDraft() {
     if (!roomId) return
     if (!seat) return
-    if (!canSpeakNow) return
-    const trimmed = draft.trim()
+    if (paused) return
+    if (isStructured && !canSpeakNow) return
+    if (isStructured && !session) return
+    const trimmed = privateDraft.trim()
     if (!trimmed) return
     setQuotaError(null)
 
@@ -271,29 +277,6 @@ export default function Room() {
         return
       }
     }
-
-    await postRepo.createPost(roomId, {
-      authorId: seat.id,
-      authorLabel: seat.isAnonymous ? 'Anonymous Knight' : seat.displayName,
-      content: trimmed,
-    })
-    setDraft('')
-    setPosts(await postRepo.listPosts(roomId))
-    if (isStructured) {
-      setSession(await sessionRepo.advanceTurn(roomId))
-    }
-  }
-
-  async function onPublishFromDraft() {
-    setConfirmPublishOpen(true)
-  }
-
-  async function onConfirmPublishFromDraft() {
-    if (!roomId) return
-    if (!seat) return
-    if (paused) return
-    const trimmed = privateDraft.trim()
-    if (!trimmed) return
     await postRepo.createPost(roomId, {
       authorId: seat.id,
       authorLabel: seat.isAnonymous ? 'Anonymous Knight' : seat.displayName,
@@ -302,8 +285,12 @@ export default function Room() {
     setPrivateDraft('')
     setDraftAiRewrite(null)
     setDraftAiBullets([])
+    setDraftPrompt(null)
     setPosts(await postRepo.listPosts(roomId))
     if (privateDraftId) await draftRepo.markPublished(privateDraftId)
+    if (isStructured) {
+      setSession(await sessionRepo.advanceTurn(roomId))
+    }
   }
 
   async function onPolishDraft() {
@@ -327,6 +314,27 @@ export default function Room() {
       setDraftAiBullets(res.bulletPoints)
     } finally {
       setDraftAiBusy(false)
+    }
+  }
+
+  async function onSuggestPrompt() {
+    if (!roomId) return
+    setDraftPromptBusy(true)
+    try {
+      const res = await ai.suggestPrompt({
+        context: {
+          roomId,
+          roomTitle: room?.title,
+          prompt: room?.prompt,
+          topic: room?.topic,
+          mode: room?.mode,
+          security: room?.security,
+          shieldStrength: room?.shieldStrength,
+        },
+      })
+      setDraftPrompt(res.prompt)
+    } finally {
+      setDraftPromptBusy(false)
     }
   }
 
@@ -571,12 +579,27 @@ export default function Room() {
                 className="rt-gild inline-flex h-10 items-center justify-center rounded-xl bg-[#b9902e] px-4 text-xs font-semibold text-black transition hover:translate-y-[-1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35 disabled:opacity-45"
                 type="button"
                 onClick={onPublishFromDraft}
-                disabled={!seat || privateDraft.trim().length === 0}
+                disabled={!seat || privateDraft.trim().length === 0 || (isStructured && !canSpeakNow)}
               >
                 Publish from Draft
               </button>
             </div>
           </div>
+
+          {quotaError ? <div className="mt-3 text-xs text-red-900">{quotaError}</div> : null}
+          {isStructured && seat && session ? (
+            <div className="mt-2 text-xs text-[#4b463f]">
+              {isOverQuota ? 'Quota reached — you can no longer publish in this session.' : null}
+              {!isOverQuota && !canSpeak ? 'Wait for your turn to publish.' : null}
+              {paused ? 'Discussion paused — wait for the facilitator to resume.' : null}
+              {!paused && canSpeak ? (
+                <>
+                  Quota remaining: <span className="text-[#1c1917]">{quotaSpeechesRemaining}</span> speeches ·{' '}
+                  <span className="text-[#1c1917]">{quotaSecondsRemaining}s</span>
+                </>
+              ) : null}
+            </div>
+          ) : null}
 
           {draftHelpVisible && seat ? (
             <div className="mt-4 rounded-2xl border border-violet-600/22 bg-violet-100/70 p-4 text-sm text-violet-900">
@@ -597,6 +620,8 @@ export default function Room() {
                 value={privateDraft}
                 onChange={(e) => setPrivateDraft(e.target.value)}
               />
+              {draftPromptBusy ? <div className="mt-3 text-xs text-[#6b645c]">Generating prompt…</div> : null}
+              {!draftPromptBusy && draftPrompt ? <div className="mt-3 text-xs text-[#4b463f]">{draftPrompt}</div> : null}
             </div>
 
             <div className="rt-subpanel rounded-2xl p-4">
@@ -615,15 +640,12 @@ export default function Room() {
                       Use Rewrite
                     </button>
                     <button
-                      className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/65 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                      className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/65 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35 disabled:opacity-55"
                       type="button"
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(draftAiRewrite)
-                        } catch {}
-                      }}
+                      onClick={onSuggestPrompt}
+                      disabled={draftPromptBusy}
                     >
-                      Copy
+                      {draftPromptBusy ? 'Prompting…' : 'Prompt'}
                     </button>
                   </div>
                   {draftAiBullets.length ? (
@@ -691,45 +713,6 @@ export default function Room() {
                   ))}
                 </div>
               )}
-            </div>
-          ) : null}
-          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-[#b9902e]/18 bg-white/70 px-3 py-3">
-            <textarea
-              aria-label="Share your thoughts with the Round Table…"
-              autoComplete="off"
-              className="min-h-10 w-full resize-none bg-transparent text-sm leading-7 text-[#1c1917] placeholder:text-[#6b645c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
-              name="message"
-              placeholder="Share your thoughts with the Round Table…"
-              disabled={!seat || !canSpeakNow}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-            />
-            <button
-              aria-label="Send"
-              className={[
-                'inline-flex h-10 w-10 items-center justify-center rounded-xl transition',
-                seat && canSpeakNow && draft.trim().length > 0
-                  ? 'bg-[#b9902e] text-black hover:translate-y-[-1px]'
-                  : 'cursor-not-allowed border border-[#b9902e]/18 bg-white/55 text-[#6b645c]',
-              ].join(' ')}
-              disabled={!seat || !canSpeakNow || draft.trim().length === 0}
-              type="button"
-              onClick={onPublish}
-            >
-              <Send className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="mt-3 text-xs text-[#4b463f]">
-            {quotaError ? `Quota: ${quotaError}` : null}
-            {!quotaError && isStructured && seat && isOverQuota ? 'Quota reached — you can no longer speak in this session.' : null}
-            {!quotaError && isStructured && seat && !isOverQuota && !canSpeak ? 'Wait for your turn to speak.' : null}
-            {!quotaError && paused ? 'Discussion paused — wait for the facilitator to resume.' : null}
-            {!quotaError && !paused && (!isStructured || !seat || canSpeak) ? 'AI will highlight keywords and suggest citations as you type' : null}
-          </div>
-          {isStructured && seat && session ? (
-            <div className="mt-2 text-xs text-[#6b645c]">
-              Quota remaining: <span className="text-[#1c1917]">{quotaSpeechesRemaining}</span> speeches ·{' '}
-              <span className="text-[#1c1917]">{quotaSecondsRemaining}s</span>
             </div>
           ) : null}
         </div>

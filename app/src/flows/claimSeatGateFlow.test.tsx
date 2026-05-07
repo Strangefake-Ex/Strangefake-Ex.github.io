@@ -23,9 +23,8 @@ test('room requires claiming a seat before sending messages', async () => {
 
   expect(screen.queryByRole('heading', { name: /claim your seat/i })).not.toBeInTheDocument()
 
-  const send = screen.getByRole('button', { name: /send/i })
-  expect(send).toBeDisabled()
-  await userEvent.type(screen.getByRole('textbox', { name: /share your thoughts/i }), 'Hello')
-  expect(send).toBeEnabled()
+  const publish = screen.getByRole('button', { name: /publish from draft/i })
+  expect(publish).toBeDisabled()
+  await userEvent.type(screen.getByRole('textbox', { name: /private draft/i }), 'Hello')
+  expect(publish).toBeEnabled()
 })
-

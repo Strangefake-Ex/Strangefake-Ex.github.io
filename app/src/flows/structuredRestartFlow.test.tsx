@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, expect, test } from 'vitest'
@@ -32,8 +32,11 @@ test('structured room can restart and clears all discussion posts', async () => 
   await userEvent.type(screen.getByRole('textbox', { name: /your name/i }), 'Alice')
   await userEvent.click(screen.getByRole('button', { name: /claim seat/i }))
 
-  await userEvent.type(screen.getByRole('textbox', { name: /share your thoughts/i }), 'hello')
-  await userEvent.click(screen.getByRole('button', { name: /send/i }))
+  const draft = screen.getByRole('textbox', { name: /private draft/i })
+  await userEvent.type(draft, 'hello')
+  await userEvent.click(screen.getByRole('button', { name: /publish from draft/i }))
+  const dialog = await screen.findByRole('dialog', { name: /confirm publish/i })
+  await userEvent.click(within(dialog).getByRole('button', { name: /^publish$/i }))
   expect((await screen.findAllByText(/^hello$/i)).length).toBeGreaterThan(0)
 
   await userEvent.click(screen.getByRole('button', { name: /restart/i }))

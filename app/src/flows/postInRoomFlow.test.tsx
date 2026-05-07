@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, expect, test } from 'vitest'
@@ -28,8 +28,10 @@ test('can post a message in a room and like it', async () => {
   await userEvent.type(screen.getByRole('textbox', { name: /your name/i }), 'Alice')
   await userEvent.click(screen.getByRole('button', { name: /claim seat/i }))
 
-  await userEvent.type(screen.getByRole('textbox', { name: /share your thoughts with the round table/i }), 'Hello Round Table')
-  await userEvent.click(screen.getByRole('button', { name: /send/i }))
+  await userEvent.type(screen.getByRole('textbox', { name: /private draft/i }), 'Hello Round Table')
+  await userEvent.click(screen.getByRole('button', { name: /publish from draft/i }))
+  const dialog = await screen.findByRole('dialog', { name: /confirm publish/i })
+  await userEvent.click(within(dialog).getByRole('button', { name: /^publish$/i }))
 
   const matches = await screen.findAllByText(/hello round table/i)
   expect(matches.length).toBeGreaterThan(0)

@@ -17,6 +17,12 @@ import { facControlKey, facPollVotesKey, POSTS_INDEX_KEY, postsKey, sessionKey }
 import { createAiClient } from '@/services/aiClient'
 import CrestSeal from '@/components/CrestSeal'
 
+const MAX_MESSAGE_CHARS = 50
+
+function charCount(text: string) {
+  return Array.from(text).length
+}
+
 export default function Room() {
   const { roomId } = useParams()
   const repo = useMemo(() => createLocalRoomRepository(), [])
@@ -193,12 +199,17 @@ export default function Room() {
 
     const run = async () => {
       await new Promise((r) => window.setTimeout(r, 600))
+      const botIds = new Set(session.order.filter((p) => p.isBot).map((p) => p.id))
       const recentMessages = posts
         .slice(0, 8)
         .slice()
         .reverse()
         .map((p) => `${p.authorLabel}: ${p.content}`)
         .join('\n')
+      const recentAiLines = posts
+        .filter((p) => botIds.has(p.authorId))
+        .slice(0, 5)
+        .map((p) => p.content)
       const contribution = [
         room.topic ? `Topic: ${room.topic}` : null,
         room.prompt ? `Prompt: ${room.prompt}` : null,
@@ -217,6 +228,9 @@ export default function Room() {
           mode: room.mode,
           security: room.security,
           shieldStrength: room.shieldStrength,
+          speakerId: currentSpeaker.id,
+          speakerLabel: currentSpeaker.label,
+          recentAiLines,
         },
       })
 
@@ -264,6 +278,10 @@ export default function Room() {
     if (isStructured && !session) return
     const trimmed = privateDraft.trim()
     if (!trimmed) return
+    if (charCount(trimmed) > MAX_MESSAGE_CHARS) {
+      setQuotaError(`Message must be within ${MAX_MESSAGE_CHARS} characters.`)
+      return
+    }
     setQuotaError(null)
 
     if (isStructured && session) {
@@ -310,8 +328,7 @@ export default function Room() {
           shieldStrength: room?.shieldStrength,
         },
       })
-      const next = Array.from(res.rewrite ?? '').slice(0, 50).join('')
-      setDraftAiRewrite(next)
+      setDraftAiRewrite(res.rewrite)
       setDraftAiBullets(res.bulletPoints)
     } finally {
       setDraftAiBusy(false)
@@ -333,7 +350,7 @@ export default function Room() {
           shieldStrength: room?.shieldStrength,
         },
       })
-      setDraftPrompt(Array.from(res.prompt ?? '').slice(0, 50).join(''))
+      setDraftPrompt(res.prompt)
     } finally {
       setDraftPromptBusy(false)
     }
@@ -765,7 +782,7 @@ export default function Room() {
                       <div className="text-xs text-[#6b645c]">{p.authorLabel}</div>
                       <div className="mt-2 text-sm leading-7 text-[#1c1917]">
                         {room?.aiGuardEnabled && guardianKeywords.length > 0
-                          ? highlightTextParts(Array.from(p.content).slice(0, 50).join(''), guardianKeywords.slice(0, 8)).map((part, idx) =>
+                          ? highlightTextParts(p.content, guardianKeywords.slice(0, 8)).map((part, idx) =>
                               part.isHighlight ? (
                                 <span
                                   key={`${p.id}-${idx}-${part.text}`}
@@ -778,7 +795,7 @@ export default function Room() {
                                 <span key={`${p.id}-${idx}-${part.text}`}>{part.text}</span>
                               ),
                             )
-                          : Array.from(p.content).slice(0, 50).join('')}
+                          : p.content}
                       </div>
                       <button
                         className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#b9902e]/18 bg-white/55 px-3 py-2 text-xs text-[#1c1917] transition hover:bg-white/75"

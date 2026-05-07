@@ -14,23 +14,23 @@ describe('ai client', () => {
     expect(res.rewrite.toLowerCase()).not.toContain('in response to the prompt')
   })
 
-  test('fallback weaveContribution references topic or prompt when provided', async () => {
+  test('fallback weaveContribution avoids repeated lines when recent AI lines are provided', async () => {
     const client = createAiClient({ mode: 'stub' })
     const res = await client.weaveContribution({
       contribution: 'Alice: I think we should consider edge cases.',
-      context: { topic: 'Testing culture', prompt: 'How should we discuss responsibly?' },
+      context: { topic: 'Testing culture', recentAiLines: ['Give one counterexample.'] },
     })
-    expect(res.script.includes('Testing culture') || res.script.includes('How should we discuss responsibly?')).toBe(true)
+    expect(res.script).not.toBe('Give one counterexample.')
   })
 
-  test('fallback weaveContribution script is within 100 words', async () => {
+  test('fallback weaveContribution script is within 50 characters', async () => {
     const client = createAiClient({ mode: 'stub' })
     const res = await client.weaveContribution({
       contribution: Array.from({ length: 200 }, (_, i) => `word${i}`).join(' '),
       context: { topic: 'T' },
     })
-    const words = res.script.trim().split(/\s+/g).filter(Boolean)
-    expect(words.length).toBeLessThanOrEqual(100)
+    const chars = Array.from(res.script).length
+    expect(chars).toBeLessThanOrEqual(50)
   })
 
   test('fallback suggestPrompt returns a single-line hint', async () => {

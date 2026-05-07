@@ -2,10 +2,8 @@ import { deepseekChatJson, jsonResponse, methodNotAllowed } from './_deepseek'
 
 export const config = { runtime: 'edge' }
 
-function limitChars(text: string, maxChars: number) {
-  const chars = Array.from(text)
-  if (chars.length <= maxChars) return text
-  return chars.slice(0, maxChars).join('')
+function charCount(text: string) {
+  return Array.from(text).length
 }
 
 export default async function handler(req: Request) {
@@ -37,5 +35,15 @@ export default async function handler(req: Request) {
   })
 
   const out = typeof result?.prompt === 'string' ? result.prompt.replace(/\s+/g, ' ').trim() : ''
-  return jsonResponse({ prompt: limitChars(out, 50) })
+  if (charCount(out) <= 50) return jsonResponse({ prompt: out })
+
+  const compact = await deepseekChatJson<{ prompt: string }>({
+    system: 'Rewrite to <= 50 characters, one sentence, no line breaks. Output JSON key prompt.',
+    user: `Original prompt: ${out}`,
+    temperature: 0.2,
+  })
+  const compactPrompt = typeof compact?.prompt === 'string' ? compact.prompt.replace(/\s+/g, ' ').trim() : ''
+  const useCjkFallback = /[\u3400-\u9fff]/.test(anchor)
+  const safePrompt = charCount(compactPrompt) <= 50 ? compactPrompt : useCjkFallback ? '先写立场一句，再补一个具体例子。' : 'Write one claim, then add one concrete example.'
+  return jsonResponse({ prompt: safePrompt })
 }

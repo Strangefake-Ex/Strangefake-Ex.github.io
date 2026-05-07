@@ -2,10 +2,8 @@ import { deepseekChatJson, jsonResponse, methodNotAllowed } from './_deepseek'
 
 export const config = { runtime: 'edge' }
 
-function limitChars(text: string, maxChars: number) {
-  const chars = Array.from(text)
-  if (chars.length <= maxChars) return text
-  return chars.slice(0, maxChars).join('')
+function charCount(text: string) {
+  return Array.from(text).length
 }
 
 export default async function handler(req: Request) {
@@ -44,7 +42,7 @@ export default async function handler(req: Request) {
     bulletPoints: string[]
   }>({
     system:
-      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. The rewrite must feel noticeably more polished than the original: tighten wording, add a clearer claim, and make it dialogue-ready. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]). The rewrite must be <= 50 characters, must be 1-2 sentences, and must not contain line breaks. bulletPoints must be exactly 3 short, direct action phrases (each <= 4 words).`,
+      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. The rewrite must feel noticeably more polished than the original: tighten wording, add a clearer claim, and make it dialogue-ready. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]). The rewrite must be <= 50 characters, must be 1-2 sentences, and must not contain line breaks. bulletPoints must be exactly 3 short, direct, draft-specific action phrases (each <= 4 words).`,
     user: [
       'Task: Rewrite the draft so it reads like a stronger, more mature contribution to a seminar discussion.',
       baseProfile.intensity === 'moderate edits' ? 'Rules: moderate rephrasing is allowed; keep meaning; improve structure.' : null,
@@ -59,5 +57,15 @@ export default async function handler(req: Request) {
   })
 
   const rewrite = typeof result?.rewrite === 'string' ? result.rewrite.replace(/\s+/g, ' ').trim() : ''
-  return jsonResponse({ ...result, rewrite: limitChars(rewrite, 50) })
+  if (charCount(rewrite) <= 50) return jsonResponse({ ...result, rewrite })
+
+  const compact = await deepseekChatJson<{ rewrite: string }>({
+    system: 'Compress text to <= 50 characters, preserve core meaning, single line, no quotes. Output JSON with key rewrite.',
+    user: [`Original rewrite: ${rewrite}`, prompt || topic ? `Topic: ${topic}\nPrompt: ${prompt}` : null].filter((v) => !!v).join('\n\n'),
+    temperature: 0.3,
+  })
+  const compactRewrite = typeof compact?.rewrite === 'string' ? compact.rewrite.replace(/\s+/g, ' ').trim() : ''
+  const useCjkFallback = /[\u3400-\u9fff]/.test(text) || /[\u3400-\u9fff]/.test(topic) || /[\u3400-\u9fff]/.test(prompt)
+  const safeRewrite = charCount(compactRewrite) <= 50 ? compactRewrite : useCjkFallback ? '先给结论，再补例子并提出问题。' : 'State the claim, add one example, ask one question.'
+  return jsonResponse({ ...result, rewrite: safeRewrite })
 }

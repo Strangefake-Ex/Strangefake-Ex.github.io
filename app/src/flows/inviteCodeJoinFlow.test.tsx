@@ -14,7 +14,7 @@ test('home can join a room by invite code', async () => {
   localStorage.setItem('rt:auth:session:v1', JSON.stringify({ nickname: 'Alice', createdAt: Date.now() }))
 
   const repo = createLocalRoomRepository(localStorage, { seedDemo: false })
-  const room = await repo.createRoom({
+  await repo.createRoom({
     title: 'Session',
     topic: 'Topic',
     prompt: 'Prompt',

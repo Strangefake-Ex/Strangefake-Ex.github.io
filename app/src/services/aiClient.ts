@@ -181,7 +181,6 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       const prompt = input.context?.prompt?.trim()
       const speakerLabel = input.context?.speakerLabel?.trim() || 'AI Knight'
       const recentAiLines = input.context?.recentAiLines ?? []
-      const latestSpeakerLabel = input.context?.latestSpeakerLabel?.trim()
       const latestSpeakerContent = toSingleLine(input.context?.latestSpeakerContent ?? '')
       const anchor = topic || prompt || 'the current topic'
       const cjk = hasCjk(`${anchor} ${latestSpeakerContent}`)
@@ -192,7 +191,6 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       const cjkPrefixes = ['', '另外，', '退一步讲，', '其实换个角度看，', '或者我们也可以说：', '不可否认的是，']
       const enPrefixes = ['', 'Also, ', 'Taking a step back, ', 'From another angle, ', 'Alternatively, ', 'Admittedly, ']
       const prefixPool = cjk ? cjkPrefixes : enPrefixes
-      const prefix = prefixPool[(turn * 11 + attempt * 5) % prefixPool.length]
 
       const continuePool = cjk
         ? [

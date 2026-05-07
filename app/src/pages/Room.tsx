@@ -17,12 +17,6 @@ import { facControlKey, facPollVotesKey, POSTS_INDEX_KEY, postsKey, sessionKey }
 import { createAiClient } from '@/services/aiClient'
 import CrestSeal from '@/components/CrestSeal'
 
-const MAX_MESSAGE_CHARS = 50
-
-function charCount(text: string) {
-  return Array.from(text).length
-}
-
 export default function Room() {
   const { roomId } = useParams()
   const repo = useMemo(() => createLocalRoomRepository(), [])
@@ -278,10 +272,6 @@ export default function Room() {
     if (isStructured && !session) return
     const trimmed = privateDraft.trim()
     if (!trimmed) return
-    if (charCount(trimmed) > MAX_MESSAGE_CHARS) {
-      setQuotaError(`Message must be within ${MAX_MESSAGE_CHARS} characters.`)
-      return
-    }
     setQuotaError(null)
 
     if (isStructured && session) {

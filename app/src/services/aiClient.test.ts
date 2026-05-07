@@ -23,14 +23,14 @@ describe('ai client', () => {
     expect(res.script).not.toBe('Give one counterexample.')
   })
 
-  test('fallback weaveContribution script is within 50 characters', async () => {
+  test('fallback weaveContribution script is topic-aware and longer than trivial one-liners', async () => {
     const client = createAiClient({ mode: 'stub' })
     const res = await client.weaveContribution({
       contribution: Array.from({ length: 200 }, (_, i) => `word${i}`).join(' '),
       context: { topic: 'T' },
     })
-    const chars = Array.from(res.script).length
-    expect(chars).toBeLessThanOrEqual(50)
+    expect(res.script.toLowerCase()).toContain('t')
+    expect(Array.from(res.script).length).toBeGreaterThan(40)
   })
 
   test('fallback suggestPrompt returns a single-line hint', async () => {

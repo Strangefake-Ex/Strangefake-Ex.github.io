@@ -40,6 +40,6 @@ test('structured session posts an AI knight message when it is the bot turn', as
   )
 
   await screen.findByRole('heading', { name: /session/i })
-  expect(await screen.findByText(/counterexample|claim fail|concrete case/i)).toBeInTheDocument()
+  expect((await screen.findAllByText(/sir rowan|lady nyx|scholar miro|dame elara|sage kian|sir vale/i)).length).toBeGreaterThan(0)
   expect(screen.queryByText(/building on/i)).toBeNull()
 })

@@ -42,7 +42,7 @@ export default async function handler(req: Request) {
     bulletPoints: string[]
   }>({
     system:
-      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. The rewrite must feel noticeably more polished than the original: tighten wording, add a clearer claim, and make it dialogue-ready. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]). The rewrite must be <= 50 characters, must be 1-2 sentences, and must not contain line breaks. bulletPoints must be exactly 3 short, direct, draft-specific action phrases (each <= 4 words).`,
+      `You rewrite a student draft for a seminar room app. Safety profile: ${baseProfile.style}. Rewrite intensity: ${baseProfile.intensity}. Higher shieldStrength implies stricter politeness and reduced confrontational tone. The rewrite must feel noticeably more polished than the original: tighten wording, add a clearer claim, and make it dialogue-ready. Do not prepend meta phrases like "In response to the prompt". Output JSON only with keys: rewrite (string), tone ("academic"|"neutral"|"gentle"), bulletPoints (string[]). The rewrite must be 2-4 sentences, no line breaks, and should be at least as long as the input draft while staying concise (prefer <= 220 chars). bulletPoints must be exactly 3 concise, draft-specific, non-duplicated action phrases.`,
     user: [
       'Task: Rewrite the draft so it reads like a stronger, more mature contribution to a seminar discussion.',
       baseProfile.intensity === 'moderate edits' ? 'Rules: moderate rephrasing is allowed; keep meaning; improve structure.' : null,
@@ -57,15 +57,27 @@ export default async function handler(req: Request) {
   })
 
   const rewrite = typeof result?.rewrite === 'string' ? result.rewrite.replace(/\s+/g, ' ').trim() : ''
-  if (charCount(rewrite) <= 50) return jsonResponse({ ...result, rewrite })
+  const sourceLen = charCount(text.replace(/\s+/g, ' ').trim())
+  if (rewrite && charCount(rewrite) >= sourceLen && charCount(rewrite) <= 220) return jsonResponse({ ...result, rewrite })
 
-  const compact = await deepseekChatJson<{ rewrite: string }>({
-    system: 'Compress text to <= 50 characters, preserve core meaning, single line, no quotes. Output JSON with key rewrite.',
-    user: [`Original rewrite: ${rewrite}`, prompt || topic ? `Topic: ${topic}\nPrompt: ${prompt}` : null].filter((v) => !!v).join('\n\n'),
-    temperature: 0.3,
+  const expanded = await deepseekChatJson<{ rewrite: string }>({
+    system: 'Rewrite into 2-4 concise sentences, no line breaks, preserve meaning, and ensure length is >= source draft length while <= 220 chars. Output JSON key rewrite.',
+    user: [
+      `Source draft (${sourceLen} chars): ${text}`,
+      `Current rewrite: ${rewrite || text}`,
+      prompt || topic ? `Topic: ${topic}\nPrompt: ${prompt}` : null,
+    ]
+      .filter((v) => !!v)
+      .join('\n\n'),
+    temperature: 0.45,
   })
-  const compactRewrite = typeof compact?.rewrite === 'string' ? compact.rewrite.replace(/\s+/g, ' ').trim() : ''
+  const compactRewrite = typeof expanded?.rewrite === 'string' ? expanded.rewrite.replace(/\s+/g, ' ').trim() : ''
   const useCjkFallback = /[\u3400-\u9fff]/.test(text) || /[\u3400-\u9fff]/.test(topic) || /[\u3400-\u9fff]/.test(prompt)
-  const safeRewrite = charCount(compactRewrite) <= 50 ? compactRewrite : useCjkFallback ? '先给结论，再补例子并提出问题。' : 'State the claim, add one example, ask one question.'
+  const safeRewrite =
+    compactRewrite && charCount(compactRewrite) >= sourceLen && charCount(compactRewrite) <= 220
+      ? compactRewrite
+      : useCjkFallback
+        ? '先明确结论，再补具体例子，最后提出可讨论的问题。'
+        : 'State a clear claim, support it with one concrete example, and end with a discussion question.'
   return jsonResponse({ ...result, rewrite: safeRewrite })
 }

@@ -89,6 +89,18 @@ function pickNonDuplicate(items: string[], seed: string, recent: string[]) {
   return items[shortHash(seed) % items.length]!
 }
 
+function uniq(items: string[]) {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const item of items) {
+    const key = toSingleLine(item).toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(item)
+  }
+  return out
+}
+
 export function createAiClient(config: { mode: AiClientMode; baseUrl?: string }): AiClient {
   if (config.mode === 'http') {
     const base = (config.baseUrl ?? '').replace(/\/$/, '')
@@ -119,19 +131,28 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       const cleaned = toSingleLine(trimmed)
       const topic = toSingleLine(input.context?.topic ?? input.context?.prompt ?? '')
       const cjk = hasCjk(cleaned) || hasCjk(topic)
+      const focus = cleaned.split(/[\s,.;!?，。！？；：]+/g).filter(Boolean).find((t) => t.length >= 2) ?? (cjk ? '主题' : 'point')
       const rewrite = cjk
         ? pickByHash(
-            ['先给结论，再补一例，再提问。', '观点要具体，理由可验证。', '删空话，保留结论和例子。'],
-            `${cleaned}|${topic}`,
+            [
+              `把“${focus}”写成明确结论，再补一个具体例子，并说明其意义。`,
+              `围绕“${focus}”先给判断，再给证据，最后用问题引导回应。`,
+              `删掉空泛表达，保留立场、理由和一个可讨论的问题。`,
+            ],
+            `${cleaned}|${topic}|${focus}`,
           )
         : pickByHash(
-            ['State claim, add one example, ask one question.', 'Make one clear claim and one concrete support.', 'Cut vague words; keep claim and evidence.'],
-            `${cleaned}|${topic}`,
+            [
+              `Turn "${focus}" into a clear claim, add one concrete example, then explain why it matters.`,
+              `State your position on "${focus}", support it with evidence, and close with a discussion question.`,
+              `Remove vague phrases and keep a crisp claim, one reason, and one invitation to respond.`,
+            ],
+            `${cleaned}|${topic}|${focus}`,
           )
-
-      const tokens = cleaned.split(/[\s,.;!?，。！？；：]+/g).filter(Boolean)
-      const focus = tokens.find((t) => t.length >= 2) ?? (cjk ? '主题' : 'point')
-      const bulletPoints = cjk ? [`聚焦${focus}`, '补充例子', '提出追问'] : [`Focus on ${focus}`, 'Add one example', 'Ask one follow-up']
+      const bulletCandidates = cjk
+        ? [`聚焦${focus}`, '给出具体例证', '说明影响范围', '提出可讨论问题']
+        : [`Focus on ${focus}`, 'Add concrete evidence', 'Clarify the implication', 'End with one question']
+      const bulletPoints = uniq(bulletCandidates).slice(0, 3)
       return { rewrite, tone: 'academic', bulletPoints }
     },
     async suggestPrompt(input) {
@@ -149,13 +170,29 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
     async weaveContribution(input) {
       const topic = input.context?.topic?.trim()
       const prompt = input.context?.prompt?.trim()
+      const speakerLabel = input.context?.speakerLabel?.trim() || 'AI Knight'
       const recentAiLines = input.context?.recentAiLines ?? []
       const anchor = topic || prompt || null
       const cjk = hasCjk(`${anchor ?? ''}`)
+      const seed = `${speakerLabel}|${anchor ?? ''}|${input.contribution.slice(-80)}`
       const pool = cjk
-        ? ['请给一个反例检验这句判断。', '这个观点的适用边界是什么？', '能补一个具体例子吗？']
-        : ['Give one counterexample.', 'When does this claim fail?', 'Add one concrete case.']
-      const script = pickNonDuplicate(pool, `${anchor ?? ''}`, recentAiLines)
+        ? [
+            `${speakerLabel}：围绕“${anchor || '当前议题'}”，请给一个能落地的例子并说明结果。`,
+            `${speakerLabel}：这个观点在什么边界条件下不成立，请给出反例。`,
+            `${speakerLabel}：若要验证该判断，最小可行的检验步骤是什么？`,
+            `${speakerLabel}：请说明这条结论对下一步讨论的具体影响。`,
+            `${speakerLabel}：同样结论在另一情境下是否成立？请对比说明。`,
+            `${speakerLabel}：请把主张拆成“条件-动作-结果”三段再论证。`,
+          ]
+        : [
+            `${speakerLabel}: Give one concrete example for "${anchor || 'this topic'}" and explain the outcome.`,
+            `${speakerLabel}: Under which boundary condition does this claim fail? Add one counterexample.`,
+            `${speakerLabel}: What is the smallest test we can run to validate this point?`,
+            `${speakerLabel}: Explain one practical implication this claim has for our next step.`,
+            `${speakerLabel}: Would the same claim hold in a different context? Compare briefly.`,
+            `${speakerLabel}: Reframe the argument as condition, action, and result.`,
+          ]
+      const script = pickNonDuplicate(pool, seed, recentAiLines)
       return {
         script,
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],

@@ -43,7 +43,7 @@ export default async function handler(req: Request) {
     followUps: string[]
   }>({
     system:
-      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 1 sentence, must be <= 50 characters, and must move the discussion forward with a fresh angle. Do not quote or restate any recent message. Do not start with phrases like "Building on", "Building upon", or "To build on".`,
+      `You are an AI knight speaking in a seminar room app. Style: ${baseProfile.style}. Output JSON only with keys: script (string), followUps (string[]). The script must be 2-3 concise sentences, between 60 and 160 characters, and must move the discussion forward with a fresh, topic-specific angle. Do not quote or restate any recent message. Do not start with phrases like "Building on", "Building upon", or "To build on".`,
     user: [
       `Task: ${speakerLabel} should provide one concise sentence with a new angle.`,
       prompt || topic ? `Prompt: ${prompt}\nTopic: ${topic}` : null,
@@ -57,15 +57,20 @@ export default async function handler(req: Request) {
   })
 
   const cleaned = (result.script ?? '').replace(/^(building on|building upon|to build on)\b[^\w]*/i, '').replace(/\s+/g, ' ').trim()
-  if (charCount(cleaned) <= 50) return jsonResponse({ ...result, script: cleaned })
+  if (charCount(cleaned) >= 60 && charCount(cleaned) <= 160) return jsonResponse({ ...result, script: cleaned })
 
   const compact = await deepseekChatJson<{ script: string }>({
-    system: 'Rewrite to <= 50 characters, one sentence, no quotes, new angle. Output JSON key script.',
+    system: 'Rewrite into 2-3 concise sentences, 60-160 characters, no quotes, no repetition of recent AI lines, and keep topic-specific angle. Output JSON key script.',
     user: [`Original line: ${cleaned}`, recentAiLines.length ? `Avoid overlap:\n${recentAiLines.join('\n')}` : null].filter((v) => !!v).join('\n\n'),
     temperature: 0.3,
   })
   const compactScript = typeof compact?.script === 'string' ? compact.script.replace(/\s+/g, ' ').trim() : ''
   const useCjkFallback = /[\u3400-\u9fff]/.test(topic) || /[\u3400-\u9fff]/.test(prompt)
-  const safeScript = charCount(compactScript) <= 50 ? compactScript : useCjkFallback ? '这个观点的适用边界是什么？' : 'When does this claim fail?'
+  const safeScript =
+    charCount(compactScript) >= 60 && charCount(compactScript) <= 160
+      ? compactScript
+      : useCjkFallback
+        ? `围绕“${topic || prompt || '当前议题'}”，请给出一个具体情境来验证这个判断，并说明它在什么条件下会失效。`
+        : `For "${topic || prompt || 'this topic'}", provide one concrete scenario that supports the claim, then explain when it would fail.`
   return jsonResponse({ ...result, script: safeScript })
 }

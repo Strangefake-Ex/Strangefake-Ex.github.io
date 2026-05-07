@@ -73,3 +73,17 @@ export function highlightTextParts(text: string, keywords: string[]): TextPart[]
   return parts.length ? parts : [{ text, isHighlight: false }]
 }
 
+export function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n))
+}
+
+export function computeParticipationBalance(posts: Array<{ authorLabel: string }>) {
+  if (posts.length === 0) return 78
+  const counts = new Map<string, number>()
+  for (const p of posts) counts.set(p.authorLabel, (counts.get(p.authorLabel) ?? 0) + 1)
+  const total = posts.length
+  if (counts.size <= 1) return clamp(Math.round(100 - (1 - 1 / Math.max(2, counts.size)) * 90), 12, 98)
+  const maxShare = Math.max(...[...counts.values()].map((c) => c / total))
+  const raw = 100 - (maxShare - 1 / Math.max(1, counts.size)) * 180
+  return clamp(Math.round(raw), 12, 98)
+}

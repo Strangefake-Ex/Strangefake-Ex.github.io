@@ -220,8 +220,13 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
             `${speakerLabel}: A critical aspect of "${anchor}" that is often overlooked is the divergence of stakeholder interests.`,
           ]
       const pool = latestSpeakerContent ? [...continuePool, ...stancePool] : stancePool
-      const suffix = cjk ? `(轮次:${turn})` : `(Turn:${turn})`
-      const script = pickNonDuplicate(pool, seed, recentAiLines, suffix)
+      
+      const cjkPrefixes = ['另外，', '退一步讲，', '其实换个角度看，', '或者我们也可以说：', '不可否认的是，']
+      const enPrefixes = ['Also, ', 'Taking a step back, ', 'From another angle, ', 'Alternatively, ', 'Admittedly, ']
+      const prefixPool = cjk ? cjkPrefixes : enPrefixes
+      const prefix = prefixPool[(turn * 11 + attempt * 5) % prefixPool.length]
+
+      const script = pickNonDuplicate(pool, seed, recentAiLines, prefix)
       return {
         script,
         followUps: ['Can someone provide an example?', 'What is a counterargument?', 'How would we test this claim?'],

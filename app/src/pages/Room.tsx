@@ -330,6 +330,7 @@ export default function Room() {
       authorLabel: seat.isAnonymous ? 'Anonymous Knight' : seat.displayName,
       content: trimmed,
     })
+    // Clear draft and AI suggestions after successful publish
     setPrivateDraft('')
     setDraftAiRewrite(null)
     setDraftAiBullets([])

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Clock3, Heart, Menu, Shield, Sparkles, Users } from 'lucide-react'
+import { ArrowLeft, Clock3, Heart, Menu, Send, Shield, Sparkles, Users } from 'lucide-react'
 
 import { createLocalRoomRepository, type Room as RoomType } from '@/repositories/roomRepository'
 import { createLocalPostRepository, type Post } from '@/repositories/postRepository'
@@ -12,29 +12,22 @@ import ClaimSeatModal from '@/components/ClaimSeatModal'
 import ConfirmDialog from '@/components/ConfirmDialog'
 import AppNavDrawer from '@/components/AppNavDrawer'
 import { computeKeywords, highlightTextParts } from '@/lib/guardian'
-import { getJson, removeKey, setJson, subscribeKey } from '@/lib/localStore'
-import { facControlKey, facPollVotesKey, POSTS_INDEX_KEY, postsKey, sessionKey } from '@/lib/storageKeys'
+import { getJson, setJson, subscribeKey } from '@/lib/localStore'
+import { facControlKey, facPollVotesKey, postsKey, sessionKey } from '@/lib/storageKeys'
 import { createAiClient } from '@/services/aiClient'
 import CrestSeal from '@/components/CrestSeal'
 
-function normalizeLine(text: string) {
-  return text.replace(/\s+/g, ' ').trim().toLowerCase()
-}
-
-function fallbackAiLine(topic?: string, latestSpeakerLabel?: string, latestSpeakerContent?: string) {
-  if (latestSpeakerLabel && latestSpeakerContent) {
-    return `我补充 ${latestSpeakerLabel} 的观点：${latestSpeakerContent} 还需要一个可验证的例子和边界条件，才能更有说服力。`
-  }
-  if (topic) {
-    return `关于“${topic}”，我的看法是先明确判断，再给一个具体场景支撑，并说明它在什么条件下不成立。`
-  }
-  return '我补充一点：结论需要配合具体情境和可验证证据，讨论才会更扎实。'
+function useLatestRef<T>(value: T) {
+  const ref = useRef(value)
+  ref.current = value
+  return ref
 }
 
 export default function Room() {
   const { roomId } = useParams()
   const repo = useMemo(() => createLocalRoomRepository(), [])
   const [room, setRoom] = useState<RoomType | null>(null)
+  const [roomNotFound, setRoomNotFound] = useState(false)
   const postRepo = useMemo(() => createLocalPostRepository(), [])
   const seatRepo = useMemo(() => createLocalSeatRepository(), [])
   const sessionRepo = useMemo(() => createLocalSessionRepository(), [])
@@ -46,6 +39,7 @@ export default function Room() {
   const [seat, setSeat] = useState<Seat | null>(null)
   const [session, setSession] = useState<StructuredSession | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [draft, setDraft] = useState('')
   const [posts, setPosts] = useState<Post[]>([])
   const [now, setNow] = useState(() => Date.now())
   const [quotaError, setQuotaError] = useState<string | null>(null)
@@ -55,8 +49,6 @@ export default function Room() {
   const [draftAiBusy, setDraftAiBusy] = useState(false)
   const [draftAiRewrite, setDraftAiRewrite] = useState<string | null>(null)
   const [draftAiBullets, setDraftAiBullets] = useState<string[]>([])
-  const [draftPromptBusy, setDraftPromptBusy] = useState(false)
-  const [draftPrompt, setDraftPrompt] = useState<string | null>(null)
   const [confirmPublishOpen, setConfirmPublishOpen] = useState(false)
   const [showAllMessages, setShowAllMessages] = useState(false)
   const [confirmAdvanceOpen, setConfirmAdvanceOpen] = useState(false)
@@ -72,7 +64,14 @@ export default function Room() {
 
   useEffect(() => {
     if (!roomId) return
-    repo.getRoom(roomId).then(setRoom)
+    let cancelled = false
+    setRoomNotFound(false)
+    repo.getRoom(roomId).then((r) => {
+      if (cancelled) return
+      if (!r) setRoomNotFound(true)
+      setRoom(r)
+    })
+    return () => { cancelled = true }
   }, [repo, roomId])
 
   useEffect(() => {
@@ -108,17 +107,25 @@ export default function Room() {
 
   useEffect(() => {
     if (!roomId) return
-    seatRepo.getSeat(roomId).then(setSeat)
+    let cancelled = false
+    seatRepo.getSeat(roomId).then((s) => {
+      if (cancelled) return
+      setSeat(s)
+    })
+    return () => { cancelled = true }
   }, [roomId, seatRepo])
 
   useEffect(() => {
     if (!roomId) return
     if (!seat) return
+    let cancelled = false
     draftRepo.listDrafts(roomId).then((ds) => {
+      if (cancelled) return
       const mine = ds.find((d) => d.seatId === seat.id && d.status === 'draft')
       setPrivateDraft(mine?.text ?? '')
       setPrivateDraftId(mine?.id ?? null)
     })
+    return () => { cancelled = true }
   }, [draftRepo, roomId, seat])
 
   useEffect(() => {
@@ -172,13 +179,12 @@ export default function Room() {
   const quotaSecondsRemaining = seat && session ? Math.max(0, session.maxSeconds - (seatStats?.seconds ?? 0)) : 0
   const isOverQuota = !!(seat && session && (quotaSpeechesRemaining <= 0 || quotaSecondsRemaining <= 0))
 
-  const endedAt = isStructured && session ? session.endedAt : undefined
-  const canSpeak = !isStructured || (!endedAt && seat && session && session.currentSpeakerId === seat.id && !isOverQuota)
+  const canSpeak = !isStructured || (seat && session && session.currentSpeakerId === seat.id && !isOverQuota)
   const paused = !!facControl?.paused
   const canSpeakNow = canSpeak && !paused
   const currentSpeaker = isStructured && session ? session.order.find((p) => p.id === session.currentSpeakerId) ?? null : null
   const turnRemainingSeconds =
-    isStructured && session && !endedAt ? Math.min(session.turnSeconds, Math.max(0, Math.ceil((session.turnEndsAt - now) / 1000))) : 0
+    isStructured && session ? Math.min(session.turnSeconds, Math.max(0, Math.ceil((session.turnEndsAt - now) / 1000))) : 0
   const guardianKeywords = useMemo(() => (room?.aiGuardEnabled ? computeKeywords(posts) : []), [posts, room?.aiGuardEnabled])
   const maxVisible = 30
   const visiblePosts = useMemo(() => (showAllMessages ? posts : posts.slice(0, maxVisible)), [maxVisible, posts, showAllMessages])
@@ -187,7 +193,6 @@ export default function Room() {
     if (!roomId) return
     if (!isStructured) return
     if (!session) return
-    if (session.endedAt) return
     if (turnRemainingSeconds > 0) return
     sessionRepo.advanceTurn(roomId).then(setSession)
   }, [isStructured, roomId, session, sessionRepo, turnRemainingSeconds])
@@ -197,7 +202,6 @@ export default function Room() {
     if (!room) return
     if (!isStructured) return
     if (!session) return
-    if (session.endedAt) return
     if (!currentSpeaker?.isBot) return
     if (turnRemainingSeconds <= 0) return
 
@@ -205,22 +209,13 @@ export default function Room() {
     if (lastAiTurnKeyRef.current === aiTurnKey) return
     lastAiTurnKeyRef.current = aiTurnKey
 
-    let cancelled = false
     const run = async () => {
       await new Promise((r) => window.setTimeout(r, 600))
-      if (cancelled) return
-      const botIds = new Set(session.order.filter((p) => p.isBot).map((p) => p.id))
       const recentMessages = posts
         .slice(0, 8)
-        .slice()
         .reverse()
         .map((p) => `${p.authorLabel}: ${p.content}`)
         .join('\n')
-      const recentAiLines = posts
-        .filter((p) => botIds.has(p.authorId))
-        .slice(0, 5)
-        .map((p) => p.content)
-      const latestHumanPost = posts.find((p) => !botIds.has(p.authorId))
       const contribution = [
         room.topic ? `Topic: ${room.topic}` : null,
         room.prompt ? `Prompt: ${room.prompt}` : null,
@@ -229,75 +224,61 @@ export default function Room() {
         .filter((v) => !!v)
         .join('\n\n')
 
-      let script = ''
-      for (let attempt = 0; attempt < 3; attempt++) {
-        if (cancelled) return
-        const res = await ai.weaveContribution({
-          contribution,
-          context: {
-            roomId,
-            roomTitle: room.title,
-            prompt: room.prompt,
-            topic: room.topic,
-            mode: room.mode,
-            security: room.security,
-            shieldStrength: room.shieldStrength,
-            speakerId: currentSpeaker.id,
-            speakerLabel: currentSpeaker.label,
-            recentAiLines,
-            latestSpeakerLabel: latestHumanPost?.authorLabel,
-            latestSpeakerContent: latestHumanPost?.content,
-            turnNumber: session.turnNumber,
-            aiAttempt: attempt,
-          },
-        })
-        const normalized = normalizeLine(res.script)
-        const isDuplicate = recentAiLines.some((line) => normalizeLine(line) === normalized)
-        if (!isDuplicate && Array.from(res.script).length > 20) {
-          script = res.script
-          break
-        }
-      }
-      if (cancelled) return
-      if (!script) {
-        script = fallbackAiLine(room.topic, latestHumanPost?.authorLabel, latestHumanPost?.content)
-      }
+      const res = await ai.weaveContribution({
+        contribution,
+        context: {
+          roomId,
+          roomTitle: room.title,
+          prompt: room.prompt,
+          topic: room.topic,
+          mode: room.mode,
+          security: room.security,
+          shieldStrength: room.shieldStrength,
+        },
+      })
 
       await postRepo.createPost(roomId, {
         authorId: session.currentSpeakerId,
         authorLabel: currentSpeaker.label,
-        content: script,
+        content: res.script,
       })
-      if (cancelled) return
       setPosts(await postRepo.listPosts(roomId))
-      if (cancelled) return
       setSession(await sessionRepo.advanceTurn(roomId))
     }
 
-    run().catch(() => {})
-    return () => {
-      cancelled = true
-    }
+    run()
   }, [ai, currentSpeaker, isStructured, postRepo, posts, room, roomId, session, sessionRepo, turnRemainingSeconds])
 
-  async function onRestart() {
+  async function onPublish() {
     if (!roomId) return
-    if (!room) return
     if (!seat) return
-    const key = postsKey(roomId)
-    const existingPosts = (getJson<Post[]>(key) ?? []) as Post[]
-    removeKey(key)
-    const index = (getJson<Record<string, string>>(POSTS_INDEX_KEY) ?? {}) as Record<string, string>
-    for (const p of existingPosts) {
-      delete index[p.id]
-    }
-    setJson(POSTS_INDEX_KEY, index)
-    setPosts([])
+    if (!canSpeakNow) return
+    const trimmed = draft.trim()
+    if (!trimmed) return
     setQuotaError(null)
-    lastAiTurnKeyRef.current = null
-    await sessionRepo.resetSession(roomId)
-    const target = Math.max(2, Math.min(room.capacity, room.participants || 2))
-    setSession(await sessionRepo.ensureSession(roomId, seat, { targetParticipants: target }))
+
+    await postRepo.createPost(roomId, {
+      authorId: seat.id,
+      authorLabel: seat.isAnonymous ? 'Anonymous Knight' : seat.displayName,
+      content: trimmed,
+    })
+    setDraft('')
+    setPosts(await postRepo.listPosts(roomId))
+
+    if (isStructured && session) {
+      const remaining = Math.max(0, Math.ceil((session.turnEndsAt - Date.now()) / 1000))
+      const used = Math.max(0, Math.min(session.turnSeconds, session.turnSeconds - remaining))
+      try {
+        setSession(await sessionRepo.recordSpeech(roomId, seat.id, used))
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Quota exceeded'
+        setQuotaError(msg)
+      }
+    }
+
+    if (isStructured) {
+      setSession(await sessionRepo.advanceTurn(roomId))
+    }
   }
 
   async function onPublishFromDraft() {
@@ -308,38 +289,18 @@ export default function Room() {
     if (!roomId) return
     if (!seat) return
     if (paused) return
-    if (isStructured && !canSpeakNow) return
-    if (isStructured && !session) return
     const trimmed = privateDraft.trim()
     if (!trimmed) return
-    setQuotaError(null)
-
-    if (isStructured && session) {
-      const remaining = Math.max(0, Math.ceil((session.turnEndsAt - Date.now()) / 1000))
-      const used = Math.max(0, Math.min(session.turnSeconds, session.turnSeconds - remaining))
-      try {
-        setSession(await sessionRepo.recordSpeech(roomId, seat.id, used))
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : 'Quota exceeded'
-        setQuotaError(msg)
-        return
-      }
-    }
     await postRepo.createPost(roomId, {
       authorId: seat.id,
       authorLabel: seat.isAnonymous ? 'Anonymous Knight' : seat.displayName,
       content: trimmed,
     })
-    // Clear draft and AI suggestions after successful publish
     setPrivateDraft('')
     setDraftAiRewrite(null)
     setDraftAiBullets([])
-    setDraftPrompt(null)
     setPosts(await postRepo.listPosts(roomId))
     if (privateDraftId) await draftRepo.markPublished(privateDraftId)
-    if (isStructured) {
-      setSession(await sessionRepo.advanceTurn(roomId))
-    }
   }
 
   async function onPolishDraft() {
@@ -363,27 +324,6 @@ export default function Room() {
       setDraftAiBullets(res.bulletPoints)
     } finally {
       setDraftAiBusy(false)
-    }
-  }
-
-  async function onSuggestPrompt() {
-    if (!roomId) return
-    setDraftPromptBusy(true)
-    try {
-      const res = await ai.suggestPrompt({
-        context: {
-          roomId,
-          roomTitle: room?.title,
-          prompt: room?.prompt,
-          topic: room?.topic,
-          mode: room?.mode,
-          security: room?.security,
-          shieldStrength: room?.shieldStrength,
-        },
-      })
-      setDraftPrompt(res.prompt)
-    } finally {
-      setDraftPromptBusy(false)
     }
   }
 
@@ -461,6 +401,21 @@ export default function Room() {
         Skip to content
       </a>
       <div className="mx-auto max-w-5xl px-6 py-10" id="main">
+        {roomNotFound ? (
+          <div className="rt-surface rt-gild rounded-3xl p-12 text-center">
+            <div className="text-2xl font-semibold text-[#1c1917]">Chamber Not Found</div>
+            <div className="mt-3 text-sm text-[#4b463f]">
+              This chamber does not exist or may have been removed.
+            </div>
+            <Link
+              className="rt-gild mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[#b9902e] px-6 text-sm font-semibold text-black transition hover:translate-y-[-1px]"
+              to="/"
+            >
+              Return to Hall
+            </Link>
+          </div>
+        ) : (
+          <>
         <div className="flex items-start justify-between gap-6">
           <div className="flex items-start gap-4">
             <div className="relative">
@@ -546,23 +501,13 @@ export default function Room() {
                   <Clock3 className="h-4 w-4 text-[#6b645c]" />
                   {turnRemainingSeconds}s
                 </div>
-                <div className="flex flex-col items-stretch gap-2">
-                  <button
-                    className="rt-gild inline-flex h-10 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/60 px-4 text-xs font-semibold text-[#1c1917] transition hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35 disabled:opacity-55"
-                    type="button"
-                    onClick={onAdvanceTurn}
-                    disabled={!!endedAt}
-                  >
-                    Advance Turn
-                  </button>
-                  <button
-                    className="rt-gild inline-flex h-10 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/60 px-4 text-xs font-semibold text-[#1c1917] transition hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
-                    type="button"
-                    onClick={onRestart}
-                  >
-                    Restart
-                  </button>
-                </div>
+                <button
+                  className="rt-gild inline-flex h-10 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/60 px-4 text-xs font-semibold text-[#1c1917] transition hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                  type="button"
+                  onClick={onAdvanceTurn}
+                >
+                  Advance Turn
+                </button>
               </div>
             </div>
 
@@ -628,31 +573,16 @@ export default function Room() {
                 className="rt-gild inline-flex h-10 items-center justify-center rounded-xl bg-[#b9902e] px-4 text-xs font-semibold text-black transition hover:translate-y-[-1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35 disabled:opacity-45"
                 type="button"
                 onClick={onPublishFromDraft}
-                disabled={!seat || privateDraft.trim().length === 0 || (isStructured && !canSpeakNow)}
+                disabled={!seat || privateDraft.trim().length === 0}
               >
                 Publish from Draft
               </button>
             </div>
           </div>
 
-          {quotaError ? <div className="mt-3 text-xs text-red-900">{quotaError}</div> : null}
-          {isStructured && seat && session ? (
-            <div className="mt-2 text-xs text-[#4b463f]">
-              {isOverQuota ? 'Quota reached — you can no longer publish in this session.' : null}
-              {!isOverQuota && !canSpeak ? 'Wait for your turn to publish.' : null}
-              {paused ? 'Discussion paused — wait for the facilitator to resume.' : null}
-              {!paused && canSpeak ? (
-                <>
-                  Quota remaining: <span className="text-[#1c1917]">{quotaSpeechesRemaining}</span> speeches ·{' '}
-                  <span className="text-[#1c1917]">{quotaSecondsRemaining}s</span>
-                </>
-              ) : null}
-            </div>
-          ) : null}
-
           {draftHelpVisible && seat ? (
             <div className="mt-4 rounded-2xl border border-violet-600/22 bg-violet-100/70 p-4 text-sm text-violet-900">
-              Want help polishing this before you speak? Try “Polish with AI”.
+              Want help polishing this before you speak? Try "Polish with AI".
             </div>
           ) : null}
 
@@ -669,8 +599,6 @@ export default function Room() {
                 value={privateDraft}
                 onChange={(e) => setPrivateDraft(e.target.value)}
               />
-              {draftPromptBusy ? <div className="mt-3 text-xs text-[#6b645c]">Generating prompt…</div> : null}
-              {!draftPromptBusy && draftPrompt ? <div className="mt-3 text-xs text-[#4b463f]">{draftPrompt}</div> : null}
             </div>
 
             <div className="rt-subpanel rounded-2xl p-4">
@@ -689,12 +617,15 @@ export default function Room() {
                       Use Rewrite
                     </button>
                     <button
-                      className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/65 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35 disabled:opacity-55"
+                      className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/65 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
                       type="button"
-                      onClick={onSuggestPrompt}
-                      disabled={draftPromptBusy}
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(draftAiRewrite)
+                        } catch {}
+                      }}
                     >
-                      {draftPromptBusy ? 'Prompting…' : 'Prompt'}
+                      Copy
                     </button>
                   </div>
                   {draftAiBullets.length ? (
@@ -708,7 +639,7 @@ export default function Room() {
                   ) : null}
                 </>
               ) : (
-                <div className="mt-3 text-sm text-[#4b463f]">Use “Polish with AI” to get a rewrite & structure hints.</div>
+                <div className="mt-3 text-sm text-[#4b463f]">Use "Polish with AI" to get a rewrite & structure hints.</div>
               )}
             </div>
           </div>
@@ -764,86 +695,131 @@ export default function Room() {
               )}
             </div>
           ) : null}
+          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-[#b9902e]/18 bg-white/70 px-3 py-3">
+            <textarea
+              aria-label="Share your thoughts with the Round Table…"
+              autoComplete="off"
+              className="min-h-10 w-full resize-none bg-transparent text-sm leading-7 text-[#1c1917] placeholder:text-[#6b645c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+              name="message"
+              placeholder="Share your thoughts with the Round Table…"
+              disabled={!seat || !canSpeakNow}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            />
+            <button
+              aria-label="Send"
+              className={[
+                'inline-flex h-10 w-10 items-center justify-center rounded-xl transition',
+                seat && canSpeakNow && draft.trim().length > 0
+                  ? 'bg-[#b9902e] text-black hover:translate-y-[-1px]'
+                  : 'cursor-not-allowed border border-[#b9902e]/18 bg-white/55 text-[#6b645c]',
+              ].join(' ')}
+              disabled={!seat || !canSpeakNow || draft.trim().length === 0}
+              type="button"
+              onClick={onPublish}
+            >
+              <Send className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="mt-3 text-xs text-[#4b463f]">
+            {quotaError ? `Quota: ${quotaError}` : null}
+            {!quotaError && isStructured && seat && isOverQuota ? 'Quota reached — you can no longer speak in this session.' : null}
+            {!quotaError && isStructured && seat && !isOverQuota && !canSpeak ? 'Wait for your turn to speak.' : null}
+            {!quotaError && paused ? 'Discussion paused — wait for the facilitator to resume.' : null}
+            {!quotaError && !paused && (!isStructured || !seat || canSpeak) ? 'AI will highlight keywords and suggest citations as you type' : null}
+          </div>
+          {isStructured && seat && session ? (
+            <div className="mt-2 text-xs text-[#6b645c]">
+              Quota remaining: <span className="text-[#1c1917]">{quotaSpeechesRemaining}</span> speeches ·{' '}
+              <span className="text-[#1c1917]">{quotaSecondsRemaining}s</span>
+            </div>
+          ) : null}
         </div>
 
-        <div className="mt-6 grid gap-6">
-          {room?.aiGuardEnabled ? <AiGuardianPanel room={room} posts={posts} /> : null}
+        <div className="mt-6 grid gap-6 lg:grid-cols-5">
+          <div className="lg:col-span-3">
+            {room?.aiGuardEnabled ? <AiGuardianPanel room={room} posts={posts} /> : null}
+          </div>
 
-          <div className="rt-surface rt-gild rounded-3xl p-6">
-            <div className="text-sm font-semibold tracking-tight">Live Scroll</div>
+          <div className="lg:col-span-2">
+            <div className="rt-surface rt-gild rounded-3xl p-6">
+              <div className="text-sm font-semibold tracking-tight">Live Scroll</div>
 
-            <div className="mt-4 grid gap-3">
-              {posts.length === 0 ? (
-                <div className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
-                  <div className="text-sm font-semibold text-[#1c1917]">No messages yet.</div>
-                  <div className="mt-2 text-sm leading-7 text-[#4b463f]">
-                    Start in Thought Space: write a private draft, then press “Publish from Draft”.
+              <div className="mt-4 grid gap-3">
+                {posts.length === 0 ? (
+                  <div className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
+                    <div className="text-sm font-semibold text-[#1c1917]">No messages yet.</div>
+                    <div className="mt-2 text-sm leading-7 text-[#4b463f]">
+                      Start in Thought Space: write a private draft, then press "Publish from Draft".
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <>
-                  {posts.length > maxVisible && !showAllMessages ? (
-                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
-                      <div className="text-xs text-[#4b463f]">Showing latest {maxVisible} messages.</div>
-                      <button
-                        className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
-                        type="button"
-                        onClick={() => setShowAllMessages(true)}
-                      >
-                        Show all messages
-                      </button>
-                    </div>
-                  ) : null}
-
-                  {showAllMessages && posts.length > maxVisible ? (
-                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
-                      <div className="text-xs text-[#4b463f]">Showing all messages.</div>
-                      <button
-                        className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
-                        type="button"
-                        onClick={() => setShowAllMessages(false)}
-                      >
-                        Show latest {maxVisible}
-                      </button>
-                    </div>
-                  ) : null}
-
-                  {[...visiblePosts].reverse().map((p) => (
-                    <div key={p.id} className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
-                      <div className="text-xs text-[#6b645c]">{p.authorLabel}</div>
-                      <div className="mt-2 text-sm leading-7 text-[#1c1917]">
-                        {room?.aiGuardEnabled && guardianKeywords.length > 0
-                          ? highlightTextParts(p.content, guardianKeywords.slice(0, 8)).map((part, idx) =>
-                              part.isHighlight ? (
-                                <span
-                                  key={`${p.id}-${idx}-${part.text}`}
-                                  data-guardian-highlight="true"
-                                  className="rounded-md bg-[#e0c06a]/35 px-1 font-semibold text-[#7a5b10]"
-                                >
-                                  {part.text}
-                                </span>
-                              ) : (
-                                <span key={`${p.id}-${idx}-${part.text}`}>{part.text}</span>
-                              ),
-                            )
-                          : p.content}
+                ) : (
+                  <>
+                    {posts.length > maxVisible && !showAllMessages ? (
+                      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
+                        <div className="text-xs text-[#4b463f]">Showing latest {maxVisible} messages.</div>
+                        <button
+                          className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                          type="button"
+                          onClick={() => setShowAllMessages(true)}
+                        >
+                          Show all messages
+                        </button>
                       </div>
-                      <button
-                        className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#b9902e]/18 bg-white/55 px-3 py-2 text-xs text-[#1c1917] transition hover:bg-white/75"
-                        type="button"
-                        onClick={() => onLike(p.id)}
-                      >
-                        <Heart className="h-3.5 w-3.5" />
-                        Like
-                        <span className="min-w-4 text-center text-[#7a5b10]">{p.likes}</span>
-                      </button>
-                    </div>
-                  ))}
-                </>
-              )}
+                    ) : null}
+
+                    {showAllMessages && posts.length > maxVisible ? (
+                      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#b9902e]/18 bg-white/55 px-4 py-3">
+                        <div className="text-xs text-[#4b463f]">Showing all messages.</div>
+                        <button
+                          className="rt-gild inline-flex h-9 items-center justify-center rounded-xl border border-[#b9902e]/18 bg-white/70 px-3 text-xs font-semibold text-[#1c1917] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                          type="button"
+                          onClick={() => setShowAllMessages(false)}
+                        >
+                          Show latest {maxVisible}
+                        </button>
+                      </div>
+                    ) : null}
+
+                    {visiblePosts.map((p) => (
+                      <div key={p.id} className="rounded-2xl border border-[#b9902e]/18 bg-white/60 p-4">
+                        <div className="text-xs text-[#6b645c]">{p.authorLabel}</div>
+                        <div className="mt-2 text-sm leading-7 text-[#1c1917]">
+                          {room?.aiGuardEnabled && guardianKeywords.length > 0
+                            ? highlightTextParts(p.content, guardianKeywords.slice(0, 8)).map((part, idx) =>
+                                part.isHighlight ? (
+                                  <span
+                                    key={`${p.id}-${idx}-${part.text}`}
+                                    data-guardian-highlight="true"
+                                    className="rounded-md bg-[#e0c06a]/35 px-1 font-semibold text-[#7a5b10]"
+                                  >
+                                    {part.text}
+                                  </span>
+                                ) : (
+                                  <span key={`${p.id}-${idx}-${part.text}`}>{part.text}</span>
+                                ),
+                              )
+                            : p.content}
+                        </div>
+                        <button
+                          className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#b9902e]/18 bg-white/55 px-3 py-2 text-xs text-[#1c1917] transition hover:bg-white/75"
+                          type="button"
+                          onClick={() => onLike(p.id)}
+                        >
+                          <Heart className="h-3.5 w-3.5" />
+                          Like
+                          <span className="min-w-4 text-center text-[#7a5b10]">{p.likes}</span>
+                        </button>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
+          </>
+        )}
       </div>
 
       <AppNavDrawer

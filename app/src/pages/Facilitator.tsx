@@ -27,11 +27,6 @@ import useAuthSession from '@/hooks/useAuthSession'
 import { computeVirtualRange } from '@/lib/virtualList'
 import { computeParticipationBalance, clamp } from '@/lib/guardian'
 
-type ParticipantRow = {
-  label: string
-  posts: number
-}
-
 function startOfDay(d: Date) {
   const x = new Date(d)
   x.setHours(0, 0, 0, 0)
@@ -65,21 +60,6 @@ function formatAgo(ms: number) {
   const h = Math.floor(m / 60)
   if (h < 48) return `${h}h ago`
   return `${Math.floor(h / 24)}d ago`
-}
-
-function buildSummary(room: Room | null, posts: Post[]) {
-  const lines: string[] = []
-  lines.push(`# Facilitator Summary: ${room?.title ?? 'Round Table Session'}`)
-  if (room?.course) lines.push(`Course: ${room.course}`)
-  lines.push('')
-  lines.push(`Prompt: ${room?.prompt ?? ''}`)
-  lines.push('')
-  lines.push('## Key Points')
-  for (const p of posts) {
-    lines.push(`- ${p.content}`)
-  }
-  lines.push('')
-  return lines.join('\n')
 }
 
 type AlertSeverity = 'critical' | 'warning' | 'info'

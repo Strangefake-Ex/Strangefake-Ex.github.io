@@ -12,8 +12,8 @@ import ClaimSeatModal from '@/components/ClaimSeatModal'
 import ConfirmDialog from '@/components/ConfirmDialog'
 import AppNavDrawer from '@/components/AppNavDrawer'
 import { computeKeywords, highlightTextParts } from '@/lib/guardian'
-import { getJson, setJson, subscribeKey } from '@/lib/localStore'
-import { facControlKey, facPollVotesKey, postsKey, sessionKey } from '@/lib/storageKeys'
+import { getJson, removeKey, setJson, subscribeKey } from '@/lib/localStore'
+import { facControlKey, facPollVotesKey, POSTS_INDEX_KEY, postsKey, sessionKey } from '@/lib/storageKeys'
 import { createAiClient } from '@/services/aiClient'
 import CrestSeal from '@/components/CrestSeal'
 
@@ -157,12 +157,13 @@ export default function Room() {
   const quotaSecondsRemaining = seat && session ? Math.max(0, session.maxSeconds - (seatStats?.seconds ?? 0)) : 0
   const isOverQuota = !!(seat && session && (quotaSpeechesRemaining <= 0 || quotaSecondsRemaining <= 0))
 
-  const canSpeak = !isStructured || (seat && session && session.currentSpeakerId === seat.id && !isOverQuota)
+  const endedAt = isStructured && session ? session.endedAt : undefined
+  const canSpeak = !isStructured || (!endedAt && seat && session && session.currentSpeakerId === seat.id && !isOverQuota)
   const paused = !!facControl?.paused
   const canSpeakNow = canSpeak && !paused
   const currentSpeaker = isStructured && session ? session.order.find((p) => p.id === session.currentSpeakerId) ?? null : null
   const turnRemainingSeconds =
-    isStructured && session ? Math.min(session.turnSeconds, Math.max(0, Math.ceil((session.turnEndsAt - now) / 1000))) : 0
+    isStructured && session && !endedAt ? Math.min(session.turnSeconds, Math.max(0, Math.ceil((session.turnEndsAt - now) / 1000))) : 0
   const guardianKeywords = useMemo(() => (room?.aiGuardEnabled ? computeKeywords(posts) : []), [posts, room?.aiGuardEnabled])
   const maxVisible = 30
   const visiblePosts = useMemo(() => (showAllMessages ? posts : posts.slice(0, maxVisible)), [maxVisible, posts, showAllMessages])
@@ -171,6 +172,7 @@ export default function Room() {
     if (!roomId) return
     if (!isStructured) return
     if (!session) return
+    if (session.endedAt) return
     if (turnRemainingSeconds > 0) return
     sessionRepo.advanceTurn(roomId).then(setSession)
   }, [isStructured, roomId, session, sessionRepo, turnRemainingSeconds])
@@ -180,6 +182,7 @@ export default function Room() {
     if (!room) return
     if (!isStructured) return
     if (!session) return
+    if (session.endedAt) return
     if (!currentSpeaker?.isBot) return
     if (turnRemainingSeconds <= 0) return
 
@@ -227,6 +230,27 @@ export default function Room() {
 
     run()
   }, [ai, currentSpeaker, isStructured, postRepo, posts, room, roomId, session, sessionRepo, turnRemainingSeconds])
+
+  async function onRestart() {
+    if (!roomId) return
+    if (!room) return
+    if (!seat) return
+    const key = postsKey(roomId)
+    const existingPosts = (getJson<Post[]>(key) ?? []) as Post[]
+    removeKey(key)
+    const index = (getJson<Record<string, string>>(POSTS_INDEX_KEY) ?? {}) as Record<string, string>
+    for (const p of existingPosts) {
+      delete index[p.id]
+    }
+    setJson(POSTS_INDEX_KEY, index)
+    setPosts([])
+    setDraft('')
+    setQuotaError(null)
+    lastAiTurnKeyRef.current = null
+    await sessionRepo.resetSession(roomId)
+    const target = Math.max(2, Math.min(room.capacity, room.participants || 2))
+    setSession(await sessionRepo.ensureSession(roomId, seat, { targetParticipants: target }))
+  }
 
   async function onPublish() {
     if (!roomId) return
@@ -465,13 +489,23 @@ export default function Room() {
                   <Clock3 className="h-4 w-4 text-[#6b645c]" />
                   {turnRemainingSeconds}s
                 </div>
-                <button
-                  className="rt-gild inline-flex h-10 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/60 px-4 text-xs font-semibold text-[#1c1917] transition hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
-                  type="button"
-                  onClick={onAdvanceTurn}
-                >
-                  Advance Turn
-                </button>
+                <div className="flex flex-col items-stretch gap-2">
+                  <button
+                    className="rt-gild inline-flex h-10 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/60 px-4 text-xs font-semibold text-[#1c1917] transition hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35 disabled:opacity-55"
+                    type="button"
+                    onClick={onAdvanceTurn}
+                    disabled={!!endedAt}
+                  >
+                    Advance Turn
+                  </button>
+                  <button
+                    className="rt-gild inline-flex h-10 items-center justify-center rounded-xl border border-[#b9902e]/20 bg-white/60 px-4 text-xs font-semibold text-[#1c1917] transition hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b9902e]/35"
+                    type="button"
+                    onClick={onRestart}
+                  >
+                    Restart
+                  </button>
+                </div>
               </div>
             </div>
 

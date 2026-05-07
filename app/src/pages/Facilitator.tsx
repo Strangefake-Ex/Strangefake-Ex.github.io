@@ -22,17 +22,14 @@ import { createLocalSessionRepository, type StructuredSession } from '@/reposito
 import { createLocalDraftRepository, type Draft } from '@/repositories/draftRepository'
 import { createAiClient } from '@/services/aiClient'
 import { getJson, removeKey, setJson, subscribeKey } from '@/lib/localStore'
-import { draftsKey, facControlKey, facEventsKey, facPollVotesKey, facRulesKey, postsKey, sessionKey } from '@/lib/storageKeys'
+import { draftsKey, facControlKey, facEventsKey, facPollVotesKey, facRulesKey, postsKey, sessionKey, ROOMS_KEY } from '@/lib/storageKeys'
 import useAuthSession from '@/hooks/useAuthSession'
 import { computeVirtualRange } from '@/lib/virtualList'
+import { computeParticipationBalance, clamp } from '@/lib/guardian'
 
 type ParticipantRow = {
   label: string
   posts: number
-}
-
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n))
 }
 
 function startOfDay(d: Date) {
@@ -68,16 +65,6 @@ function formatAgo(ms: number) {
   const h = Math.floor(m / 60)
   if (h < 48) return `${h}h ago`
   return `${Math.floor(h / 24)}d ago`
-}
-
-function computeParticipationBalance(posts: Post[]) {
-  if (posts.length === 0) return 78
-  const counts = new Map<string, number>()
-  for (const p of posts) counts.set(p.authorLabel, (counts.get(p.authorLabel) ?? 0) + 1)
-  const total = posts.length
-  const maxShare = Math.max(...[...counts.values()].map((c) => c / total))
-  const raw = 100 - (maxShare - 1 / Math.max(1, counts.size)) * 180
-  return clamp(Math.round(raw), 12, 98)
 }
 
 function buildSummary(room: Room | null, posts: Post[]) {
@@ -208,7 +195,7 @@ function buildFacilitatorExport(input: {
 
   lines.push('## Highlights')
   for (const p of input.posts.slice(0, 12)) {
-    lines.push(`- “${p.content.slice(0, 140)}${p.content.length > 140 ? '…' : ''}” — ${p.authorLabel}`)
+    lines.push(`- "${p.content.slice(0, 140)}${p.content.length > 140 ? '…' : ''}" — ${p.authorLabel}`)
   }
   lines.push('')
 
@@ -256,7 +243,6 @@ export default function Facilitator() {
   const [room, setRoom] = useState<Room | null>(null)
   const [rooms, setRooms] = useState<Room[]>([])
   const [posts, setPosts] = useState<Post[]>([])
-  const [rows, setRows] = useState<ParticipantRow[]>([])
   const [session, setSession] = useState<StructuredSession | null>(null)
   const [drafts, setDrafts] = useState<Draft[]>([])
   const [weaves, setWeaves] = useState<Record<string, { script: string; followUps: string[] }>>({})
@@ -302,8 +288,10 @@ export default function Facilitator() {
     loadRoom()
     loadPosts()
     const unsubPosts = subscribeKey(postsKey(roomId), () => loadPosts())
+    const unsubRoom = subscribeKey(ROOMS_KEY, () => loadRoom())
     return () => {
       unsubPosts()
+      unsubRoom()
     }
   }, [postRepo, roomId, roomRepo])
 
@@ -327,14 +315,12 @@ export default function Facilitator() {
     return subscribeKey(draftsKey(roomId), () => load())
   }, [draftRepo, roomId])
 
-  useEffect(() => {
+  const rows = useMemo(() => {
     const counts = new Map<string, number>()
     for (const p of posts) counts.set(p.authorLabel, (counts.get(p.authorLabel) ?? 0) + 1)
-    setRows(
-      [...counts.entries()]
-        .map(([label, count]) => ({ label, posts: count }))
-        .sort((a, b) => b.posts - a.posts),
-    )
+    return [...counts.entries()]
+      .map(([label, count]) => ({ label, posts: count }))
+      .sort((a, b) => b.posts - a.posts)
   }, [posts])
 
   const participationBalance = useMemo(() => computeParticipationBalance(posts), [posts])
@@ -355,8 +341,9 @@ export default function Facilitator() {
   )
   const draftingNow = useMemo(() => nearContributions.filter((d) => nowMs - d.lastActivityAt < 30_000).length, [nearContributions, nowMs])
   const silenceSeconds = useMemo(() => {
-    const last = posts.slice().sort((a, b) => b.createdAt - a.createdAt)[0]?.createdAt ?? 0
-    if (!last) return posts.length === 0 ? 0 : 0
+    const sorted = posts.slice().sort((a, b) => b.createdAt - a.createdAt)
+    const last = sorted[0]?.createdAt
+    if (last == null) return 0
     return Math.max(0, Math.floor((nowMs - last) / 1000))
   }, [nowMs, posts])
   const alerts: GuardianAlert[] = useMemo(() => {
@@ -496,7 +483,7 @@ export default function Facilitator() {
     const windowMs = 10 * 60 * 1000
     const recentPosts = posts.filter((p) => nowMs - p.createdAt <= windowMs)
     const recentCount = recentPosts.length
-    const densityPerMin = Math.round((recentCount / 10) * 10) / 10
+    const densityPerMin = Math.round(recentCount / 10 * 10) / 10
     const capacity = room?.capacity ?? participantBreakdown.length
     const coveragePct = Math.round((participantBreakdown.length / Math.max(1, capacity)) * 100)
     const recentParticipants = new Set(recentPosts.map((p) => p.authorLabel)).size
@@ -542,10 +529,10 @@ export default function Facilitator() {
     const delta = prevScore == null ? null : score - prevScore
     const recommendations = [
       participationBalance < 65 ? 'Invite one quiet voice with a specific question.' : 'Ask for a counterexample to deepen the argument.',
-      silenceSeconds >= 180 ? 'Use a quick “agree / disagree / unsure” poll question.' : 'Summarize two viewpoints and ask for synthesis.',
+      silenceSeconds >= 180 ? 'Use a quick "agree / disagree / unsure" poll question.' : 'Summarize two viewpoints and ask for synthesis.',
       draftingNow > 0 ? 'Call on someone drafting privately and offer a gentle bridge into the room.' : 'Request one concrete example before moving on.',
     ]
-    const highlights = posts.slice(0, 5).map((p) => `“${p.content.slice(0, 120)}${p.content.length > 120 ? '…' : ''}” — ${p.authorLabel}`)
+    const highlights = posts.slice(0, 5).map((p) => `"${p.content.slice(0, 120)}${p.content.length > 120 ? '…' : ''}" — ${p.authorLabel}`)
     return { score, delta, recommendations, highlights }
   }, [draftingNow, participationBalance, posts, roomId, silenceSeconds])
 

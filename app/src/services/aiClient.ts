@@ -112,11 +112,11 @@ function uniq(items: string[]) {
 
 export function createAiClient(config: { mode: AiClientMode; baseUrl?: string }): AiClient {
   if (config.mode === 'http') {
-    const base = (config.baseUrl ?? '/api/ai').replace(/\/$/, '')
+    const base = (config.baseUrl || '/api/ai').replace(/\/$/, '')
     async function postJson<T>(path: string, body: unknown): Promise<T> {
       const res = await fetch(`${base}${path}`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
       if (!res.ok) throw new Error(`AI API error (${res.status})`)

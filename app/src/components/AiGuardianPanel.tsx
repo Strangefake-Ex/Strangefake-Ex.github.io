@@ -54,7 +54,8 @@ export default function AiGuardianPanel({ room, posts }: { room: Room | null; po
 
   const ai = useMemo(() => {
     const baseUrl = import.meta.env.VITE_AI_BASE_URL ? String(import.meta.env.VITE_AI_BASE_URL) : ''
-    return createAiClient({ mode: baseUrl ? 'http' : 'stub', baseUrl })
+    const mode = (baseUrl || import.meta.env.PROD) ? 'http' : 'stub'
+    return createAiClient({ mode, baseUrl })
   }, [])
 
   const participationBalance = useMemo(() => computeParticipationBalance(posts), [posts, nonce])

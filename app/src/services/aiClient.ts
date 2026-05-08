@@ -112,7 +112,7 @@ function uniq(items: string[]) {
 
 export function createAiClient(config: { mode: AiClientMode; baseUrl?: string }): AiClient {
   if (config.mode === 'http') {
-    const base = (config.baseUrl ?? '').replace(/\/$/, '')
+    const base = (config.baseUrl ?? '/api/ai').replace(/\/$/, '')
     async function postJson<T>(path: string, body: unknown): Promise<T> {
       const res = await fetch(`${base}${path}`, {
         method: 'POST',
@@ -123,10 +123,10 @@ export function createAiClient(config: { mode: AiClientMode; baseUrl?: string })
       return (await res.json()) as T
     }
     return {
-      rewriteDraft: (input) => postJson<RewriteDraftResult>('/api/ai/rewrite', input),
-      suggestPrompt: (input) => postJson<SuggestPromptResult>('/api/ai/prompt', input),
-      explainAlert: (input) => postJson<ExplainAlertResult>('/api/ai/explain-alert', input),
-      weaveContribution: (input) => postJson<WeaveContributionResult>('/api/ai/weave', input),
+      rewriteDraft: (input) => postJson<RewriteDraftResult>('/rewrite', input),
+      suggestPrompt: (input) => postJson<SuggestPromptResult>('/prompt', input),
+      explainAlert: (input) => postJson<ExplainAlertResult>('/explain-alert', input),
+      weaveContribution: (input) => postJson<WeaveContributionResult>('/weave', input),
     }
   }
 

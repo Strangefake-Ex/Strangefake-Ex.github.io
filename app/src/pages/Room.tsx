@@ -200,31 +200,34 @@ export default function Room() {
     if (!session) return
     if (session.endedAt) return
     if (!currentSpeaker?.isBot) return
-    if (turnRemainingSeconds <= 0) return
+    if (session.turnEndsAt <= now) return
 
     const aiTurnKey = `${session.currentSpeakerId}:${session.turnEndsAt}`
     if (lastAiTurnKeyRef.current === aiTurnKey) return
     lastAiTurnKeyRef.current = aiTurnKey
 
-    let cancelled = false
     const run = async () => {
       await new Promise((r) => window.setTimeout(r, 600))
-      if (cancelled) return
-      const botIds = new Set(session.order.filter((p) => p.isBot).map((p) => p.id))
-      const recentMessages = posts
+      // Get latest state
+      const currentSession = session
+      const currentPosts = posts
+      const currentRoom = room
+      
+      const botIds = new Set(currentSession.order.filter((p) => p.isBot).map((p) => p.id))
+      const recentMessages = currentPosts
         .slice(0, 8)
         .slice()
         .reverse()
         .map((p) => `${p.authorLabel}: ${p.content}`)
         .join('\n')
-      const recentAiLines = posts
+      const recentAiLines = currentPosts
         .filter((p) => botIds.has(p.authorId))
         .slice(0, 5)
         .map((p) => p.content)
-      const latestHumanPost = posts.find((p) => !botIds.has(p.authorId))
+      const latestHumanPost = currentPosts.find((p) => !botIds.has(p.authorId))
       const contribution = [
-        room.topic ? `Topic: ${room.topic}` : null,
-        room.prompt ? `Prompt: ${room.prompt}` : null,
+        currentRoom.topic ? `Topic: ${currentRoom.topic}` : null,
+        currentRoom.prompt ? `Prompt: ${currentRoom.prompt}` : null,
         `Recent messages:\n${recentMessages || 'No messages yet.'}`,
       ]
         .filter((v) => !!v)
@@ -232,23 +235,22 @@ export default function Room() {
 
       let script = ''
       for (let attempt = 0; attempt < 3; attempt++) {
-        if (cancelled) return
         const res = await ai.weaveContribution({
           contribution,
           context: {
             roomId,
-            roomTitle: room.title,
-            prompt: room.prompt,
-            topic: room.topic,
-            mode: room.mode,
-            security: room.security,
-            shieldStrength: room.shieldStrength,
+            roomTitle: currentRoom.title,
+            prompt: currentRoom.prompt,
+            topic: currentRoom.topic,
+            mode: currentRoom.mode,
+            security: currentRoom.security,
+            shieldStrength: currentRoom.shieldStrength,
             speakerId: currentSpeaker.id,
             speakerLabel: currentSpeaker.label,
             recentAiLines,
             latestSpeakerLabel: latestHumanPost?.authorLabel,
             latestSpeakerContent: latestHumanPost?.content,
-            turnNumber: session.turnNumber,
+            turnNumber: currentSession.turnNumber,
             aiAttempt: attempt,
           },
         })
@@ -259,27 +261,23 @@ export default function Room() {
           break
         }
       }
-      if (cancelled) return
+      
       if (!script) {
-        script = fallbackAiLine(room.topic, latestHumanPost?.authorLabel, latestHumanPost?.content)
+        script = fallbackAiLine(currentRoom.topic, latestHumanPost?.authorLabel, latestHumanPost?.content)
       }
 
       await postRepo.createPost(roomId, {
-        authorId: session.currentSpeakerId,
+        authorId: currentSession.currentSpeakerId,
         authorLabel: currentSpeaker.label,
         content: script,
       })
-      if (cancelled) return
+      
       setPosts(await postRepo.listPosts(roomId))
-      if (cancelled) return
       setSession(await sessionRepo.advanceTurn(roomId))
     }
 
     run().catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [ai, currentSpeaker, isStructured, postRepo, posts, room, roomId, session, sessionRepo, turnRemainingSeconds])
+  }, [ai, currentSpeaker, isStructured, now, postRepo, posts, room, roomId, session, sessionRepo])
 
   async function onRestart() {
     if (!roomId) return

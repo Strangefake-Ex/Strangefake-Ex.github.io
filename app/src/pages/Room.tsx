@@ -40,8 +40,9 @@ export default function Room() {
   const sessionRepo = useMemo(() => createLocalSessionRepository(), [])
   const draftRepo = useMemo(() => createLocalDraftRepository(), [])
   const ai = useMemo(() => {
-    const baseUrl = import.meta.env.VITE_AI_BASE_URL ? String(import.meta.env.VITE_AI_BASE_URL) : '/api/ai'
-    return createAiClient({ mode: 'http', baseUrl })
+    const baseUrl = import.meta.env.VITE_AI_BASE_URL ? String(import.meta.env.VITE_AI_BASE_URL) : ''
+    const mode = (baseUrl || import.meta.env.PROD) ? 'http' : 'stub'
+    return createAiClient({ mode, baseUrl })
   }, [])
   const [seat, setSeat] = useState<Seat | null>(null)
   const [session, setSession] = useState<StructuredSession | null>(null)

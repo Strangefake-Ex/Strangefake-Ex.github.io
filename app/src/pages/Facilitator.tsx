@@ -250,7 +250,8 @@ export default function Facilitator() {
   const { session: authSession } = useAuthSession()
   const ai = useMemo(() => {
     const baseUrl = import.meta.env.VITE_AI_BASE_URL ? String(import.meta.env.VITE_AI_BASE_URL) : ''
-    return createAiClient({ mode: baseUrl ? 'http' : 'stub', baseUrl })
+    const mode = (baseUrl || import.meta.env.PROD) ? 'http' : 'stub'
+    return createAiClient({ mode, baseUrl })
   }, [])
 
   const [room, setRoom] = useState<Room | null>(null)

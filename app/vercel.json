@@ -1,9 +1,16 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/ai/*.ts": {
+      "runtime": "edge",
+      "memory": 512,
+      "maxDuration": 30
+    }
+  }
 }
 

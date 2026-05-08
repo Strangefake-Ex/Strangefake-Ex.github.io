@@ -4,13 +4,6 @@
       "source": "/((?!api/|assets/).*)",
       "destination": "/index.html"
     }
-  ],
-  "functions": {
-    "api/ai/*.ts": {
-      "runtime": "edge",
-      "memory": 512,
-      "maxDuration": 30
-    }
-  }
+  ]
 }
 

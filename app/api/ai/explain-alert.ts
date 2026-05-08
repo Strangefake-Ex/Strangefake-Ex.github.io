@@ -1,6 +1,8 @@
 import { deepseekChatJson, jsonResponse, methodNotAllowed } from './_deepseek'
 
-export const config = { runtime: 'edge' }
+export const config = {
+  runtime: 'edge'
+}
 
 export default async function handler(req: Request) {
   if (req.method !== 'POST') return methodNotAllowed()

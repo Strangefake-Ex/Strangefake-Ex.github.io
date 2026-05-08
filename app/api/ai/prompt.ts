@@ -1,6 +1,8 @@
 import { deepseekChatJson, jsonResponse, methodNotAllowed } from './_deepseek'
 
-export const config = { runtime: 'edge' }
+export const config = {
+  runtime: 'edge'
+}
 
 function charCount(text: string) {
   return Array.from(text).length

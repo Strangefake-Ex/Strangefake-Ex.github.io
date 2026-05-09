@@ -1021,7 +1021,110 @@ aiClient.test.ts:
 
 ---
 
-## 9. AI Tool Citations
+## 9. Web Deliverables (GitHub Pages + Vercel)
+
+### Overview
+
+This repository produces two public-facing web deliverables:
+
+- **Process Portfolio (static, single-file HTML):** https://strangefake-ex.github.io/
+- **Round Table App (Vite SPA + Vercel Functions):** https://round-table-app.vercel.app/
+
+The prompts below capture the primary prompts used to generate and polish each deliverable so the work can be reproduced consistently.
+
+### 9.1 Process Portfolio: Single-File `index.html` (GitHub Pages)
+
+**Prompt: Generate the Process Portfolio Page**
+
+```
+You are building a single-file portfolio website (index.html only) for a Human-Centric Computing project called "Round Table". Requirements:
+
+- No build step: use Tailwind via CDN (https://cdn.tailwindcss.com).
+- Use Google Fonts: Cinzel (display), Cormorant Garamond (serif headings), Plus Jakarta Sans (body).
+- Visual style: dark navy + gold + parchment; cinematic, scholarly, medieval/Arthurian; avoid generic SaaS look.
+- Create a long-scrolling page with anchored sections:
+  Motivation, Research, Review, Personas, Journey, Requirements, Ideation, Prototype, Evaluation, Team, References.
+- Include micro-interactions:
+  reveal-on-scroll, hover polish, subtle background aura, and motion-reduce support.
+- Use semantic HTML (main/nav/section), correct heading hierarchy, and visible focus rings for keyboard users.
+- Embed local PNG/JPG images via relative paths and keep them centrally managed in one folder.
+- Include outbound links to:
+  1) the Round Table App production URL (Vercel),
+  2) the Figma prototype URL.
+
+Output a complete, production-ready index.html with no placeholders.
+```
+
+**Output used for:** `/index.html` (deployed on GitHub Pages).
+
+### 9.2 Process Portfolio: Consolidate Local Images into `graph/`
+
+**Prompt: Organize Local Images Without Visual Changes**
+
+```
+We have a static index.html that references multiple local .png and .jpg files from the repository root.
+
+Task:
+1) Create a folder named "graph/" at the repository root.
+2) Move ALL local .png and .jpg files into graph/.
+3) Update ALL references in index.html (img src and CSS url()) to the new paths.
+4) Ensure the rendered page does not change (no DOM changes other than file paths; no layout/style changes).
+
+Constraints:
+- Keep filenames unchanged (including spaces) unless absolutely necessary.
+- Do not touch external image URLs.
+- After the change, run a quick verification that every referenced local image exists on disk.
+```
+
+**Output used for:** `graph/*` asset organization + path updates in `/index.html`.
+
+### 9.3 Process Portfolio: One-Off HTML Hygiene Pass (Accessibility + Consistency)
+
+**Prompt: Write One-Off Fix Scripts (Run Once, Do Not Depend on Them at Runtime)**
+
+```
+Write small Python scripts that make safe, mechanical edits to a single static file /workspace/index.html:
+
+1) fix_html_images.py
+   - Ensure every <img> has an alt attribute (default alt="").
+   - Ensure every <img> has explicit width and height attributes (use sensible defaults).
+
+2) fix_html_links.py
+   - Ensure every <a> tag has focus-visible ring classes for keyboard navigation.
+
+3) fix_html_transitions.py
+   - Replace "transition-all" with "transition motion-reduce:transition-none" to respect reduced motion.
+
+Do not change the page structure or content semantics beyond these mechanical edits.
+```
+
+**Output used for:** A one-time hygiene pass to improve accessibility and reduce-motion support, with the final result committed directly into `/index.html` so the deployed site has no runtime script dependency.
+
+### 9.4 Round Table App: Production Deployment (Vercel)
+
+**Prompt: Deploy a Vite SPA + Serverless AI Endpoints**
+
+```
+We have a Vite + React + TypeScript app under /app and serverless endpoints under /app/api/ai/*.
+
+Goal: deploy to Vercel as https://round-table-app.vercel.app/ with these requirements:
+
+- SPA routing works (react-router): all non-/api routes rewrite to /index.html
+- /api/ai/* routes are handled by Vercel Functions (no SPA rewrite)
+- The frontend can run with stub AI mode in development but call real endpoints in production
+- Environment variables:
+  - DEEPSEEK_API_KEY (server-side only; never exposed to the client)
+  - DEEPSEEK_BASE_URL and DEEPSEEK_MODEL (optional)
+  - VITE_AI_BASE_URL (optional override)
+
+Provide a vercel.json that satisfies the routing constraints and a short production checklist.
+```
+
+**Output used for:** `/app/vercel.json` routing rules + production deployment readiness checklist.
+
+---
+
+## 10. AI Tool Citations
 
 In accordance with CPT208 Generative AI Permissions policy (mandatory citation requirement for Portfolio, System & Video Demo submissions).
 

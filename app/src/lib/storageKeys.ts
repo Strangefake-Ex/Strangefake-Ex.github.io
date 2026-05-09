@@ -1,4 +1,5 @@
 export const AUTH_SESSION_KEY = 'rt:auth:session:v1'
+export const AUTH_USERS_KEY = 'rt:auth:users:v1'
 export const ROOMS_KEY = 'rt:rooms'
 export const SEEDED_ROOMS_KEY = 'rt:seeded:v1'
 export const SEEDED_ACTIVITY_KEY = 'rt:seeded:activity:v1'

@@ -5,6 +5,7 @@ import { BadgeCheck, Calendar, Crown, Menu, Shield, Sparkles, Swords, Trophy } f
 import { createLocalPostRepository, type Post } from '@/repositories/postRepository'
 import { createLocalRoomRepository, type Room } from '@/repositories/roomRepository'
 import AppNavDrawer from '@/components/AppNavDrawer'
+import useAuthSession from '@/hooks/useAuthSession'
 
 type ChamberRow = {
   roomId: string
@@ -60,6 +61,7 @@ function monthsMatch(a: Date, b: Date) {
 }
 
 export default function Profile() {
+  const { session } = useAuthSession()
   const roomRepo = useMemo(() => createLocalRoomRepository(), [])
   const postRepo = useMemo(() => createLocalPostRepository(localStorage, { seedDemo: true }), [])
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -114,6 +116,12 @@ export default function Profile() {
     if (totalSpeeches >= 10) list.push({ label: 'Champion', icon: <Trophy className="h-4 w-4" /> })
     return list.slice(0, 6)
   }, [avgImpact, totalLikes, totalSpeeches])
+  const userNickname = session?.nickname || 'Traveler'
+  const joinDate = session?.createdAt ? new Date(session.createdAt) : new Date()
+  const joinYear = joinDate.getFullYear()
+  const joinMonth = joinDate.getMonth() + 1
+  const joinDay = joinDate.getDate()
+  const joinFullDate = `${joinYear}.${joinMonth}.${joinDay}`
 
   return (
     <main className="relative z-10 min-h-dvh bg-transparent font-body text-[#1c1917] rt-page">
@@ -151,12 +159,15 @@ export default function Profile() {
             <div className="rt-surface rt-gild rounded-3xl p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-xs tracking-[0.18em] text-[#6b645c]">SIR</div>
-                  <div className="mt-2 text-2xl font-semibold tracking-tight text-[#1c1917]">Aldric</div>
-                  <div className="mt-1 text-xs font-semibold tracking-[0.14em] text-[#7a5b10]">KNIGHT-ERRANT</div>
+                  <div className="mt-2 text-2xl font-semibold tracking-tight text-[#1c1917]">
+                    {userNickname}
+                  </div>
+                  <div className="mt-1 text-xs font-semibold tracking-[0.14em] text-[#7a5b10]">
+                    {session?.nickname ? 'KNIGHT OF THE ROUND TABLE' : 'TRAVELER'}
+                  </div>
                   <div className="mt-3 inline-flex items-center gap-2 text-xs text-[#4b463f]">
                     <Calendar className="h-4 w-4" />
-                    Joined September 2024
+                    Joined {joinFullDate}
                   </div>
                 </div>
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#b9902e] text-black shadow-[0_18px_44px_rgba(185,144,46,0.16)]">

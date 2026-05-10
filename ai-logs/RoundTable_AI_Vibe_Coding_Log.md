@@ -11,7 +11,7 @@ Generated: May 2026
 | Tool | Version | Purpose |
 |------|---------|---------|
 | **DeepSeek API** | deepseek-chat | Runtime AI engine: draft rewriting, prompt suggestions, alert explanations, AI Knight discussion contributions |
-| **Gemini 3.1 Pro** | gemini 3.1 pro and gemini-2.5-pro (via Google AI Studio) | Design brainstorming, user persona generation, medieval theme conceptualization, poster content drafting, README writing |
+| **Gemini 3.1 Pro** | gemini 3.1 pro  (via Google AI Studio) | Design brainstorming, user persona generation, medieval theme conceptualization, poster content drafting, README writing |
 | **Claude Code** | v4.x (Claude Opus 4.7 / Sonnet 4.6) | Primary vibe coding tool: project scaffolding, React component generation, business logic implementation, TypeScript debugging, test authoring |
 
 ---
@@ -1134,7 +1134,7 @@ In accordance with CPT208 Generative AI Permissions policy (mandatory citation r
 
 **[1]** DeepSeek API, `deepseek-chat` model, accessed March–May 2026, available at https://platform.deepseek.com. Used as the runtime AI engine for the system's four AI-powered features: draft rewriting, prompt suggestions, alert explanations, and AI Knight discussion contributions. Integrated via Vercel Functions.
 
-**[2]** Gemini 3.1 Pro (gemini-2.5-pro), via Google AI Studio, accessed March–May 2026, available at https://aistudio.google.com. Used for design brainstorming, user persona generation, medieval theme conceptualization, poster content drafting, user journey map narration, and README.md documentation writing.
+**[2]** Gemini 3.1 Pro , via Google AI Studio, accessed March–May 2026, available at https://aistudio.google.com. Used for design brainstorming, user persona generation, medieval theme conceptualization, poster content drafting, user journey map narration, and README.md documentation writing.
 
 **[3]** Claude Code (Claude Opus 4.7 / Sonnet 4.6), v4.x, accessed March–May 2026, available at https://claude.ai. Used for vibe coding the system's full codebase: project scaffolding (Vite + React + TypeScript + Tailwind), repository pattern implementation, all React page components (Room, Facilitator, AiGuardianPanel, etc.), AI client service abstraction, Guardian NLP module, virtual list utility, Vitest integration tests (30+ flows), unit tests, ESLint/TypeScript configuration, and Vercel deployment setup.
 

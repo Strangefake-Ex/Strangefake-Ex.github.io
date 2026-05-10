@@ -37,7 +37,7 @@ The root directory hosts a standalone **landing page** (`index.html`). The app i
 
 ## Getting Started
 path 1:
-click the website https://round-table-app.vercel.app/, login in with the accout cpt208 and password cpt208
+click the website link: https://round-table-app.vercel.app/, login in with the accout cpt208 and password cpt208
 
 path 2:
 ```bash

@@ -11,7 +11,7 @@ Generated: May 2026
 | Tool | Version | Purpose |
 |------|---------|---------|
 | **DeepSeek API** | deepseek-chat | Runtime AI engine: draft rewriting, prompt suggestions, alert explanations, AI Knight discussion contributions |
-| **Gemini 3.1 Pro** | gemini 3.1 pro  (via Google AI Studio) | Design brainstorming, user persona generation, medieval theme conceptualization, poster content drafting, README writing |
+| **Gemini ** | gemini 3.1 pro  (via Google AI Studio) | Design brainstorming, user persona generation, medieval theme conceptualization, poster content drafting, README writing |
 | **Claude Code** | v4.x (Claude Opus 4.7 / Sonnet 4.6) | Primary vibe coding tool: project scaffolding, React component generation, business logic implementation, TypeScript debugging, test authoring |
 
 ---

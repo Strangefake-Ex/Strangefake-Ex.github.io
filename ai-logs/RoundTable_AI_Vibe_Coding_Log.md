@@ -1132,7 +1132,7 @@ In accordance with CPT208 Generative AI Permissions policy (mandatory citation r
 
 ### Formal Citations
 
-**[1]** DeepSeek API, `deepseek-chat` model, accessed March–May 2026, available at https://api.deepseek.com. Used as the runtime AI engine for the system's four AI-powered features: draft rewriting, prompt suggestions, alert explanations, and AI Knight discussion contributions. Integrated via Vercel Functions.
+**[1]** DeepSeek API, `deepseek-chat` model, accessed March–May 2026, available at https://platform.deepseek.com. Used as the runtime AI engine for the system's four AI-powered features: draft rewriting, prompt suggestions, alert explanations, and AI Knight discussion contributions. Integrated via Vercel Functions.
 
 **[2]** Gemini 3.1 Pro (gemini-2.5-pro), via Google AI Studio, accessed March–May 2026, available at https://aistudio.google.com. Used for design brainstorming, user persona generation, medieval theme conceptualization, poster content drafting, user journey map narration, and README.md documentation writing.
 

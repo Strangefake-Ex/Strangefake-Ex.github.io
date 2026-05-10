@@ -4,18 +4,20 @@
 
 A **Vite + React + TypeScript + Tailwind CSS** frontend for structured academic discussion. Themed around a medieval round-table aesthetic, it supports round-robin turn-taking, AI-assisted drafting, and real-time facilitator monitoring — ideal for classroom seminars, book clubs, and small-group debates.
 
+The root directory hosts a standalone **landing page** (`index.html`). The app itself lives in the `app/` directory.
+
 ---
 
 ## Features
 
 | Module | Description |
 |--------|-------------|
-| 🏰 **Chamber Hall** | Browse, search, and filter discussion chambers; join via invite code; filter by mode and security level |
-| ✍️ **Thought Space** | Private draft area with AI-powered polish & rewrite; one-click publish to the public discussion |
-| 🛡️ **AI Guardian** | Keyword highlighting, AI knight auto-contributions, safety alerts with explanations |
-| 🔄 **Structured Turns** | Round-robin speaking order with configurable quotas (speech count / seconds); AI bots fill empty seats |
-| 🎛️ **Facilitator HUD** | Participation dashboard, trend charts, heatmap, alert management; pause/resume, prompt cards, quick polls, Markdown export |
-| 🔐 **Auth** | Local nickname-based registration and login |
+| Chamber Hall | Browse, search, and filter discussion chambers; join via invite code; filter by mode and security level |
+| Thought Space | Private draft area with AI-powered polish & rewrite; one-click publish to the public discussion |
+| AI Guardian | Keyword highlighting, AI knight auto-contributions, safety alerts with explanations |
+| Structured Turns | Round-robin speaking order with configurable quotas (speech count / seconds); AI bots fill empty seats |
+| Facilitator HUD | Participation dashboard, trend charts, heatmap, alert management; pause/resume, prompt cards, quick polls, Markdown export |
+| Auth | Local nickname-based registration and login |
 
 ---
 
@@ -24,8 +26,9 @@ A **Vite + React + TypeScript + Tailwind CSS** frontend for structured academic 
 - **Framework**: React 18 + TypeScript
 - **Build**: Vite 6
 - **Routing**: react-router-dom v7
+- **State**: zustand + localStorage with cross-tab event sync
 - **Styling**: Tailwind CSS 3 + custom design system (parchment & gold theme)
-- **State**: localStorage with cross-tab event sync
+- **Icons**: lucide-react
 - **Testing**: Vitest + @testing-library/react + jsdom
 - **AI Backend**: Vercel Edge Functions + DeepSeek API
 - **Deployment**: Vercel
@@ -35,27 +38,25 @@ A **Vite + React + TypeScript + Tailwind CSS** frontend for structured academic 
 ## Getting Started
 
 ```bash
-# Install dependencies
+cd app
 npm install
-
-# Start dev server
 npm run dev
 ```
 
-Open `http://localhost:5173` to explore. Six seed chambers and nine demo posts are pre-loaded — no backend required.
+Open `http://localhost:5173`. Six seed chambers and nine demo posts are pre-loaded — no backend required.
 
 ---
 
 ## Scripts
 
 ```bash
-npm run dev        # Start dev server
-npm run build      # Production build (includes TypeScript check)
-npm run preview    # Preview production build
-npm run check      # TypeScript type check
-npm run lint       # ESLint
-npm test           # Run tests (vitest watch)
-npm run test:run   # Run all tests once
+npm run dev         # Start dev server
+npm run build       # Production build (includes TypeScript check)
+npm run preview     # Preview production build
+npm run check       # TypeScript type check
+npm run lint        # ESLint
+npm test            # Run tests (vitest watch)
+npm run test:run    # Run all tests once
 ```
 
 ---
@@ -111,7 +112,7 @@ DEEPSEEK_MODEL=deepseek-chat                  # optional
 ```
 
 The frontend toggles AI mode via the `VITE_AI_BASE_URL` env var:
-- **Unset** → local stub (simulated responses)
+- **Unset** → local stub (deterministic simulated responses, works offline)
 - **Set** → HTTP calls to the API routes
 
 ---
@@ -120,12 +121,13 @@ The frontend toggles AI mode via the `VITE_AI_BASE_URL` env var:
 
 1. Push the repo to GitHub
 2. Open [Vercel](https://vercel.com) → Add New → Project → select the repo
-3. Framework Preset: **Vite** (usually auto-detected)
-4. Build settings:
+3. Set **Root Directory** to `app`
+4. Framework Preset: **Vite** (usually auto-detected)
+5. Build settings:
    - Build Command: `npm run build`
    - Output Directory: `dist`
-5. Add `DEEPSEEK_API_KEY` env var if using AI features
-6. Deploy
+6. Add `DEEPSEEK_API_KEY` env var if using AI features
+7. Deploy
 
 A `vercel.json` with SPA rewrite rules is included — no 404s on refresh.
 
@@ -134,24 +136,29 @@ A `vercel.json` with SPA rewrite rules is included — no 404s on refresh.
 ## Project Structure
 
 ```
-├── api/ai/                  # Vercel Edge Functions
-│   ├── _deepseek.ts         # DeepSeek API client
-│   ├── weave.ts             # AI knight contribution
-│   ├── rewrite.ts           # AI draft polish
-│   └── explain-alert.ts     # AI alert explanation
-├── src/
-│   ├── components/          # Shared UI components
-│   ├── flows/               # Integration tests (27 user-flow tests)
-│   ├── hooks/               # Custom hooks (auth, theme, motion)
-│   ├── lib/                 # Utilities (keywords, localStorage, virtual list)
-│   ├── pages/               # Route pages
-│   ├── repositories/        # Data layer (localStorage CRUD)
-│   └── services/            # AI client (stub / http dual-mode)
-├── index.html
-├── vite.config.ts
-├── tailwind.config.js
-├── tsconfig.json
-└── vercel.json
+├── index.html                     # Landing / marketing page
+├── app/                           # The Vite React application
+│   ├── api/ai/                    # Vercel Edge Functions
+│   │   ├── _deepseek.ts           # DeepSeek API client
+│   │   ├── prompt.ts              # AI prompt suggestions
+│   │   ├── rewrite.ts             # AI draft polish
+│   │   ├── weave.ts               # AI knight contribution
+│   │   └── explain-alert.ts       # AI alert explanation
+│   ├── src/
+│   │   ├── components/            # Shared UI components
+│   │   ├── flows/                 # Integration tests (~27 user-flow tests)
+│   │   ├── hooks/                 # Custom hooks (auth, theme, motion)
+│   │   ├── lib/                   # Utilities (guardian, localStorage, virtual list)
+│   │   ├── pages/                 # Route pages (8 pages)
+│   │   ├── repositories/          # Data layer (localStorage CRUD)
+│   │   └── services/              # AI client (stub / http dual-mode)
+│   ├── index.html                 # App entry point
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   └── vercel.json
+├── graph/                         # Screenshots & team photos
+└── ai-logs/                       # AI interaction logs
 ```
 
 ---

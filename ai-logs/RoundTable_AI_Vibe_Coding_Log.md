@@ -26,7 +26,7 @@ DeepSeek's `deepseek-chat` model serves as the runtime AI engine for all four AI
 
 ```
 Model: deepseek-chat (configurable via DEEPSEEK_MODEL env)
-Base URL: https://platform.deepseek.com (configurable via DEEPSEEK_BASE_URL env)
+Base URL: https://api.deepseek.com (configurable via DEEPSEEK_BASE_URL env)
 Default temperature: 0.4
 Response format: json_object
 ```

@@ -60,7 +60,11 @@ export default function Auth() {
 
             <div className="relative">
               <div className="flex flex-wrap items-center gap-4">
-                <RoundTableLogo className="h-12 w-12 drop-shadow-[0_18px_44px_rgba(20,17,15,0.10)]" ariaLabel="The Round Table" />
+                <RoundTableLogo
+                  className="h-12 w-12 drop-shadow-[0_18px_44px_rgba(20,17,15,0.14)]"
+                  ariaLabel="The Round Table"
+                  tone="bold"
+                />
                 <div>
                   <h1 className="font-display text-balance text-5xl font-semibold tracking-[-0.03em] text-[#1c1917] sm:text-6xl">
                     The Round Table

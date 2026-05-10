@@ -16,10 +16,10 @@ test('can register, sign out, and sign in with nickname + password', async () =>
     </MemoryRouter>,
   )
 
+  await userEvent.click(screen.getByRole('button', { name: /^register$/i }))
   await userEvent.type(screen.getByRole('textbox', { name: /nickname/i }), 'Alice')
   await userEvent.type(screen.getByLabelText(/password/i), 'pw123')
-  const signInButtons = screen.getAllByRole('button', { name: /^sign in$/i })
-  await userEvent.click(signInButtons[signInButtons.length - 1]!)
+  await userEvent.click(screen.getByRole('button', { name: /create account/i }))
 
   expect(await screen.findByRole('heading', { name: /join the discussion/i })).toBeInTheDocument()
 
@@ -34,9 +34,9 @@ test('can register, sign out, and sign in with nickname + password', async () =>
 
   await userEvent.click(screen.getByRole('link', { name: /sign in/i }))
   await userEvent.type(screen.getByRole('textbox', { name: /nickname/i }), 'Alice')
-  await userEvent.type(screen.getByLabelText(/password/i), 'totally-different')
-  const signInButtons2 = screen.getAllByRole('button', { name: /^sign in$/i })
-  await userEvent.click(signInButtons2[signInButtons2.length - 1]!)
+  await userEvent.type(screen.getByLabelText(/password/i), 'pw123')
+  const signInButtons = screen.getAllByRole('button', { name: /^sign in$/i })
+  await userEvent.click(signInButtons[signInButtons.length - 1]!)
 
   expect(await screen.findByRole('heading', { name: /join the discussion/i })).toBeInTheDocument()
 })

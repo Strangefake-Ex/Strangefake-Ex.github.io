@@ -5,7 +5,7 @@
 A **Vite + React + TypeScript + Tailwind CSS** frontend for structured academic discussion. Themed around a medieval round-table aesthetic, it supports round-robin turn-taking, AI-assisted drafting, and real-time facilitator monitoring — ideal for classroom seminars, book clubs, and small-group debates.
 
 The root directory hosts a standalone **landing page** (`index.html`). The app itself lives in the `app/` directory.
-For more information, please visit https://strangefake-ex.github.io/
+>For more information, please visit https://strangefake-ex.github.io/
 
 ---
 

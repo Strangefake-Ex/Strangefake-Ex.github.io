@@ -6,6 +6,7 @@ A **Vite + React + TypeScript + Tailwind CSS** frontend for structured academic 
 
 The root directory hosts a standalone **landing page** (`index.html`). The app itself lives in the `app/` directory.
 >For more information, please visit https://strangefake-ex.github.io/
+>github repository :https://github.com/Strangefake-Ex/Strangefake-Ex.github.io
 
 ---
 
